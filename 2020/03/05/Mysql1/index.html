@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>MySQL常见面试题 | gssplus&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+    <meta name="keywords" content="gss's Blog" />
+  
+  <meta name="description" content="数据库常见面试题">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL常见面试题">
+<meta property="og:url" content="https://guoshusong.github.io/2020/03/05/Mysql1/index.html">
+<meta property="og:site_name" content="gssplus&#39;s Blog">
+<meta property="og:description" content="数据库常见面试题">
+<meta property="article:published_time" content="2020-03-05T01:23:15.000Z">
+<meta property="article:modified_time" content="2020-04-04T06:18:30.225Z">
+<meta property="article:author" content="GuoShuSong">
+<meta property="article:tag" content="Mysql">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+  
+
+  
+  
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+  <div id="container">
+      <header id="header">
+    <div id="banner"></div>
+    <div id="header-outer">
+        <div id="header-menu" class="header-menu-pos animated">
+            <div class="header-menu-container">
+                <a href="/" class="left">
+                    <span class="site-title">Hello,Here is gssplus!</span>
+                </a>
+                <nav id="header-menu-nav" class="right">
+                    
+                    <a  href="/">
+                        <i class="fa fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    
+                    <a  href="/archives">
+                        <i class="fa fa-archive"></i>
+                        <span>Archives</span>
+                    </a>
+                    
+                    <a  href="/about">
+                        <i class="fa fa-user"></i>
+                        <span>About</span>
+                    </a>
+                    
+                </nav>
+                <a class="mobile-header-menu-button">
+                    <i class="fa fa-bars"></i>
+                </a>
+            </div>
+        </div>
+        <div id="header-row">
+            <div id="logo">
+                <a href="/">
+                    <img src="/images/logo.png" alt="logo">
+                </a>
+            </div>
+            <div class="header-info">
+                <div id="header-title">
+                    
+                    <h2>
+                        Hello,Here is gssplus!
+                    </h2>
+                    
+                </div>
+                <div id="header-description">
+                    
+                    <h3>
+                        我见过春日夏风，秋月冬雪，也曾踏遍南水北山，东麓西岭，可这四季春秋，苍山央水，都不及你瞅我展眉一笑
+                    </h3>
+                    
+                </div>
+            </div>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a title="MinHow" target="_blank" href="//guoshusong.github.io/">
+                            <i class="fa fa-home fa-2x"></i></a>
+                    
+                        <a title="Github" target="_blank" href="//github.com/guoshusong">
+                            <i class="fa fa-github fa-2x"></i></a>
+                    
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>
+      <div class="outer">
+        <section id="main" class="body-wrap"><article id="post-Mysql1" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="post-title" itemprop="name">
+      MySQL常见面试题
+    </h1>
+    <div class="post-title-bar">
+      <ul>
+          
+        <li>
+          <i class="fa fa-calendar"></i>  2020-03-05
+        </li>
+        <li>
+          <i class="fa fa-eye"></i>
+          <span id="busuanzi_value_page_pv"></span>
+        </li>
+      </ul>
+    </div>
+  
+
+          
+      </header>
+    
+    <div class="article-entry post-content" itemprop="articleBody">
+      
+            
+            <h2 id="数据库常见面试题"><a href="#数据库常见面试题" class="headerlink" title="数据库常见面试题"></a>数据库常见面试题</h2><a id="more"></a>
+
+<h2 id="char、varchar和text三者的区别"><a href="#char、varchar和text三者的区别" class="headerlink" title="char、varchar和text三者的区别"></a>char、varchar和text三者的区别</h2><p>在MySQL中，char、varchar和text类型的字段都可以用来存储字符类型的数据，char、varchar都可以指定最大的字符长度，但text不可以。</p>
+<p>它们的存储方式和数据的检索方式也都不一样。<br>数据的检索效率是：char &gt; varchar &gt; text</p>
+<p>具体说明：</p>
+<p>char：存储定长数据很方便，CHAR字段上的索引效率级高，必须在括号里定义长度，可以有默认值，比如定义char(10)，那么不论你存储的数据是否达到了10个字节，都要占去10个字节的空间（自动用空格填充），且在检索的时候后面的空格会隐藏掉，所以检索出来的数据需要记得用trim之类的函数去过滤空格。</p>
+<p>varchar：存储变长数据，但存储效率没有char高，必须在括号里定义长度，可以有默认值。保存数据的时候，不进行空格自动填充，而且如果数据存在空格时，当值保存和检索时尾部的空格仍会保留。另外，varchar类型的实际长度是它的值的实际长度+1，这一个字节用于保存实际使用了多大的长度。</p>
+<p>text：存储可变长度的非Unicode数据，最大长度为2^16-1个字符。text列不能有默认值，存储或检索过程中，不存在大小写转换，后面如果指定长度，不会报错误，但是这个长度是不起作用的，意思就是你插入数据的时候，超过你指定的长度还是可以正常插入。</p>
+<p>关于存储空间：<br>在使用UTF8字符集的时候，MySQL手册上是这样描述的：</p>
+<p>基本拉丁字母、数字和标点符号使用一个字节；<br>大多数的欧洲和中东手写字母适合两个字节序列：扩展的拉丁字母（包括发音符号、长音符号、重音符号、低音符号和其它音符）、西里尔字母、希腊语、亚美尼亚语、希伯来语、阿拉伯语、叙利亚语和其它语言；<br>韩语、中文和日本象形文字使用三个字节序列。<br>结论：</p>
+<p>经常变化的字段用varchar；</p>
+<p>知道固定长度的用char；</p>
+<p>超过255字节的只能用varchar或者text；</p>
+<p>能用varchar的地方不用text；</p>
+<h2 id="B-树、B树的区别"><a href="#B-树、B树的区别" class="headerlink" title="B+树、B树的区别"></a>B+树、B树的区别</h2><ul>
+<li><p>B+树中只有叶子节点会带有指向记录的指针（ROWID），而B树则所有节点都带有，在内部节点出现的索引项不会再出现在叶子节点中。</p>
+</li>
+<li><p>B+树中所有叶子节点都是通过指针连接在一起，而B树不会。</p>
+</li>
+</ul>
+<p>B+树的优点：</p>
+<ul>
+<li><p>非叶子节点不会带上ROWID，这样，一个块中可以容纳更多的索引项，一是可以降低树的高度。二是一个内部节点可以定位更多的叶子节点。</p>
+</li>
+<li><p>叶子节点之间通过指针来连接，范围扫描将十分简单，而对于B树来说，则需要在叶子节点和内部节点不停的往返移动。</p>
+</li>
+</ul>
+<p>B树的优点：</p>
+<ul>
+<li>对于在内部节点的数据，可直接得到，不必根据叶子节点来定位。</li>
+</ul>
+<h2 id="MySQL中的锁"><a href="#MySQL中的锁" class="headerlink" title="MySQL中的锁"></a>MySQL中的锁</h2><h3 id="行级锁"><a href="#行级锁" class="headerlink" title="行级锁"></a>行级锁</h3><p>行级锁是 MySQL 中锁定粒度最细的一种锁，表示只针对当前操作的行进行加锁。行级锁能大大减少数据库操作的冲突，其加锁粒度最小，但加锁的开销也最大。行级锁分为共享锁和排他锁。</p>
+<p><strong>特点</strong></p>
+<p>开销大，加锁慢；会出现死锁；锁定粒度最小，发生锁冲突的概率最低，并发度也最高。</p>
+<h3 id="表级锁"><a href="#表级锁" class="headerlink" title="表级锁"></a>表级锁</h3><p>表级锁是 MySQL 中锁定粒度最大的一种锁，表示对当前操作的整张表加锁，它实现简单，资源消耗较少，被大部分 MySQL 引擎支持。最常使用的 MyISAM 与 InnoDB 都支持表级锁定。表级锁定分为表共享读锁（共享锁）与表独占写锁（排他锁）。</p>
+<p><strong>特点</strong></p>
+<p>开销小，加锁快；不会出现死锁；锁定粒度大，发出锁冲突的概率最高，并发度最低。</p>
+<h3 id="页级锁"><a href="#页级锁" class="headerlink" title="页级锁"></a>页级锁</h3><p>页级锁是 MySQL 中锁定粒度介于行级锁和表级锁中间的一种锁。表级锁速度快，但冲突多，行级冲突少，但速度慢。因此，采取了折衷的页级锁，一次锁定相邻的一组记录。BDB 支持页级锁。</p>
+<p><strong>特点</strong></p>
+<p>开销和加锁时间界于表锁和行锁之间；会出现死锁；锁定粒度界于表锁和行锁之间，并发度一般。</p>
+<h3 id="MySQL中常用的锁机制"><a href="#MySQL中常用的锁机制" class="headerlink" title="MySQL中常用的锁机制"></a>MySQL中常用的锁机制</h3><ul>
+<li><p>MyISAM 和 Memory 采用表级锁（table-level locking）</p>
+</li>
+<li><p>BDB 采用页级锁（page-level locking）或表级锁，默认为页级锁；</p>
+</li>
+<li><p>InnoDB 支持行级锁（row-level locking）和表级锁，默认为行级锁。</p>
+</li>
+</ul>
+<h3 id="InnoDB-中的行锁与表锁"><a href="#InnoDB-中的行锁与表锁" class="headerlink" title="InnoDB 中的行锁与表锁"></a>InnoDB 中的行锁与表锁</h3><p>在 InnoDB 引擎中既支持行锁也支持表锁，那么什么时候会锁住整张表？什么时候只锁住一行呢？</p>
+<p>InnoDB 行锁是通过给索引上的索引项加锁来实现的，这一点 MySQL 与 Oracle 不同，后者是通过在数据块中对相应数据行加锁来实现的。InnoDB 这种行锁实现的特点意味着：只有通过索引条件检索数据，InnoDB 才使用行级锁，否则，InnoDB 将使用表锁。</p>
+<p>在实际应用中，要特别注意 InnoDB 行锁的这一特性，不然的话，可能导致大量的锁冲突，从而影响并发性能。</p>
+<ul>
+<li><p>在不通过索引条件查询的时候，InnoDB 确实使用的是表锁，而不是行锁。</p>
+</li>
+<li><p>由于 MySQL 的行锁是针对索引加的锁，不是针对记录加的锁，因此虽然是访问不同行的记录，但是如果是使用相同的索引键，是会出现锁冲突的。应用设计的时候要注意这一点。</p>
+</li>
+<li><p>当表有多个索引的时候，不同的事务可以使用不同的索引锁定不同的行，另外，不论是使用主键索引、唯一索引还是普通索引，InnoDB 都会使用行锁来对数据加锁。</p>
+</li>
+<li><p>即便在条件中使用了索引字段，但是否使用索引来检索数据是由 MySQL 通过判断不同的执行计划的代价来决定的。如果 MySQL 认为全表扫描效率更高，比如对一些很小的表，它就不会使用索引，这种情况下 InnoDB 将使用表锁，而不是行锁。因此，在分析锁冲突时，别忘了检查 SQL 的执行计划，以确认是否真正使用了索引。</p>
+</li>
+</ul>
+<h3 id="行级锁与死锁"><a href="#行级锁与死锁" class="headerlink" title="行级锁与死锁"></a>行级锁与死锁</h3><p>MyISAM 中是不会产生死锁的，因为 MyISAM 总是一次性获得所需的全部锁，要么全部满足，要么全部等待。而在 InnoDB 中，锁是逐步获得的，就造成了死锁的可能。</p>
+<p>在 MySQL 中，行级锁并不是直接锁记录，而是锁索引。索引分为主键索引和非主键索引两种，如果一条 SQL 语句操作了主键索引，MySQL 就会锁定这条主键索引；如果一条 SQL 语句操作了非主键索引，MySQL 就会先锁定该非主键索引，再锁定相关的主键索引。 在进行UPDATE、DELETE操作时，MySQL 不仅锁定WHERE条件扫描过的所有索引记录，而且会锁定相邻的键值，即所谓的next-key locking.</p>
+<p>当两个事务同时执行，一个锁住了主键索引，在等待其他相关索引；另一个锁定了非主键索引，在等待主键索引。这样就会发生死锁。</p>
+<p>发生死锁后，InnoDB 一般都可以检测到，并使一个事务释放锁回退，另一个获取锁完成事务。</p>
+<h2 id="MyISAM和InnoDB的区别"><a href="#MyISAM和InnoDB的区别" class="headerlink" title="MyISAM和InnoDB的区别"></a>MyISAM和InnoDB的区别</h2><ul>
+<li><p>InnoDB不支持FULLTEXT类型的索引。</p>
+</li>
+<li><p>InnoDB 中不保存表的具体行数，也就是说，执行select count(* ) from table时，InnoDB要扫描一遍整个表来计算有多少行，但是MyISAM只要简单的读出保存好的行数即可。注意的是，当count(*)语句包含 where条件时，两种表的操作是一样的。</p>
+</li>
+<li><p>对于AUTO_INCREMENT类型的字段，InnoDB中必须包含只有该字段的索引，但是在MyISAM表中，可以和其他字段一起建立联合索引。</p>
+</li>
+<li><p>DELETE FROM table时，InnoDB不会重新建立表，而是一行一行的删除。</p>
+</li>
+<li><p>LOAD TABLE FROM MASTER操作对InnoDB是不起作用的，解决方法是首先把InnoDB表改成MyISAM表，导入数据后再改成InnoDB表，但是对于使用的额外的InnoDB特性(例如外键)的表不适用。</p>
+</li>
+<li><p>另外，InnoDB表的行锁也不是绝对的，假如在执行一个SQL语句时MySQL不能确定要扫描的范围，InnoDB表同样会锁全表，例如update table set num=1 where name like “%aaa%”</p>
+</li>
+</ul>
+<h2 id="哈希索引和B-树索引比较"><a href="#哈希索引和B-树索引比较" class="headerlink" title="哈希索引和B+树索引比较"></a>哈希索引和B+树索引比较</h2><h3 id="哈希索引的优势"><a href="#哈希索引的优势" class="headerlink" title="哈希索引的优势"></a>哈希索引的优势</h3><p>（1）等值查询。哈希索引具有绝对优势（前提是：没有大量重复键值，如果大量重复键值时，哈希索引的效率很低，因为存在所谓的哈希碰撞问题。）</p>
+<h3 id="哈希索引不适用的场景"><a href="#哈希索引不适用的场景" class="headerlink" title="哈希索引不适用的场景"></a>哈希索引不适用的场景</h3><p>（1）不支持范围查询</p>
+<p>（2）不支持索引完成排序</p>
+<p>（3）不支持联合索引的最左前缀匹配规则</p>
+<p>MySQL中，只有HEAP/MEMORY引擎才显示支持哈希索引。而常用的InnoDB引擎中默认使用的是B+树索引，它会实时监控表上索引的使用情况，如果认为建立哈希索引可以提高查询效率，则自动在内存中的“自适应哈希索引缓冲区”建立哈希索引（在InnoDB中默认开启自适应哈希索引），通过观察搜索模式，MySQL会利用index key的前缀建立哈希索引，如果一个表几乎大部分都在缓冲池中，那么建立一个哈希索引能够加快等值查询。</p>
+<h2 id="INNODB在做SELECT的时候，要维护的东西比MYISAM引擎多很多"><a href="#INNODB在做SELECT的时候，要维护的东西比MYISAM引擎多很多" class="headerlink" title="INNODB在做SELECT的时候，要维护的东西比MYISAM引擎多很多"></a>INNODB在做SELECT的时候，要维护的东西比MYISAM引擎多很多</h2><p>1）数据块，INNODB要缓存，MYISAM只缓存索引块，  这中间还有换进换出的减少；</p>
+<p>2）innodb寻址要映射到块，再到行，MYISAM记录的直接是文件的OFFSET，定位比INNODB要快</p>
+<p>3）INNODB还需要维护MVCC一致；虽然你的场景没有，但他还是需要去检查和维护MVCC(Multi-Version Concurrency Control)多版本并发控制</p>
+<p>注释</p>
+<p>InnoDB：通过为每一行记录添加两个额外的隐藏的值来实现MVCC，这两个值一个记录这行数据何时被创建，另外一个记录这行数据何时过期（或者被删除）。但是InnoDB并不存储这些事件发生时的实际时间，相反它只存储这些事件发生时的系统版本号。这是一个随着事务的创建而不断增长的数字。每个事务在事务开始时会记录它自己的系统版本号。每个查询必须去检查每行数据的版本号与事务的版本号是否相同。让我们来看看当隔离级别是REPEATABLEREAD时这种策略是如何应用到特定的操作的：</p>
+<p>SELECT InnoDB必须每行数据来保证它符合两个条件：</p>
+<p>1、InnoDB必须找到一个行的版本，它至少要和事务的版本一样老(也即它的版本号不大于事务的版本号)。这保证了不管是事务开始之前，或者事务创建时，或者修改了这行数据的时候，这行数据是存在的。</p>
+<p>2、这行数据的删除版本必须是未定义的或者比事务版本要大。这可以保证在事务开始之前这行数据没有被删除</p>
+
+            <div class="post-copyright">
+    <div class="content">
+        <p>最后更新： 2020年04月04日 14:18</p>
+        <p>原始链接： <a class="post-url" href="/2020/03/05/Mysql1/" title="MySQL常见面试题">https://guoshusong.github.io/2020/03/05/Mysql1/</a></p>
+        <footer>
+            <a href="https://guoshusong.github.io">
+                <img src="/images/logo.png" alt="GuoShuSong">
+                GuoShuSong
+            </a>
+        </footer>
+    </div>
+</div>
+
+      
+        
+            
+
+        
+    </div>
+    <footer class="article-footer">
+        
+        
+<div class="post-share">
+    <a href="javascript:;" id="share-sub" class="post-share-fab">
+        <i class="fa fa-share-alt"></i>
+    </a>
+    <div class="post-share-list" id="share-list">
+        <ul class="share-icons">
+          <li>
+            <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://guoshusong.github.io/2020/03/05/Mysql1/&title=《MySQL常见面试题》 — gssplus's Blog&pic=https://guoshusong.github.ioimages/logo.png" data-title="微博">
+              <i class="fa fa-weibo"></i>
+            </a>
+          </li>
+          <li>
+            <a class="weixin share-sns" id="wxFab" href="javascript:;" data-title="微信">
+              <i class="fa fa-weixin"></i>
+            </a>
+          </li>
+          <li>
+            <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://guoshusong.github.io/2020/03/05/Mysql1/&title=《MySQL常见面试题》 — gssplus's Blog&source=数据库常见面试题" data-title="QQ">
+              <i class="fa fa-qq"></i>
+            </a>
+          </li>
+          <li>
+            <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://guoshusong.github.io/2020/03/05/Mysql1/" data-title="Facebook">
+              <i class="fa fa-facebook"></i>
+            </a>
+          </li>
+          <li>
+            <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《MySQL常见面试题》 — gssplus's Blog&url=https://guoshusong.github.io/2020/03/05/Mysql1/&via=https://guoshusong.github.io" data-title="Twitter">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li>
+            <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://guoshusong.github.io/2020/03/05/Mysql1/" data-title="Google+">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        </ul>
+     </div>
+</div>
+<div class="post-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;" id="wxShare-close">×</a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://guoshusong.github.io/2020/03/05/Mysql1/" alt="微信分享二维码">
+</div>
+
+<div class="mask"></div>
+
+        
+        <ul class="article-footer-menu">
+            
+            
+  <li class="article-footer-tags">
+    <i class="fa fa-tags"></i>
+      
+    <a href="/tags/Mysql/" class="color1">Mysql</a>
+      
+  </li>
+
+        </ul>
+        
+    </footer>
+  </div>
+</article>
+
+
+    <aside class="post-toc-pos post-toc-top" id="post-toc">
+        <nav class="post-toc-wrap">
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#数据库常见面试题"><span class="post-toc-text">数据库常见面试题</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#char、varchar和text三者的区别"><span class="post-toc-text">char、varchar和text三者的区别</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#B-树、B树的区别"><span class="post-toc-text">B+树、B树的区别</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#MySQL中的锁"><span class="post-toc-text">MySQL中的锁</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#行级锁"><span class="post-toc-text">行级锁</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#表级锁"><span class="post-toc-text">表级锁</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#页级锁"><span class="post-toc-text">页级锁</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#MySQL中常用的锁机制"><span class="post-toc-text">MySQL中常用的锁机制</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#InnoDB-中的行锁与表锁"><span class="post-toc-text">InnoDB 中的行锁与表锁</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#行级锁与死锁"><span class="post-toc-text">行级锁与死锁</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#MyISAM和InnoDB的区别"><span class="post-toc-text">MyISAM和InnoDB的区别</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#哈希索引和B-树索引比较"><span class="post-toc-text">哈希索引和B+树索引比较</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#哈希索引的优势"><span class="post-toc-text">哈希索引的优势</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#哈希索引不适用的场景"><span class="post-toc-text">哈希索引不适用的场景</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#INNODB在做SELECT的时候，要维护的东西比MYISAM引擎多很多"><span class="post-toc-text">INNODB在做SELECT的时候，要维护的东西比MYISAM引擎多很多</span></a></li></ol>
+        </nav>
+    </aside>
+    
+
+<nav id="article-nav">
+  
+    <a href="/2020/06/02/JavaNote_01/" id="article-nav-newer" class="article-nav-link-wrap">
+
+      <span class="article-nav-title">
+        <i class="fa fa-hand-o-left" aria-hidden="true"></i>
+        
+          瞎写点儿零零碎碎的东西
+        
+      </span>
+    </a>
+  
+  
+    <a href="/2020/01/28/SpringBoot_24%E5%8F%82%E6%95%B0%E6%A0%A1%E9%AA%8C/" id="article-nav-older" class="article-nav-link-wrap">
+      <span class="article-nav-title">SpringBoot参数校验</span>
+      <i class="fa fa-hand-o-right" aria-hidden="true"></i>
+    </a>
+  
+</nav>
+
+
+
+    
+</section>
+        
+      </div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+
+      <p>
+        Powered by  <a href="http://hexo.io/" target="_blank">Hexo</a>
+        Theme <a href="//github.com/wongminho/hexo-theme-miho" target="_blank">MiHo</a>
+      &copy; 2020 GuoShuSong<br>
+      </p>
+    </div>
+  </div>
+</footer>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script>
+  var mihoConfig = {
+      root: "https://guoshusong.github.io",
+      animate: true,
+      isHome: false,
+      share: true,
+      reward: 0
+  }
+</script>
+<div class="sidebar">
+    <div id="sidebar-search" title="Search">
+        <i class="fa fa-search"></i>
+    </div>
+    <div id="sidebar-category" title="Categories">
+        <i class="fa fa-book"></i>
+    </div>
+    <div id="sidebar-tag" title="Tags">
+        <i class="fa fa-tags"></i>
+    </div>
+    <div id="sidebar-top">
+        <span class="sidebar-top-icon"><i class="fa fa-angle-up"></i></span>
+    </div>
+</div>
+<div class="sidebar-menu-box" id="sidebar-menu-box">
+    <div class="sidebar-menu-box-container">
+        <div id="sidebar-menu-box-categories">
+            <a class="category-link" href="/categories/Docker/">Docker</a><a class="category-link" href="/categories/Java/">Java</a><a class="category-link" href="/categories/Nginx/">Nginx</a><a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a><a class="category-link" href="/categories/%E7%90%90%E7%A2%8E/">琐碎</a><a class="category-link" href="/categories/%E9%9D%A2%E8%AF%95/">面试</a>
+        </div>
+        <div id="sidebar-menu-box-tags">
+            <a href="/tags/Docker/" style="font-size: 12.5px;">Docker</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Java%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">Java基础</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 12.5px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 20px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 10px;">SpringBoot</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 17.5px;">java</a> <a href="/tags/jvm/" style="font-size: 15px;">jvm</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">排序算法</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" style="font-size: 12.5px;">数据结构与算法</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a> <a href="/tags/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/" style="font-size: 10px;">查找算法</a> <a href="/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A1%A8/" style="font-size: 10px;">线性表</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+        </div>
+    </div>
+    <a href="javascript:;" class="sidebar-menu-box-close">&times;</a>
+</div>
+<div class="mobile-header-menu-nav" id="mobile-header-menu-nav">
+    <div class="mobile-header-menu-container">
+        <span class="title">Menus</span>
+        <ul class="mobile-header-menu-navbar">
+            
+            <li>
+                <a  href="/">
+                    <i class="fa fa-home"></i><span>Home</span>
+                </a>
+            </li>
+            
+            <li>
+                <a  href="/archives">
+                    <i class="fa fa-archive"></i><span>Archives</span>
+                </a>
+            </li>
+            
+            <li>
+                <a  href="/about">
+                    <i class="fa fa-user"></i><span>About</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    <div class="mobile-header-tag-container">
+        <span class="title">Tags</span>
+        <div id="mobile-header-container-tags">
+            <a href="/tags/Docker/" style="font-size: 12.5px;">Docker</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Java%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">Java基础</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 12.5px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 20px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 10px;">SpringBoot</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 17.5px;">java</a> <a href="/tags/jvm/" style="font-size: 15px;">jvm</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">排序算法</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" style="font-size: 12.5px;">数据结构与算法</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a> <a href="/tags/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/" style="font-size: 10px;">查找算法</a> <a href="/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A1%A8/" style="font-size: 10px;">线性表</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+        </div>
+    </div>
+</div>
+<div class="search-wrap">
+    <span class="search-close">&times;</span>
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+            <i class="icon icon-lg icon-chevron-left"></i>
+        </a>
+        <input class="search-field" placeholder="Search..." id="keywords">
+        <a id="search-submit" href="javascript:;">
+            <i class="fa fa-search"></i>
+        </a>
+    <div class="search-container" id="search-container">
+        <ul class="search-result" id="search-result">
+        </ul>
+    </div>
+</div>
+
+<div id="search-tpl">
+    <li class="search-result-item">
+        <a href="{url}" class="search-item-li">
+            <span class="search-item-li-title" title="{title}">{title}</span>
+        </a>
+    </li>
+</div>
+
+<script src="/js/search.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+  <script src="//cdn.bootcss.com/particles.js/2.0.0/particles.min.js"></script>
+  <div id="particles"></div>
+  
+<script src="/js/particles.js"></script>
+
+
+
+
+
+
+
+
+  
+<link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+
+  <script src="//cdn.bootcss.com/scrollReveal.js/3.0.5/scrollreveal.js"></script>
+  
+<script src="/js/animate.js"></script>
+
+
+
+  
+<script src="/js/pop-img.js"></script>
+
+  <script>
+     $(".article-entry p img").popImg();
+  </script>
+
+  </div>
+</body>
+</html>

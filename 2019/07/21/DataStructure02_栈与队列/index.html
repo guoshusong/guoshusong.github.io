@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>栈与队列 | gssplus&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+    <meta name="keywords" content="gss's Blog" />
+  
+  <meta name="description" content="顺序、链栈、队列">
+<meta property="og:type" content="article">
+<meta property="og:title" content="栈与队列">
+<meta property="og:url" content="https://guoshusong.github.io/2019/07/21/DataStructure02_%E6%A0%88%E4%B8%8E%E9%98%9F%E5%88%97/index.html">
+<meta property="og:site_name" content="gssplus&#39;s Blog">
+<meta property="og:description" content="顺序、链栈、队列">
+<meta property="article:published_time" content="2019-07-21T11:58:05.000Z">
+<meta property="article:modified_time" content="2020-06-02T07:11:26.862Z">
+<meta property="article:author" content="GuoShuSong">
+<meta property="article:tag" content="栈">
+<meta property="article:tag" content="队列">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+  
+
+  
+  
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+  <div id="container">
+      <header id="header">
+    <div id="banner"></div>
+    <div id="header-outer">
+        <div id="header-menu" class="header-menu-pos animated">
+            <div class="header-menu-container">
+                <a href="/" class="left">
+                    <span class="site-title">Hello,Here is gssplus!</span>
+                </a>
+                <nav id="header-menu-nav" class="right">
+                    
+                    <a  href="/">
+                        <i class="fa fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    
+                    <a  href="/archives">
+                        <i class="fa fa-archive"></i>
+                        <span>Archives</span>
+                    </a>
+                    
+                    <a  href="/about">
+                        <i class="fa fa-user"></i>
+                        <span>About</span>
+                    </a>
+                    
+                </nav>
+                <a class="mobile-header-menu-button">
+                    <i class="fa fa-bars"></i>
+                </a>
+            </div>
+        </div>
+        <div id="header-row">
+            <div id="logo">
+                <a href="/">
+                    <img src="/images/logo.png" alt="logo">
+                </a>
+            </div>
+            <div class="header-info">
+                <div id="header-title">
+                    
+                    <h2>
+                        Hello,Here is gssplus!
+                    </h2>
+                    
+                </div>
+                <div id="header-description">
+                    
+                    <h3>
+                        我见过春日夏风，秋月冬雪，也曾踏遍南水北山，东麓西岭，可这四季春秋，苍山央水，都不及你瞅我展眉一笑
+                    </h3>
+                    
+                </div>
+            </div>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a title="MinHow" target="_blank" href="//guoshusong.github.io/">
+                            <i class="fa fa-home fa-2x"></i></a>
+                    
+                        <a title="Github" target="_blank" href="//github.com/guoshusong">
+                            <i class="fa fa-github fa-2x"></i></a>
+                    
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>
+      <div class="outer">
+        <section id="main" class="body-wrap"><article id="post-DataStructure02_栈与队列" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="post-title" itemprop="name">
+      栈与队列
+    </h1>
+    <div class="post-title-bar">
+      <ul>
+          
+              <li>
+                  <i class="fa fa-book"></i>
+                  
+                      <a href="/categories/数据结构与算法/">数据结构与算法</a>
+                  
+              </li>
+          
+        <li>
+          <i class="fa fa-calendar"></i>  2019-07-21
+        </li>
+        <li>
+          <i class="fa fa-eye"></i>
+          <span id="busuanzi_value_page_pv"></span>
+        </li>
+      </ul>
+    </div>
+  
+
+          
+      </header>
+    
+    <div class="article-entry post-content" itemprop="articleBody">
+      
+            
+            <h2 id="顺序、链栈、队列"><a href="#顺序、链栈、队列" class="headerlink" title="顺序、链栈、队列"></a>顺序、链栈、队列</h2><a id="more"></a>
+
+<h3 id="栈-Stack"><a href="#栈-Stack" class="headerlink" title="栈(Stack)"></a>栈(Stack)</h3><p>栈是限定仅在表尾进行插入和删除操作的线性表</p>
+<p>允许插入(进栈、压栈、入栈)和删除(出栈、弹栈)的一端称为栈顶，另一端称为栈底<br>不含任何元素的为空栈，栈是先进后出的线性表，简称LIFO结构。</p>
+<h4 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h4><p>InitStack(*S) 初始化栈，简历一个空栈</p>
+<p>DestroyStack(*S) 若栈存在，则销毁</p>
+<p>ClearStack(*S) 清空栈</p>
+<p>StackEmpty(S) 判断栈是否为空</p>
+<p>GetTop(S,*e) 若栈存在且为非空，用e返回S的栈顶元素</p>
+<p>Push(*S , e) 若栈S存在，插入新元素e到栈S中并成为栈顶元素</p>
+<p>Pop(<em>S,</em>e) 删除栈S中栈顶元素，并用e返回其值</p>
+<p>StackLength(S) 栈S中元素个数</p>
+<h4 id="栈的顺序结构"><a href="#栈的顺序结构" class="headerlink" title="栈的顺序结构"></a>栈的顺序结构</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">	SElemType data[MAXSIZE];</span><br><span class="line">	<span class="keyword">int</span> top;<span class="comment">//用于栈顶指针</span></span><br><span class="line">&#125;SqStack;</span><br></pre></td></tr></table></figure>
+
+<h5 id="进栈"><a href="#进栈" class="headerlink" title="进栈"></a>进栈</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Status <span class="title">Push</span><span class="params">(SqStack* S, SElemType e)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (S-&gt;top == MAXSIZE <span class="number">-1</span>) <span class="comment">//栈满</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> ERROR;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	S-&gt;top++;</span><br><span class="line">	S-&gt;data[S-&gt;top] =e; <span class="comment">//将新元素赋值给栈顶空间</span></span><br><span class="line">	<span class="keyword">return</span> OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="出栈"><a href="#出栈" class="headerlink" title="出栈"></a>出栈</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Status <span class="title">Pop</span><span class="params">(SqStack *S, SElemType *e)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (S-&gt;top == <span class="number">-1</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> ERROR;</span><br><span class="line">	&#125;</span><br><span class="line">	*e = S-&gt;data[S-&gt;top];</span><br><span class="line">	S-&gt;top--;</span><br><span class="line">	<span class="keyword">return</span> OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="两栈共享空间"><a href="#两栈共享空间" class="headerlink" title="两栈共享空间"></a>两栈共享空间</h4><p>两个栈最好是同一类型的数据</p>
+<p>数组有两个端点，两个栈有两个栈底，一个栈底为数组的始端，即下标为0，另一个栈底为数组的末端，及<br>下标为n-1处，两个栈增加元素就是两端点向中间延伸。</p>
+<p>top1、top2为栈1、栈2的栈顶指针，</p>
+<p>栈1为空时，top1等于-1；栈2为空时，top2等于n；<br>若栈2是空栈，top1等于n-1时，栈1满；栈1是空栈时，top2等于0时，栈2满。top+1=top2时，说明整个栈满</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">	SElemType data[MAXSIZE];</span><br><span class="line">	<span class="keyword">int</span> top1;</span><br><span class="line">	<span class="keyword">int</span> top2;</span><br><span class="line">&#125;SqDoubleStack;</span><br></pre></td></tr></table></figure>
+
+<h5 id="进栈-1"><a href="#进栈-1" class="headerlink" title="进栈"></a>进栈</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">stackNumber表示要进第一个栈还是第二个栈</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function">Status <span class="title">Push</span><span class="params">(SqDoubleStack* S, SElemType e, <span class="keyword">int</span> stackNumber)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (S-&gt;top1+<span class="number">1</span>==S-&gt;top2)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> ERROR;<span class="comment">//栈满</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (stackNumber==<span class="number">1</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		S-&gt;data[++S-&gt;top1] = e;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> (stackNumber == <span class="number">2</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		S-&gt;data[--S-&gt;top2] = e;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="出栈-1"><a href="#出栈-1" class="headerlink" title="出栈"></a>出栈</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">tatus <span class="title">Pop</span><span class="params">(SqDoubleStack* s, SElemType* e, <span class="keyword">int</span> stackNumber)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (stackNumber == <span class="number">1</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> (s-&gt;top1 == <span class="number">-1</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">return</span> ERROR;</span><br><span class="line">		&#125;</span><br><span class="line">		*e = s-&gt;data[s-&gt;top1--];</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> (stackNumber == <span class="number">2</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> (s-&gt;top2 == MAXSIZE)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">return</span> ERROR;</span><br><span class="line">		&#125;</span><br><span class="line">		*e = s-&gt;data[s-&gt;top2++];</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="栈的链式存储结构-链栈"><a href="#栈的链式存储结构-链栈" class="headerlink" title="栈的链式存储结构(链栈)"></a>栈的链式存储结构(链栈)</h4><p>把栈顶放在单链表的头部，栈顶指针和单链表的头指针合二为一。栈顶在头部，所以通常对于栈来说是不需要头结点的。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">StackNode</span> &#123;</span></span><br><span class="line">	SElemType data;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">StackNode</span> *<span class="title">next</span>;</span></span><br><span class="line">&#125;StackNode,*LinkStackPtr;</span><br><span class="line"> </span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">LinkStack</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	LinkStackPtr top;</span><br><span class="line">	<span class="keyword">int</span> count;</span><br><span class="line">&#125;LinkStack;</span><br></pre></td></tr></table></figure>
+
+<h5 id="进栈-2"><a href="#进栈-2" class="headerlink" title="进栈"></a>进栈</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Status <span class="title">Push</span><span class="params">(LinkStack  *L, SElemType e)</span> </span>&#123;</span><br><span class="line">	LinkStackPtr s = (LinkStackPtr)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(StackNode));</span><br><span class="line">	s-&gt;data = e;</span><br><span class="line">	<span class="comment">//把当前的栈顶元素赋值给新结点的直接后继</span></span><br><span class="line">	s-&gt;next = L -&gt;top;</span><br><span class="line">	<span class="comment">//将新的结点s赋值给栈顶指针.</span></span><br><span class="line">	L-&gt;top = s;</span><br><span class="line">	L-&gt;count++;</span><br><span class="line">	<span class="keyword">return</span> OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="出栈-2"><a href="#出栈-2" class="headerlink" title="出栈"></a>出栈</h5><p>假设变量p用来存储要删除的栈顶结点，将栈顶指针下移一位，最后释放p</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Status <span class="title">Pop</span><span class="params">(LinkStack* L, SElemType* e)</span> </span>&#123;</span><br><span class="line">	LinkStackPtr p;</span><br><span class="line">	<span class="keyword">if</span> （StackEmpty(*L))</span><br><span class="line">	&#123;</span><br><span class="line">	<span class="keyword">return</span> ERROR;</span><br><span class="line">	&#125;</span><br><span class="line">	*e = L-&gt;top-&gt;data;</span><br><span class="line">	p = L-&gt;top;</span><br><span class="line">	<span class="comment">//将栈顶指定下移</span></span><br><span class="line">	L-&gt;top = L-&gt;top-&gt;next;</span><br><span class="line">	<span class="built_in">free</span>(p);</span><br><span class="line">	L-&gt;count--;</span><br><span class="line">	<span class="keyword">return</span> OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="栈的应用"><a href="#栈的应用" class="headerlink" title="栈的应用"></a>栈的应用</h4><p>如果栈的使用过程元素变化不可预料，有时很小，有时很大，最好使用链栈。如果在可变范围内，建议使用顺序栈。</p>
+<h5 id="后缀表达式"><a href="#后缀表达式" class="headerlink" title="后缀表达式"></a>后缀表达式</h5><p>9 3 1 - 3 * + 10 2 / +</p>
+<p>9+(3-1)*3+10/2</p>
+<p>1.初始化一个空栈</p>
+<p>2.后缀表达式前三个全是数字，所以9、3、1进栈</p>
+<p>3.接下来是 - ，所以将1出栈作为减数，3出栈作为被减数，运算得到2进栈</p>
+<p>4.接下是数字3进栈</p>
+<p>5.后面是 * 3和2出栈，相乘得6进栈</p>
+<p>6.后面是 + ，9、6出栈，相加得15进栈</p>
+<p>7.10 2 进栈</p>
+<p>8.遇到符号 /  出栈，运算 ， 5 进栈</p>
+<p>9.遇到 + ，15+5=20，进栈</p>
+<p>10.结果 20 出栈</p>
+<h5 id="将中缀表达式转为后缀表达式"><a href="#将中缀表达式转为后缀表达式" class="headerlink" title="将中缀表达式转为后缀表达式"></a>将中缀表达式转为后缀表达式</h5><p>从左到右遍历每个数字和符号，若是数字就输出，若是符号，判断与栈顶符号的优先级，是右括号或者优先级低于栈顶符号，则栈顶元素出栈并输出直到优先级高于后等于，当前符号进栈。</p>
+<p>9+(3-1)*3+10/2</p>
+<p>1.初始化空栈</p>
+<p>2.第一个数字是9，输出9，后面符号为 + ，+进栈</p>
+<p>3.第三个符号是 ( ，因为其是左括号，还未配对，故进栈</p>
+<p>4.第四个是数字3 ，输出 ， 表达式为 9 3 ，接着是” - “ 进栈</p>
+<p>5.接下来是数字1，输出。后面符号 ) ,需要去匹配前面的(，所以栈顶依次出栈，输出，直到遇到(为止。表达式变为 9 3 1 -</p>
+<p>6.接着是数字3，9 3 1 - 3 ，接着是符号 * ，此时栈顶符号为 + ，优先级低于 + ，所以不输出 ， * 进栈。</p>
+<p>7.之后是 + ，栈顶元素 * ，优先级高，(没有比+号更低的优先级，所以全部出栈) 总表达式 9 3 1 - 3 * + ，当前符号 + 进栈。</p>
+<p>8.紧接着输出 10，后面是符号 / ，进栈</p>
+<p>9.输出数字2 </p>
+<p>10.因为已经到最后，所以栈中符号全部输出。表达式最终结果为 9 3 1 - 3 * + 10 2 /。</p>
+<p><a href="https://blog.csdn.net/seveny_/article/details/81508118" target="_blank" rel="noopener">出栈的合法性</a></p>
+<h3 id="队列"><a href="#队列" class="headerlink" title="队列"></a>队列</h3><p>队列只允许在一端进行插入操作，在一端进行删除操作。</p>
+<p>队列是一种先进先出的线性表，简称FIFO。允许插入的一端为队尾，允许删除的一端为队头。</p>
+<h4 id="操作-1"><a href="#操作-1" class="headerlink" title="操作"></a>操作</h4><p>InitQueue(*Q) 初始化队列</p>
+<p>DestroyQueue(*Q) 若存在，则销毁</p>
+<p>ClearQueue(*Q) 清空</p>
+<p>QueueEmpty(Q)</p>
+<p>GetHead(Q,*e) 若Q存在且非空，用e返回Q中的对头元素</p>
+<p>EnQueue(*Q,e) 若Q存在，插入新元素e到队列Q中，并成为队尾元素</p>
+<p>DeQueue(<em>Q,</em>e) 删除队列Q中对头元素，用e返回其值</p>
+<p>QueueLength(*e)</p>
+<h4 id="循环队列"><a href="#循环队列" class="headerlink" title="循环队列"></a>循环队列</h4><p>对满的条件为(rear+1)%QueueSize == front</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> </span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	QElemType data[MAXSIZE];</span><br><span class="line">	<span class="keyword">int</span> front; <span class="comment">//头指针</span></span><br><span class="line">	<span class="keyword">int</span> rear; <span class="comment">//尾指针，若队列不为空，指向队尾元素的下一个位置</span></span><br><span class="line">&#125;SqQueue;</span><br></pre></td></tr></table></figure>
+
+<h5 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Status <span class="title">InitQueue</span><span class="params">(SqQueue* q)</span> </span>&#123;</span><br><span class="line">	q-&gt;front = <span class="number">0</span>;</span><br><span class="line">	q-&gt;rear = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">return</span> OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="求长度"><a href="#求长度" class="headerlink" title="求长度"></a>求长度</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">QueueLength</span><span class="params">(SqQueue q)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> (q.rear - q.front + MAXSIZE) % MAXSIZE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="入列"><a href="#入列" class="headerlink" title="入列"></a>入列</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Status <span class="title">EnQueue</span><span class="params">(SqQueue* q, QElemType e)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> ((q-&gt;rear+<span class="number">1</span>)%MAXSIZE == q-&gt;front)<span class="comment">//队列满的判断</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> ERROR;</span><br><span class="line">	&#125;</span><br><span class="line">	q-&gt;data[q-&gt;rear] = e;</span><br><span class="line">	q-&gt;rear = (q-&gt;rear + <span class="number">1</span>) % MAXSIZE;<span class="comment">//rear指针向后移动一位</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="出列"><a href="#出列" class="headerlink" title="出列"></a>出列</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Status <span class="title">DeQueue</span><span class="params">(SqQueue* q, QElemType* e)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (q-&gt;front == q-&gt;rear)<span class="comment">//队列空</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> ERROR;</span><br><span class="line">	&#125;</span><br><span class="line">	*e = q-&gt;data[q-&gt;front];</span><br><span class="line">	q-&gt;front = (q-&gt;front + <span class="number">1</span>) % MAXSIZE;<span class="comment">//将front指针向后移动一位</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>循环队列会面临数组可能溢出的问题。</p>
+<h4 id="队列的链式结构-链队列"><a href="#队列的链式结构-链队列" class="headerlink" title="队列的链式结构(链队列)"></a>队列的链式结构(链队列)</h4><p>将队列头指针指向链队列的头结点，队尾指针指向终端结点</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">QNode</span> &#123;</span><span class="comment">//结点结构</span></span><br><span class="line">	QElemType data;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span>  <span class="title">QNode</span>* <span class="title">next</span>;</span></span><br><span class="line">&#125;QNode,*QueuePtr;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span><span class="comment">//队列的链表结构</span></span><br><span class="line">	QueuePtr front, rear;<span class="comment">//队头、队尾指针</span></span><br><span class="line">&#125;LinkQueue;</span><br></pre></td></tr></table></figure>
+
+<h5 id="入列-1"><a href="#入列-1" class="headerlink" title="入列"></a>入列</h5><p>入列操作其实就是在链尾部插入结点</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Status <span class="title">EnQueue</span><span class="params">(LinkQueue* q, QElemType e)</span> </span>&#123;</span><br><span class="line">	QueuePtr s = (QueuePtr)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(QNode));</span><br><span class="line">	<span class="keyword">if</span> (!s)<span class="comment">//存储分配失败</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">exit</span>(OVERFLOW);</span><br><span class="line">	&#125;</span><br><span class="line">	s-&gt;data = e;</span><br><span class="line">	s-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">	q-&gt;rear-&gt;next = s;<span class="comment">//把拥有元素e新结点s赋值给原队尾结点的后继</span></span><br><span class="line"></span><br><span class="line">	q-&gt;rear = s;<span class="comment">//把当前s设置为队尾结点</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="出队操作"><a href="#出队操作" class="headerlink" title="出队操作"></a>出队操作</h5><p>将头结点的后继结点出队，将头结点的后继改为它后面的结点。若链表除头结点外只剩一个元素时，则需要将rear指向头结点。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Status <span class="title">DeQueue</span><span class="params">(LinkQueue* q, QElemType *e)</span> </span>&#123;</span><br><span class="line">	QueuePtr p;</span><br><span class="line">	<span class="keyword">if</span> (q-&gt;front == q-&gt;rear)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> ERROR;<span class="comment">//队列为空</span></span><br><span class="line">	&#125;</span><br><span class="line">	p = q-&gt;front-&gt;next;</span><br><span class="line">	*e = p-&gt;data;</span><br><span class="line">	q-&gt;front-&gt;next = p-&gt;next;<span class="comment">//将原队头结点后继p-&gt;next赋值给头结点后继</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (q-&gt;rear == p)<span class="comment">//若队头是队尾，则删除后将rear指向头结点</span></span><br><span class="line">	&#123;</span><br><span class="line">		q-&gt;rear = q-&gt;front;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">free</span>(p);</span><br><span class="line">	<span class="keyword">return</span> OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><h4 id="字符串解码"><a href="#字符串解码" class="headerlink" title="字符串解码"></a>字符串解码</h4><p><a href="https://leetcode-cn.com/problems/decode-string/" target="_blank" rel="noopener">leetcode394</a></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">SNode</span>* <span class="title">PtrToSNode</span>;</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">SNode</span> &#123;</span></span><br><span class="line">    <span class="keyword">char</span>* str;</span><br><span class="line">    PtrToSNode next;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">typedef</span> PtrToSNode Stack;</span><br><span class="line"></span><br><span class="line"><span class="function">Stack <span class="title">CreateStack</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Stack S = (Stack)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(struct SNode));</span><br><span class="line">    S-&gt;str = <span class="literal">NULL</span>;</span><br><span class="line">    S-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">return</span> S;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">Add</span><span class="params">(Stack S)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    PtrToSNode tmp = (PtrToSNode)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(struct SNode));</span><br><span class="line">    tmp-&gt;str = (<span class="keyword">char</span>*)<span class="built_in">malloc</span>(<span class="number">3000</span>*<span class="keyword">sizeof</span>(<span class="keyword">char</span>));</span><br><span class="line">    <span class="built_in">memset</span>(tmp-&gt;str, <span class="string">'\0'</span>, <span class="number">3000</span>*<span class="keyword">sizeof</span>(<span class="keyword">char</span>));</span><br><span class="line">    tmp-&gt;next = S-&gt;next;</span><br><span class="line">    S-&gt;next = tmp;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">IsEmpty</span><span class="params">(Stack S)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (S-&gt;next == <span class="literal">NULL</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">char</span>* <span class="title">Top</span><span class="params">(Stack S)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (IsEmpty(S)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    PtrToSNode firstnode = S-&gt;next;</span><br><span class="line">    <span class="keyword">return</span> firstnode-&gt;str;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">Pop</span><span class="params">(Stack S)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (IsEmpty(S)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    PtrToSNode firstnode = S-&gt;next;</span><br><span class="line">    S-&gt;next = firstnode-&gt;next;</span><br><span class="line">    firstnode-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="built_in">free</span>(firstnode);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">char</span> * <span class="title">decodeString</span><span class="params">(<span class="keyword">char</span> * s)</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> sLen = <span class="built_in">strlen</span>(s);</span><br><span class="line">    <span class="comment">//用来记录倍数关系的</span></span><br><span class="line">    <span class="keyword">int</span>* times = (<span class="keyword">int</span>*)<span class="built_in">malloc</span>(<span class="number">50</span>*<span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br><span class="line">    <span class="built_in">memset</span>(times, <span class="number">0</span>, <span class="number">50</span>*<span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br><span class="line">    <span class="keyword">int</span> timesLen = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// 用来转换成int</span></span><br><span class="line">    <span class="keyword">char</span>* time = (<span class="keyword">char</span>*)<span class="built_in">malloc</span>(<span class="number">11</span>*<span class="keyword">sizeof</span>(<span class="keyword">char</span>));</span><br><span class="line">    <span class="built_in">memset</span>(time, <span class="string">'\0'</span>, <span class="number">11</span>*<span class="keyword">sizeof</span>(<span class="keyword">char</span>));</span><br><span class="line">    </span><br><span class="line">    Stack S = CreateStack();</span><br><span class="line">    Add(S);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; sLen; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">isdigit</span>(s[i])) &#123;</span><br><span class="line">            time[<span class="built_in">strlen</span>(time)] = s[i];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (s[i] == <span class="string">'['</span>) &#123;</span><br><span class="line">            <span class="keyword">int</span> count = atoi(time);</span><br><span class="line">            <span class="built_in">memset</span>(time, <span class="string">'\0'</span>, <span class="number">11</span>*<span class="keyword">sizeof</span>(<span class="keyword">char</span>));</span><br><span class="line">            times[timesLen] = count;</span><br><span class="line">            timesLen++;</span><br><span class="line">            Add(S);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">isalpha</span>(s[i])) &#123;</span><br><span class="line">            Top(S)[<span class="built_in">strlen</span>(Top(S))] = s[i];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (s[i] == <span class="string">']'</span>) &#123;</span><br><span class="line">            <span class="keyword">char</span>* str = (<span class="keyword">char</span>*)<span class="built_in">malloc</span>(<span class="number">3000</span>*<span class="keyword">sizeof</span>(<span class="keyword">char</span>));</span><br><span class="line">            <span class="built_in">memset</span>(str, <span class="string">'\0'</span>, <span class="number">3000</span>*<span class="keyword">sizeof</span>(<span class="keyword">char</span>));</span><br><span class="line">            <span class="built_in">strcpy</span>(str, Top(S));</span><br><span class="line">            Pop(S);</span><br><span class="line">            <span class="keyword">int</span> strcount = times[timesLen - <span class="number">1</span>];</span><br><span class="line">            <span class="comment">//printf("%d\n",strcount);</span></span><br><span class="line">            times[timesLen - <span class="number">1</span>] = <span class="number">0</span>;</span><br><span class="line">            timesLen--;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; strcount; i++) &#123;</span><br><span class="line">                <span class="built_in">strcat</span>(Top(S), str);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//printf("%d\n",i);</span></span><br><span class="line">        <span class="comment">//puts(Top(S));</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> Top(S);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+            <div class="post-copyright">
+    <div class="content">
+        <p>最后更新： 2020年06月02日 15:11</p>
+        <p>原始链接： <a class="post-url" href="/2019/07/21/DataStructure02_%E6%A0%88%E4%B8%8E%E9%98%9F%E5%88%97/" title="栈与队列">https://guoshusong.github.io/2019/07/21/DataStructure02_%E6%A0%88%E4%B8%8E%E9%98%9F%E5%88%97/</a></p>
+        <footer>
+            <a href="https://guoshusong.github.io">
+                <img src="/images/logo.png" alt="GuoShuSong">
+                GuoShuSong
+            </a>
+        </footer>
+    </div>
+</div>
+
+      
+        
+            
+
+        
+    </div>
+    <footer class="article-footer">
+        
+        
+<div class="post-share">
+    <a href="javascript:;" id="share-sub" class="post-share-fab">
+        <i class="fa fa-share-alt"></i>
+    </a>
+    <div class="post-share-list" id="share-list">
+        <ul class="share-icons">
+          <li>
+            <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://guoshusong.github.io/2019/07/21/DataStructure02_%E6%A0%88%E4%B8%8E%E9%98%9F%E5%88%97/&title=《栈与队列》 — gssplus's Blog&pic=https://guoshusong.github.ioimages/logo.png" data-title="微博">
+              <i class="fa fa-weibo"></i>
+            </a>
+          </li>
+          <li>
+            <a class="weixin share-sns" id="wxFab" href="javascript:;" data-title="微信">
+              <i class="fa fa-weixin"></i>
+            </a>
+          </li>
+          <li>
+            <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://guoshusong.github.io/2019/07/21/DataStructure02_%E6%A0%88%E4%B8%8E%E9%98%9F%E5%88%97/&title=《栈与队列》 — gssplus's Blog&source=顺序、链栈、队列" data-title="QQ">
+              <i class="fa fa-qq"></i>
+            </a>
+          </li>
+          <li>
+            <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://guoshusong.github.io/2019/07/21/DataStructure02_%E6%A0%88%E4%B8%8E%E9%98%9F%E5%88%97/" data-title="Facebook">
+              <i class="fa fa-facebook"></i>
+            </a>
+          </li>
+          <li>
+            <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《栈与队列》 — gssplus's Blog&url=https://guoshusong.github.io/2019/07/21/DataStructure02_%E6%A0%88%E4%B8%8E%E9%98%9F%E5%88%97/&via=https://guoshusong.github.io" data-title="Twitter">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li>
+            <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://guoshusong.github.io/2019/07/21/DataStructure02_%E6%A0%88%E4%B8%8E%E9%98%9F%E5%88%97/" data-title="Google+">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        </ul>
+     </div>
+</div>
+<div class="post-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;" id="wxShare-close">×</a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://guoshusong.github.io/2019/07/21/DataStructure02_%E6%A0%88%E4%B8%8E%E9%98%9F%E5%88%97/" alt="微信分享二维码">
+</div>
+
+<div class="mask"></div>
+
+        
+        <ul class="article-footer-menu">
+            
+            
+  <li class="article-footer-tags">
+    <i class="fa fa-tags"></i>
+      
+    <a href="/tags/栈/" class="color2">栈</a>
+      
+    <a href="/tags/队列/" class="color3">队列</a>
+      
+  </li>
+
+        </ul>
+        
+    </footer>
+  </div>
+</article>
+
+
+    <aside class="post-toc-pos post-toc-top" id="post-toc">
+        <nav class="post-toc-wrap">
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#顺序、链栈、队列"><span class="post-toc-text">顺序、链栈、队列</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#栈-Stack"><span class="post-toc-text">栈(Stack)</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#操作"><span class="post-toc-text">操作</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#栈的顺序结构"><span class="post-toc-text">栈的顺序结构</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#进栈"><span class="post-toc-text">进栈</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#出栈"><span class="post-toc-text">出栈</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#两栈共享空间"><span class="post-toc-text">两栈共享空间</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#进栈-1"><span class="post-toc-text">进栈</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#出栈-1"><span class="post-toc-text">出栈</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#栈的链式存储结构-链栈"><span class="post-toc-text">栈的链式存储结构(链栈)</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#进栈-2"><span class="post-toc-text">进栈</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#出栈-2"><span class="post-toc-text">出栈</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#栈的应用"><span class="post-toc-text">栈的应用</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#后缀表达式"><span class="post-toc-text">后缀表达式</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#将中缀表达式转为后缀表达式"><span class="post-toc-text">将中缀表达式转为后缀表达式</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#队列"><span class="post-toc-text">队列</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#操作-1"><span class="post-toc-text">操作</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#循环队列"><span class="post-toc-text">循环队列</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#初始化"><span class="post-toc-text">初始化</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#求长度"><span class="post-toc-text">求长度</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#入列"><span class="post-toc-text">入列</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#出列"><span class="post-toc-text">出列</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#队列的链式结构-链队列"><span class="post-toc-text">队列的链式结构(链队列)</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#入列-1"><span class="post-toc-text">入列</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#出队操作"><span class="post-toc-text">出队操作</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#例子"><span class="post-toc-text">例子</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#字符串解码"><span class="post-toc-text">字符串解码</span></a></li></ol></li></ol></li></ol>
+        </nav>
+    </aside>
+    
+
+<nav id="article-nav">
+  
+    <a href="/2019/07/25/DataStructure03_%E4%B8%B2/" id="article-nav-newer" class="article-nav-link-wrap">
+
+      <span class="article-nav-title">
+        <i class="fa fa-hand-o-left" aria-hidden="true"></i>
+        
+          串
+        
+      </span>
+    </a>
+  
+  
+    <a href="/2019/07/21/DataStructure01_%E7%BA%BF%E6%80%A7%E8%A1%A8/" id="article-nav-older" class="article-nav-link-wrap">
+      <span class="article-nav-title">栈与队列</span>
+      <i class="fa fa-hand-o-right" aria-hidden="true"></i>
+    </a>
+  
+</nav>
+
+
+
+    
+</section>
+        
+      </div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+
+      <p>
+        Powered by  <a href="http://hexo.io/" target="_blank">Hexo</a>
+        Theme <a href="//github.com/wongminho/hexo-theme-miho" target="_blank">MiHo</a>
+      &copy; 2020 GuoShuSong<br>
+      </p>
+    </div>
+  </div>
+</footer>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script>
+  var mihoConfig = {
+      root: "https://guoshusong.github.io",
+      animate: true,
+      isHome: false,
+      share: true,
+      reward: 0
+  }
+</script>
+<div class="sidebar">
+    <div id="sidebar-search" title="Search">
+        <i class="fa fa-search"></i>
+    </div>
+    <div id="sidebar-category" title="Categories">
+        <i class="fa fa-book"></i>
+    </div>
+    <div id="sidebar-tag" title="Tags">
+        <i class="fa fa-tags"></i>
+    </div>
+    <div id="sidebar-top">
+        <span class="sidebar-top-icon"><i class="fa fa-angle-up"></i></span>
+    </div>
+</div>
+<div class="sidebar-menu-box" id="sidebar-menu-box">
+    <div class="sidebar-menu-box-container">
+        <div id="sidebar-menu-box-categories">
+            <a class="category-link" href="/categories/Docker/">Docker</a><a class="category-link" href="/categories/Java/">Java</a><a class="category-link" href="/categories/Nginx/">Nginx</a><a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a><a class="category-link" href="/categories/%E7%90%90%E7%A2%8E/">琐碎</a><a class="category-link" href="/categories/%E9%9D%A2%E8%AF%95/">面试</a>
+        </div>
+        <div id="sidebar-menu-box-tags">
+            <a href="/tags/Docker/" style="font-size: 12.5px;">Docker</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Java%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">Java基础</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 12.5px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 20px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 10px;">SpringBoot</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 17.5px;">java</a> <a href="/tags/jvm/" style="font-size: 15px;">jvm</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">排序算法</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" style="font-size: 12.5px;">数据结构与算法</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a> <a href="/tags/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/" style="font-size: 10px;">查找算法</a> <a href="/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A1%A8/" style="font-size: 10px;">线性表</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+        </div>
+    </div>
+    <a href="javascript:;" class="sidebar-menu-box-close">&times;</a>
+</div>
+<div class="mobile-header-menu-nav" id="mobile-header-menu-nav">
+    <div class="mobile-header-menu-container">
+        <span class="title">Menus</span>
+        <ul class="mobile-header-menu-navbar">
+            
+            <li>
+                <a  href="/">
+                    <i class="fa fa-home"></i><span>Home</span>
+                </a>
+            </li>
+            
+            <li>
+                <a  href="/archives">
+                    <i class="fa fa-archive"></i><span>Archives</span>
+                </a>
+            </li>
+            
+            <li>
+                <a  href="/about">
+                    <i class="fa fa-user"></i><span>About</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    <div class="mobile-header-tag-container">
+        <span class="title">Tags</span>
+        <div id="mobile-header-container-tags">
+            <a href="/tags/Docker/" style="font-size: 12.5px;">Docker</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Java%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">Java基础</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 12.5px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 20px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 10px;">SpringBoot</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 17.5px;">java</a> <a href="/tags/jvm/" style="font-size: 15px;">jvm</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">排序算法</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" style="font-size: 12.5px;">数据结构与算法</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a> <a href="/tags/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/" style="font-size: 10px;">查找算法</a> <a href="/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A1%A8/" style="font-size: 10px;">线性表</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+        </div>
+    </div>
+</div>
+<div class="search-wrap">
+    <span class="search-close">&times;</span>
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+            <i class="icon icon-lg icon-chevron-left"></i>
+        </a>
+        <input class="search-field" placeholder="Search..." id="keywords">
+        <a id="search-submit" href="javascript:;">
+            <i class="fa fa-search"></i>
+        </a>
+    <div class="search-container" id="search-container">
+        <ul class="search-result" id="search-result">
+        </ul>
+    </div>
+</div>
+
+<div id="search-tpl">
+    <li class="search-result-item">
+        <a href="{url}" class="search-item-li">
+            <span class="search-item-li-title" title="{title}">{title}</span>
+        </a>
+    </li>
+</div>
+
+<script src="/js/search.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+  <script src="//cdn.bootcss.com/particles.js/2.0.0/particles.min.js"></script>
+  <div id="particles"></div>
+  
+<script src="/js/particles.js"></script>
+
+
+
+
+
+
+
+
+  
+<link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+
+  <script src="//cdn.bootcss.com/scrollReveal.js/3.0.5/scrollreveal.js"></script>
+  
+<script src="/js/animate.js"></script>
+
+
+
+  
+<script src="/js/pop-img.js"></script>
+
+  <script>
+     $(".article-entry p img").popImg();
+  </script>
+
+  </div>
+</body>
+</html>

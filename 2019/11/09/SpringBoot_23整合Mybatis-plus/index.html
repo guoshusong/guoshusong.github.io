@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>SpringBoot整合Mybatis-plus | gssplus&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+    <meta name="keywords" content="gss's Blog" />
+  
+  <meta name="description" content="SpringBoot整合使用Mybatis-plus">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot整合Mybatis-plus">
+<meta property="og:url" content="https://guoshusong.github.io/2019/11/09/SpringBoot_23%E6%95%B4%E5%90%88Mybatis-plus/index.html">
+<meta property="og:site_name" content="gssplus&#39;s Blog">
+<meta property="og:description" content="SpringBoot整合使用Mybatis-plus">
+<meta property="og:image" content="https://i.loli.net/2019/11/09/APEhDuklYednbOx.png">
+<meta property="og:image" content="https://i.loli.net/2019/11/09/gSwo4kn6LarYZjc.png">
+<meta property="og:image" content="https://i.loli.net/2019/11/09/gAWewDU7yB3IRKx.png">
+<meta property="og:image" content="https://i.loli.net/2019/11/09/eH8sTb4MUjI5E9k.png">
+<meta property="og:image" content="https://i.loli.net/2019/11/09/MsTBV8i6KZFpWxP.png">
+<meta property="article:published_time" content="2019-11-09T10:26:57.000Z">
+<meta property="article:modified_time" content="2020-01-13T07:51:33.626Z">
+<meta property="article:author" content="GuoShuSong">
+<meta property="article:tag" content="Spring">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2019/11/09/APEhDuklYednbOx.png">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+  
+
+  
+  
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+  <div id="container">
+      <header id="header">
+    <div id="banner"></div>
+    <div id="header-outer">
+        <div id="header-menu" class="header-menu-pos animated">
+            <div class="header-menu-container">
+                <a href="/" class="left">
+                    <span class="site-title">Hello,Here is gssplus!</span>
+                </a>
+                <nav id="header-menu-nav" class="right">
+                    
+                    <a  href="/">
+                        <i class="fa fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    
+                    <a  href="/archives">
+                        <i class="fa fa-archive"></i>
+                        <span>Archives</span>
+                    </a>
+                    
+                    <a  href="/about">
+                        <i class="fa fa-user"></i>
+                        <span>About</span>
+                    </a>
+                    
+                </nav>
+                <a class="mobile-header-menu-button">
+                    <i class="fa fa-bars"></i>
+                </a>
+            </div>
+        </div>
+        <div id="header-row">
+            <div id="logo">
+                <a href="/">
+                    <img src="/images/logo.png" alt="logo">
+                </a>
+            </div>
+            <div class="header-info">
+                <div id="header-title">
+                    
+                    <h2>
+                        Hello,Here is gssplus!
+                    </h2>
+                    
+                </div>
+                <div id="header-description">
+                    
+                    <h3>
+                        我见过春日夏风，秋月冬雪，也曾踏遍南水北山，东麓西岭，可这四季春秋，苍山央水，都不及你瞅我展眉一笑
+                    </h3>
+                    
+                </div>
+            </div>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a title="MinHow" target="_blank" href="//guoshusong.github.io/">
+                            <i class="fa fa-home fa-2x"></i></a>
+                    
+                        <a title="Github" target="_blank" href="//github.com/guoshusong">
+                            <i class="fa fa-github fa-2x"></i></a>
+                    
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>
+      <div class="outer">
+        <section id="main" class="body-wrap"><article id="post-SpringBoot_23整合Mybatis-plus" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="post-title" itemprop="name">
+      SpringBoot整合Mybatis-plus
+    </h1>
+    <div class="post-title-bar">
+      <ul>
+          
+        <li>
+          <i class="fa fa-calendar"></i>  2019-11-09
+        </li>
+        <li>
+          <i class="fa fa-eye"></i>
+          <span id="busuanzi_value_page_pv"></span>
+        </li>
+      </ul>
+    </div>
+  
+
+          
+      </header>
+    
+    <div class="article-entry post-content" itemprop="articleBody">
+      
+            
+            <h2 id="SpringBoot整合使用Mybatis-plus"><a href="#SpringBoot整合使用Mybatis-plus" class="headerlink" title="SpringBoot整合使用Mybatis-plus"></a>SpringBoot整合使用Mybatis-plus</h2><a id="more"></a>
+
+<h3 id="Mabitas-plus"><a href="#Mabitas-plus" class="headerlink" title="Mabitas plus"></a>Mabitas plus</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">               :&#96;</span><br><span class="line">                    .:,</span><br><span class="line">                     :::,,.</span><br><span class="line">             ::      &#96;::::::</span><br><span class="line">             ::&#96;    &#96;,:,&#96; .:&#96;</span><br><span class="line">             &#96;:: &#96;::::::::.:&#96;      &#96;:&#39;;,&#96;</span><br><span class="line">              ::::,     .:::&#96;   &#96;@++++++++:</span><br><span class="line">               &#96;&#96;        :::&#96;  @+++++++++++#</span><br><span class="line">                         :::, #++++++++++++++&#96;</span><br><span class="line">                 ,:      &#96;::::::;&#39;##++++++++++</span><br><span class="line">                 .@#@;&#96;   ::::::::::::::::::::;</span><br><span class="line">                  #@####@, :::::::::::::::+#;::.</span><br><span class="line">                  @@######+@:::::::::::::.  #@:;</span><br><span class="line">           ,      @@########&#39;:::::::::::: .#&#39;&#39;&#39;:&#96;</span><br><span class="line">           ;##@@@+:##########@::::::::::: @#;.,:.</span><br><span class="line">            #@@@######++++#####&#39;::::::::: .##+,:#&#96;</span><br><span class="line">            @@@@@#####+++++&#39;#####+::::::::&#96; ,&#96;::@#:&#96;</span><br><span class="line">            &#96;@@@@#####++++++&#39;#####+#&#39;:::::::::::@.</span><br><span class="line">             @@@@######+++++&#39;&#39;#######+##&#39;;::::;&#39;:,&#96;</span><br><span class="line">              @@@@#####+++++&#39;&#39;&#39;#######++++++++++&#96;</span><br><span class="line">               #@@#####++++++&#39;&#39;########++++++++&#39;</span><br><span class="line">               &#96;#@######+++++&#39;&#39;+########+++++++;</span><br><span class="line">                &#96;@@#####+++++&#39;&#39;##########++++++,</span><br><span class="line">                 @@######+++++&#39;##########+++++#&#96;</span><br><span class="line">                @@@@#####+++++############++++;</span><br><span class="line">              ;#@@@@@####++++##############+++,</span><br><span class="line">             @@@@@@@@@@@###@###############++&#39;</span><br><span class="line">           @#@@@@@@@@@@@@###################+:</span><br><span class="line">        &#96;@#@@@@@@@@@@@@@@###################&#39;&#96;</span><br><span class="line">      :@#@@@@@@@@@@@@@@@@@##################,</span><br><span class="line">      ,@@@@@@@@@@@@@@@@@@@@################;</span><br><span class="line">       ,#@@@@@@@@@@@@@@@@@@@##############+&#96;</span><br><span class="line">        .#@@@@@@@@@@@@@@@@@@#############@,</span><br><span class="line">          @@@@@@@@@@@@@@@@@@@###########@,</span><br><span class="line">           :#@@@@@@@@@@@@@@@@##########@,</span><br><span class="line">            &#96;##@@@@@@@@@@@@@@@########+,</span><br><span class="line">              &#96;+@@@@@@@@@@@@@@@#####@:&#96;</span><br><span class="line">                &#96;:@@@@@@@@@@@@@@##@;.</span><br><span class="line">                   &#96;,&#39;@@@@##@@@+;,&#96;</span><br><span class="line">                        &#96;&#96;...&#96;&#96;</span><br><span class="line"></span><br><span class="line"> _ _     &#x2F;_ _ _&#x2F;_. ____  &#x2F;    _</span><br><span class="line">&#x2F; &#x2F; &#x2F;&#x2F;_&#x2F;&#x2F;_&#x2F;&#x2F;_|&#x2F; &#x2F;_\  &#x2F;_&#x2F;&#x2F;&#x2F;_&#x2F;_\      Talk is cheap. Show me the code.</span><br><span class="line">     _&#x2F;             &#x2F;</span><br></pre></td></tr></table></figure>
+
+<h3 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.baomidou<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatis-plus-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.2.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h3><p>配置MapperScan注解</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="meta">@MapperScan</span>(<span class="string">"com.baomidou.mybatisplus.samples.quickstart.mapper"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Application</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run(QuickStartApplication<span class="class">.<span class="keyword">class</span>, <span class="title">args</span>)</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://gitee.com/baomidou/mybatisplus-spring-boot/blob/2.x/src/main/resources/application.yml" target="_blank" rel="noopener">关于yml中的配置可以看这篇文章</a></p>
+<h3 id="重要注解"><a href="#重要注解" class="headerlink" title="重要注解"></a>重要注解</h3><h4 id="TableName-表名注解"><a href="#TableName-表名注解" class="headerlink" title="@TableName(表名注解)"></a>@TableName(表名注解)</h4><p><img src="https://i.loli.net/2019/11/09/APEhDuklYednbOx.png" alt="TableName.PNG"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">关于&#96;autoResultMap&#96;的说明:</span><br><span class="line"></span><br><span class="line">从mp的原理上讲,因为底层是mybatis,所以一些mybatis的常识你要知道,mp只是帮你注入了常用crud 注入之前可以说是动态的(根据你entity的字段以及注解变化而变化),但是注入之后是静态的(等于你写在xml的东西) 而对于直接指定typeHandler,mybatis只支持你写在2个地方:</span><br><span class="line"></span><br><span class="line">定义在resultMap里,只作用于select查询的返回结果封装</span><br><span class="line">定义在insert和updatesql的#&#123;property&#125;里的property后面(例:#&#123;property,typehandler&#x3D;xxx.xxx.xxx&#125;),只作用于设置值 而除了这两种直接指定typeHandler,mybatis有一个全局的扫描你自己的typeHandler包的配置,这是根据你的property的类型去找typeHandler并使用 这个属性的作用就是:如果你的property类型... todo</span><br></pre></td></tr></table></figure>
+
+<h4 id="Tabled"><a href="#Tabled" class="headerlink" title="@Tabled"></a>@Tabled</h4><p><img src="https://i.loli.net/2019/11/09/gSwo4kn6LarYZjc.png" alt="tabled.PNG"></p>
+<h4 id="TableFileld"><a href="#TableFileld" class="headerlink" title="@TableFileld"></a>@TableFileld</h4><ul>
+<li>描述：字段注解(非主键)</li>
+</ul>
+<p><img src="https://i.loli.net/2019/11/09/gAWewDU7yB3IRKx.png" alt="TableFileld.PNG"></p>
+<p><img src="https://i.loli.net/2019/11/09/eH8sTb4MUjI5E9k.png" alt="Field.PNG"></p>
+<h4 id="Version"><a href="#Version" class="headerlink" title="@Version"></a>@Version</h4><p>描述：乐观锁注解、标记 @Verison 在字段上</p>
+<h4 id="EnumValue"><a href="#EnumValue" class="headerlink" title="@EnumValue"></a>@EnumValue</h4><p>描述：通枚举类注解(注解在枚举字段上)</p>
+<h4 id="TableLogic"><a href="#TableLogic" class="headerlink" title="@TableLogic"></a>@TableLogic</h4><p>描述：表字段逻辑处理注解（逻辑删除）<br>属性|类型|必须指定|默认值|描述<br>—|—|—|—|—<br>value|String|否|””|    逻辑未删除值<br>delval|String|否|””|逻辑删除值</p>
+<p><img src="https://i.loli.net/2019/11/09/MsTBV8i6KZFpWxP.png" alt="mybatis-plus1.PNG"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@TableName</span>(value = <span class="string">"表名(String)"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">student</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@TableId</span>(value=<span class="string">"stu_id"</span>,type=IdType.AUTO)</span><br><span class="line">    <span class="keyword">private</span> Integer stuId;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@TableField</span>(value=<span class="string">"stu_pwd"</span>)</span><br><span class="line">    <span class="keyword">private</span> String stuPwd;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="代码生成器"><a href="#代码生成器" class="headerlink" title="代码生成器"></a>代码生成器</h4><p>AutoGenerator 是 MyBatis-Plus 的代码生成器，通过 AutoGenerator 可以快速生成 Entity、Mapper、Mapper XML、Service、Controller 等各个模块的代码，极大的提升了开发效率。</p>
+<p><a href="https://mp.baomidou.com/guide/generator.html#%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B" target="_blank" rel="noopener">具体可以看这篇文章</a></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.baomidou<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatis-plus-generator<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.2.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="CRUD接口"><a href="#CRUD接口" class="headerlink" title="CRUD接口"></a>CRUD接口</h3><h4 id="MapperCRUD接口"><a href="#MapperCRUD接口" class="headerlink" title="MapperCRUD接口"></a>MapperCRUD接口</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">通用 CRUD 封装BaseMapper接口，为 Mybatis-Plus 启动时自动解析实体表关系映射转换为 Mybatis 内部对象注入容器</span><br><span class="line"></span><br><span class="line">泛型 T 为任意实体对象</span><br><span class="line"></span><br><span class="line">参数 Serializable 为任意类型主键 Mybatis-Plus 不推荐使用复合主键约定每一张表都有自己的唯一 id 主键</span><br><span class="line"></span><br><span class="line">对象 Wrapper 为 条件构造器</span><br></pre></td></tr></table></figure>
+
+<h5 id="insert"><a href="#insert" class="headerlink" title="insert"></a>insert</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 插入一条记录</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> entity 实体对象</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 插入成功记录数</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">insert</span><span class="params">(T entity)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<h5 id="delete"><a href="#delete" class="headerlink" title="delete"></a>delete</h5><p>deleteById</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 根据 ID 删除</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> id 主键ID</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 删除成功记录数</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">deleteById</span><span class="params">(Serializable id)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>deleteByMap</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 根据 columnMap 条件，删除记录</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> columnMap 表字段 map 对象</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 删除成功记录数</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">deleteByMap</span><span class="params">(@Param(Constants.COLUMN_MAP)</span> Map&lt;String, Object&gt; columnMap)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>deleteBatchIds</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 删除（根据ID 批量删除）</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> idList 主键ID列表(不能为 null 以及 empty)</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 删除成功记录数</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">deleteBatchIds</span><span class="params">(@Param(Constants.COLLECTION)</span> Collection&lt;? extends Serializable&gt; idList)</span>;</span><br></pre></td></tr></table></figure>
+
+<h5 id="Update"><a href="#Update" class="headerlink" title="Update"></a>Update</h5><p>updateById</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 根据 ID 修改</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> entity 实体对象</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 修改成功记录数</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">updateById</span><span class="params">(@Param(Constants.ENTITY)</span> T entity)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>update</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 根据 whereEntity 条件，更新记录</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> entity        实体对象 (set 条件值,可为 null)</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> updateWrapper 实体对象封装操作类（可以为 null,里面的 entity 用于生成 where 语句）</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 修改成功记录数</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">update</span><span class="params">(@Param(Constants.ENTITY)</span> T entity, @<span class="title">Param</span><span class="params">(Constants.WRAPPER)</span> Wrapper&lt;T&gt; updateWrapper)</span>;</span><br></pre></td></tr></table></figure>
+
+<h5 id="select"><a href="#select" class="headerlink" title="select"></a>select</h5><p>selectById</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 根据 ID 查询</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> id 主键ID</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 实体</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function">T <span class="title">selectById</span><span class="params">(Serializable id)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>selectBatchIds</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 查询（根据ID 批量查询）</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> idList 主键ID列表(不能为 null 以及 empty)</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 实体集合</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function">List&lt;T&gt; <span class="title">selectBatchIds</span><span class="params">(@Param(Constants.COLLECTION)</span> Collection&lt;? extends Serializable&gt; idList)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>selectByMap</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 查询（根据 columnMap 条件）</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> columnMap 表字段 map 对象</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 实体集合</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function">List&lt;T&gt; <span class="title">selectByMap</span><span class="params">(@Param(Constants.COLUMN_MAP)</span> Map&lt;String, Object&gt; columnMap)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>selectOne</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 根据 entity 条件，查询一条记录</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> queryWrapper 实体对象</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 实体</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function">T <span class="title">selectOne</span><span class="params">(@Param(Constants.WRAPPER)</span> Wrapper&lt;T&gt; queryWrapper)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>selectCount</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 根据 Wrapper 条件，查询总记录数</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> queryWrapper 实体对象</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 满足条件记录数</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function">Integer <span class="title">selectCount</span><span class="params">(@Param(Constants.WRAPPER)</span> Wrapper&lt;T&gt; queryWrapper)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>selectMaps</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 根据 Wrapper 条件，查询全部记录</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> queryWrapper 实体对象封装操作类（可以为 null）</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 字段映射对象 Map 集合</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">List&lt;Map&lt;String, Object&gt;&gt; selectMaps(<span class="meta">@Param</span>(Constants.WRAPPER) Wrapper&lt;T&gt; queryWrapper);</span><br></pre></td></tr></table></figure>
+
+<p>selectObjs</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 根据 Wrapper 条件，查询全部记录</span></span><br><span class="line"><span class="comment"> * 注意： 只返回第一个字段的值</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> queryWrapper 实体对象封装操作类（可以为 null）</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 字段映射对象集合</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function">List&lt;Object&gt; <span class="title">selectObjs</span><span class="params">(@Param(Constants.WRAPPER)</span> Wrapper&lt;T&gt; queryWrapper)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>selectPage</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 根据 entity 条件，查询全部记录（并翻页）</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> page         分页查询条件（可以为 RowBounds.DEFAULT）</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> queryWrapper 实体对象封装操作类（可以为 null）</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 实体分页对象</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function">IPage&lt;T&gt; <span class="title">selectPage</span><span class="params">(IPage&lt;T&gt; page, @Param(Constants.WRAPPER)</span> Wrapper&lt;T&gt; queryWrapper)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>selectMapsPage</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 根据 Wrapper 条件，查询全部记录（并翻页）</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> page         分页查询条件</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> queryWrapper 实体对象封装操作类</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 字段映射对象 Map 分页对象</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">IPage&lt;Map&lt;String, Object&gt;&gt; selectMapsPage(IPage&lt;T&gt; page, <span class="meta">@Param</span>(Constants.WRAPPER) Wrapper&lt;T&gt; queryWraapper);</span><br></pre></td></tr></table></figure>
+
+<h4 id="Service-CRUD-接口"><a href="#Service-CRUD-接口" class="headerlink" title="Service CRUD 接口"></a>Service CRUD 接口</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">说明:</span><br><span class="line"></span><br><span class="line">通用 Service CRUD 封装IService接口，进一步封装 CRUD 采用 get 查询单行 remove 删除 list 查询集合 page 分页 前缀命名方式区分 Mapper 层避免混淆，</span><br><span class="line"></span><br><span class="line">泛型 T 为任意实体对象</span><br><span class="line"></span><br><span class="line">建议如果存在自定义通用 Service 方法的可能，请创建自己的 IBaseService 继承 Mybatis-Plus 提供的基类</span><br><span class="line"></span><br><span class="line">对象 Wrapper 为 条件构造器</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://mp.baomidou.com/guide/crud-interface.html#selectmapspage" target="_blank" rel="noopener">接口的具体内容可以查看这篇文章</a></p>
+<h4 id="mapper层选装件"><a href="#mapper层选装件" class="headerlink" title="mapper层选装件"></a>mapper层选装件</h4><p><a href="https://mp.baomidou.com/guide/crud-interface.html#pagemaps" target="_blank" rel="noopener">官方文档</a></p>
+<h4 id="条件构造器"><a href="#条件构造器" class="headerlink" title="条件构造器"></a>条件构造器</h4><p>这个我还没弄懂，我觉得我需要去看源码了</p>
+<p><a href="https://mp.baomidou.com/guide/wrapper.html" target="_blank" rel="noopener">官方文档</a>、</p>
+<h3 id="分页插件"><a href="#分页插件" class="headerlink" title="分页插件"></a>分页插件</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@EnableTransactionManagement</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@MapperScan</span>(<span class="string">"com.baomidou.cloud.service.*.mapper*"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MybatisPlusConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> PaginationInterceptor <span class="title">paginationInterceptor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        PaginationInterceptor paginationInterceptor = <span class="keyword">new</span> PaginationInterceptor();</span><br><span class="line">        <span class="comment">// 设置请求的页面大于最大页后操作， true调回到首页，false 继续请求  默认false</span></span><br><span class="line">        <span class="comment">// paginationInterceptor.setOverflow(false);</span></span><br><span class="line">        <span class="comment">// 设置最大单页限制数量，默认 500 条，-1 不受限制</span></span><br><span class="line">        <span class="comment">// paginationInterceptor.setLimit(500);</span></span><br><span class="line">        <span class="keyword">return</span> paginationInterceptor;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="自定义分页"><a href="#自定义分页" class="headerlink" title="自定义分页"></a>自定义分页</h4><p>UserMapper.java 方法内容</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UserMapper</span></span>&#123;<span class="comment">//可以继承或者不继承BaseMapper</span></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 查询 : 根据state状态查询用户列表，分页显示</span></span><br><span class="line"><span class="comment">     * 注意!!: 如果入参是有多个,需要加注解指定参数名才能在xml中取值</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> page 分页对象,xml中可以从里面进行取值,传递参数 Page 即自动分页,必须放在第一位(你可以继承Page实现自己的分页对象)</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> state 状态</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 分页对象</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">IPage&lt;User&gt; <span class="title">selectPageVo</span><span class="params">(Page page, @Param(<span class="string">"state"</span>)</span> Integer state)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>UserMapper.xml 等同于编写一个普通 list 查询，mybatis-plus 自动替你分页</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"selectPageVo"</span> <span class="attr">resultType</span>=<span class="string">"com.baomidou.cloud.entity.UserVo"</span>&gt;</span></span><br><span class="line">    SELECT id,name FROM user WHERE state=#&#123;state&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>UserServiceImpl.java 调用分页方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> IPage&lt;User&gt; <span class="title">selectUserPage</span><span class="params">(Page&lt;User&gt; page, Integer state)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 不进行 count sql 优化，解决 MP 无法自动优化 SQL 问题，这时候你需要自己查询 count 部分</span></span><br><span class="line">    <span class="comment">// page.setOptimizeCountSql(false);</span></span><br><span class="line">    <span class="comment">// 当 total 为小于 0 或者设置 setSearchCount(false) 分页插件不会进行 count 查询</span></span><br><span class="line">    <span class="comment">// 要点!! 分页返回的对象与传入的对象是同一个</span></span><br><span class="line">    <span class="keyword">return</span> userMapper.selectPageVo(page, state);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+            <div class="post-copyright">
+    <div class="content">
+        <p>最后更新： 2020年01月13日 15:51</p>
+        <p>原始链接： <a class="post-url" href="/2019/11/09/SpringBoot_23%E6%95%B4%E5%90%88Mybatis-plus/" title="SpringBoot整合Mybatis-plus">https://guoshusong.github.io/2019/11/09/SpringBoot_23%E6%95%B4%E5%90%88Mybatis-plus/</a></p>
+        <footer>
+            <a href="https://guoshusong.github.io">
+                <img src="/images/logo.png" alt="GuoShuSong">
+                GuoShuSong
+            </a>
+        </footer>
+    </div>
+</div>
+
+      
+        
+            
+
+        
+    </div>
+    <footer class="article-footer">
+        
+        
+<div class="post-share">
+    <a href="javascript:;" id="share-sub" class="post-share-fab">
+        <i class="fa fa-share-alt"></i>
+    </a>
+    <div class="post-share-list" id="share-list">
+        <ul class="share-icons">
+          <li>
+            <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://guoshusong.github.io/2019/11/09/SpringBoot_23%E6%95%B4%E5%90%88Mybatis-plus/&title=《SpringBoot整合Mybatis-plus》 — gssplus's Blog&pic=https://guoshusong.github.ioimages/logo.png" data-title="微博">
+              <i class="fa fa-weibo"></i>
+            </a>
+          </li>
+          <li>
+            <a class="weixin share-sns" id="wxFab" href="javascript:;" data-title="微信">
+              <i class="fa fa-weixin"></i>
+            </a>
+          </li>
+          <li>
+            <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://guoshusong.github.io/2019/11/09/SpringBoot_23%E6%95%B4%E5%90%88Mybatis-plus/&title=《SpringBoot整合Mybatis-plus》 — gssplus's Blog&source=SpringBoot整合使用Mybatis-plus" data-title="QQ">
+              <i class="fa fa-qq"></i>
+            </a>
+          </li>
+          <li>
+            <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://guoshusong.github.io/2019/11/09/SpringBoot_23%E6%95%B4%E5%90%88Mybatis-plus/" data-title="Facebook">
+              <i class="fa fa-facebook"></i>
+            </a>
+          </li>
+          <li>
+            <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《SpringBoot整合Mybatis-plus》 — gssplus's Blog&url=https://guoshusong.github.io/2019/11/09/SpringBoot_23%E6%95%B4%E5%90%88Mybatis-plus/&via=https://guoshusong.github.io" data-title="Twitter">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li>
+            <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://guoshusong.github.io/2019/11/09/SpringBoot_23%E6%95%B4%E5%90%88Mybatis-plus/" data-title="Google+">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        </ul>
+     </div>
+</div>
+<div class="post-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;" id="wxShare-close">×</a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://guoshusong.github.io/2019/11/09/SpringBoot_23%E6%95%B4%E5%90%88Mybatis-plus/" alt="微信分享二维码">
+</div>
+
+<div class="mask"></div>
+
+        
+        <ul class="article-footer-menu">
+            
+            
+  <li class="article-footer-tags">
+    <i class="fa fa-tags"></i>
+      
+    <a href="/tags/Spring/" class="color2">Spring</a>
+      
+  </li>
+
+        </ul>
+        
+    </footer>
+  </div>
+</article>
+
+
+    <aside class="post-toc-pos post-toc-top" id="post-toc">
+        <nav class="post-toc-wrap">
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#SpringBoot整合使用Mybatis-plus"><span class="post-toc-text">SpringBoot整合使用Mybatis-plus</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Mabitas-plus"><span class="post-toc-text">Mabitas plus</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#依赖"><span class="post-toc-text">依赖</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#配置"><span class="post-toc-text">配置</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#重要注解"><span class="post-toc-text">重要注解</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#TableName-表名注解"><span class="post-toc-text">@TableName(表名注解)</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Tabled"><span class="post-toc-text">@Tabled</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#TableFileld"><span class="post-toc-text">@TableFileld</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Version"><span class="post-toc-text">@Version</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#EnumValue"><span class="post-toc-text">@EnumValue</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#TableLogic"><span class="post-toc-text">@TableLogic</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#代码生成器"><span class="post-toc-text">代码生成器</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#CRUD接口"><span class="post-toc-text">CRUD接口</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#MapperCRUD接口"><span class="post-toc-text">MapperCRUD接口</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#insert"><span class="post-toc-text">insert</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#delete"><span class="post-toc-text">delete</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Update"><span class="post-toc-text">Update</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#select"><span class="post-toc-text">select</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Service-CRUD-接口"><span class="post-toc-text">Service CRUD 接口</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#mapper层选装件"><span class="post-toc-text">mapper层选装件</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#条件构造器"><span class="post-toc-text">条件构造器</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#分页插件"><span class="post-toc-text">分页插件</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#自定义分页"><span class="post-toc-text">自定义分页</span></a></li></ol></li></ol></li></ol>
+        </nav>
+    </aside>
+    
+
+<nav id="article-nav">
+  
+    <a href="/2020/01/12/Mysql2/" id="article-nav-newer" class="article-nav-link-wrap">
+
+      <span class="article-nav-title">
+        <i class="fa fa-hand-o-left" aria-hidden="true"></i>
+        
+          事务及事务的各种隔离级别
+        
+      </span>
+    </a>
+  
+  
+    <a href="/2019/10/03/SpringBoot_22token%E7%99%BB%E5%BD%95/" id="article-nav-older" class="article-nav-link-wrap">
+      <span class="article-nav-title">SpringBoot+token登录</span>
+      <i class="fa fa-hand-o-right" aria-hidden="true"></i>
+    </a>
+  
+</nav>
+
+
+
+    
+</section>
+        
+      </div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+
+      <p>
+        Powered by  <a href="http://hexo.io/" target="_blank">Hexo</a>
+        Theme <a href="//github.com/wongminho/hexo-theme-miho" target="_blank">MiHo</a>
+      &copy; 2020 GuoShuSong<br>
+      </p>
+    </div>
+  </div>
+</footer>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script>
+  var mihoConfig = {
+      root: "https://guoshusong.github.io",
+      animate: true,
+      isHome: false,
+      share: true,
+      reward: 0
+  }
+</script>
+<div class="sidebar">
+    <div id="sidebar-search" title="Search">
+        <i class="fa fa-search"></i>
+    </div>
+    <div id="sidebar-category" title="Categories">
+        <i class="fa fa-book"></i>
+    </div>
+    <div id="sidebar-tag" title="Tags">
+        <i class="fa fa-tags"></i>
+    </div>
+    <div id="sidebar-top">
+        <span class="sidebar-top-icon"><i class="fa fa-angle-up"></i></span>
+    </div>
+</div>
+<div class="sidebar-menu-box" id="sidebar-menu-box">
+    <div class="sidebar-menu-box-container">
+        <div id="sidebar-menu-box-categories">
+            <a class="category-link" href="/categories/Docker/">Docker</a><a class="category-link" href="/categories/Java/">Java</a><a class="category-link" href="/categories/Nginx/">Nginx</a><a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a><a class="category-link" href="/categories/%E7%90%90%E7%A2%8E/">琐碎</a><a class="category-link" href="/categories/%E9%9D%A2%E8%AF%95/">面试</a>
+        </div>
+        <div id="sidebar-menu-box-tags">
+            <a href="/tags/Docker/" style="font-size: 12.5px;">Docker</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Java%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">Java基础</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 12.5px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 20px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 10px;">SpringBoot</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 17.5px;">java</a> <a href="/tags/jvm/" style="font-size: 15px;">jvm</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">排序算法</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" style="font-size: 12.5px;">数据结构与算法</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a> <a href="/tags/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/" style="font-size: 10px;">查找算法</a> <a href="/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A1%A8/" style="font-size: 10px;">线性表</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+        </div>
+    </div>
+    <a href="javascript:;" class="sidebar-menu-box-close">&times;</a>
+</div>
+<div class="mobile-header-menu-nav" id="mobile-header-menu-nav">
+    <div class="mobile-header-menu-container">
+        <span class="title">Menus</span>
+        <ul class="mobile-header-menu-navbar">
+            
+            <li>
+                <a  href="/">
+                    <i class="fa fa-home"></i><span>Home</span>
+                </a>
+            </li>
+            
+            <li>
+                <a  href="/archives">
+                    <i class="fa fa-archive"></i><span>Archives</span>
+                </a>
+            </li>
+            
+            <li>
+                <a  href="/about">
+                    <i class="fa fa-user"></i><span>About</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    <div class="mobile-header-tag-container">
+        <span class="title">Tags</span>
+        <div id="mobile-header-container-tags">
+            <a href="/tags/Docker/" style="font-size: 12.5px;">Docker</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Java%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">Java基础</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 12.5px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 20px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 10px;">SpringBoot</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 17.5px;">java</a> <a href="/tags/jvm/" style="font-size: 15px;">jvm</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">排序算法</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" style="font-size: 12.5px;">数据结构与算法</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a> <a href="/tags/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/" style="font-size: 10px;">查找算法</a> <a href="/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A1%A8/" style="font-size: 10px;">线性表</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+        </div>
+    </div>
+</div>
+<div class="search-wrap">
+    <span class="search-close">&times;</span>
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+            <i class="icon icon-lg icon-chevron-left"></i>
+        </a>
+        <input class="search-field" placeholder="Search..." id="keywords">
+        <a id="search-submit" href="javascript:;">
+            <i class="fa fa-search"></i>
+        </a>
+    <div class="search-container" id="search-container">
+        <ul class="search-result" id="search-result">
+        </ul>
+    </div>
+</div>
+
+<div id="search-tpl">
+    <li class="search-result-item">
+        <a href="{url}" class="search-item-li">
+            <span class="search-item-li-title" title="{title}">{title}</span>
+        </a>
+    </li>
+</div>
+
+<script src="/js/search.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+  <script src="//cdn.bootcss.com/particles.js/2.0.0/particles.min.js"></script>
+  <div id="particles"></div>
+  
+<script src="/js/particles.js"></script>
+
+
+
+
+
+
+
+
+  
+<link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+
+  <script src="//cdn.bootcss.com/scrollReveal.js/3.0.5/scrollreveal.js"></script>
+  
+<script src="/js/animate.js"></script>
+
+
+
+  
+<script src="/js/pop-img.js"></script>
+
+  <script>
+     $(".article-entry p img").popImg();
+  </script>
+
+  </div>
+</body>
+</html>

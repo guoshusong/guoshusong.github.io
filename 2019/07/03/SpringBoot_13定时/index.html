@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>SpringBoot的定时任务 | gssplus&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+    <meta name="keywords" content="gss's Blog" />
+  
+  <meta name="description" content="SpringBoot的定时任务学习笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot的定时任务">
+<meta property="og:url" content="https://guoshusong.github.io/2019/07/03/SpringBoot_13%E5%AE%9A%E6%97%B6/index.html">
+<meta property="og:site_name" content="gssplus&#39;s Blog">
+<meta property="og:description" content="SpringBoot的定时任务学习笔记">
+<meta property="article:published_time" content="2019-07-03T13:05:05.000Z">
+<meta property="article:modified_time" content="2020-01-13T07:50:20.552Z">
+<meta property="article:author" content="GuoShuSong">
+<meta property="article:tag" content="Spring">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+  
+
+  
+  
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+  <div id="container">
+      <header id="header">
+    <div id="banner"></div>
+    <div id="header-outer">
+        <div id="header-menu" class="header-menu-pos animated">
+            <div class="header-menu-container">
+                <a href="/" class="left">
+                    <span class="site-title">Hello,Here is gssplus!</span>
+                </a>
+                <nav id="header-menu-nav" class="right">
+                    
+                    <a  href="/">
+                        <i class="fa fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    
+                    <a  href="/archives">
+                        <i class="fa fa-archive"></i>
+                        <span>Archives</span>
+                    </a>
+                    
+                    <a  href="/about">
+                        <i class="fa fa-user"></i>
+                        <span>About</span>
+                    </a>
+                    
+                </nav>
+                <a class="mobile-header-menu-button">
+                    <i class="fa fa-bars"></i>
+                </a>
+            </div>
+        </div>
+        <div id="header-row">
+            <div id="logo">
+                <a href="/">
+                    <img src="/images/logo.png" alt="logo">
+                </a>
+            </div>
+            <div class="header-info">
+                <div id="header-title">
+                    
+                    <h2>
+                        Hello,Here is gssplus!
+                    </h2>
+                    
+                </div>
+                <div id="header-description">
+                    
+                    <h3>
+                        我见过春日夏风，秋月冬雪，也曾踏遍南水北山，东麓西岭，可这四季春秋，苍山央水，都不及你瞅我展眉一笑
+                    </h3>
+                    
+                </div>
+            </div>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a title="MinHow" target="_blank" href="//guoshusong.github.io/">
+                            <i class="fa fa-home fa-2x"></i></a>
+                    
+                        <a title="Github" target="_blank" href="//github.com/guoshusong">
+                            <i class="fa fa-github fa-2x"></i></a>
+                    
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>
+      <div class="outer">
+        <section id="main" class="body-wrap"><article id="post-SpringBoot_13定时" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="post-title" itemprop="name">
+      SpringBoot的定时任务
+    </h1>
+    <div class="post-title-bar">
+      <ul>
+          
+        <li>
+          <i class="fa fa-calendar"></i>  2019-07-03
+        </li>
+        <li>
+          <i class="fa fa-eye"></i>
+          <span id="busuanzi_value_page_pv"></span>
+        </li>
+      </ul>
+    </div>
+  
+
+          
+      </header>
+    
+    <div class="article-entry post-content" itemprop="articleBody">
+      
+            
+            <h2 id="SpringBoot的定时任务学习笔记"><a href="#SpringBoot的定时任务学习笔记" class="headerlink" title="SpringBoot的定时任务学习笔记"></a>SpringBoot的定时任务学习笔记</h2><a id="more"></a>
+
+<p><a href="https://www.cnblogs.com/zhanghaoliang/p/7886110.html" target="_blank" rel="noopener">参考博客</a></p>
+<p>需要在启动类上加</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@EnableScheduling</span><span class="comment">//开启定时任务</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@EnableAsync</span><span class="comment">//开启多线程</span></span><br></pre></td></tr></table></figure>
+<h3 id="Schedule注解"><a href="#Schedule注解" class="headerlink" title="Schedule注解"></a>Schedule注解</h3><p>@Scheduled(fixedRate = 5000) ：上一次开始执行时间点之后5秒再执行</p>
+<p>@Scheduled(fixedDelay = 5000) ：上一次执行完毕时间点之后5秒再执行</p>
+<p>@Scheduled(initialDelay=1000, fixedRate=5000) ：第一次延迟1秒后执行，之后按fixedRate的规则每5秒执行一次</p>
+<p>@Scheduled(cron=” /5 “) ：通过cron表达式定义规则，什么是cro表达式，自行搜索引擎。</p>
+<h3 id="cron表达式的写法"><a href="#cron表达式的写法" class="headerlink" title="cron表达式的写法"></a>cron表达式的写法</h3><p>corn从左到右（用空格隔开）：秒 分 小时 月份中的日期 月份 星期中的日期 年份</p>
+<p><a href="http://cron.qqe2.com/" target="_blank" rel="noopener">一款cron在线生成器</a></p>
+<p>cron表达式的写法:</p>
+<p>   （1） * ：表示匹配该域的任意值。假如在Minutes域使用 * , 即表示每分钟都会触发事件。</p>
+<p>　　（2）? ：只能用在DayofMonth和DayofWeek两个域。它也匹配域的任意值，但实际不会。因为DayofMonth和DayofWeek会相互影响。例如想在每月的20日触发调度，不管20日到底是星期几，则只能使用如下写法： 13 13 15 20 * ?, 其中最后一位只能用？，而不能使用<em>，如果使用</em>表示不管星期几都会触发，实际上并不是这样。</p>
+<p>　　（3）- ：表示范围。例如在Minutes域使用5-20，表示从5分到20分钟每分钟触发一次 </p>
+<p>　　（4）/ ：表示起始时间开始触发，然后每隔固定时间触发一次。例如在Minutes域使用5/20,则意味着5分钟触发一次，而25，45等分别触发一次. </p>
+<p>　　（5）, ：表示列出枚举值。例如：在Minutes域使用5,20，则意味着在5和20分每分钟触发一次。 </p>
+<p>　　（6）L ：表示最后，只能出现在DayofWeek和DayofMonth域。如果在DayofWeek域使用5L,意味着在最后的一个星期四触发。 </p>
+<p>　　（7）W :表示有效工作日(周一到周五),只能出现在DayofMonth域，系统将在离指定日期的最近的有效工作日触发事件。例如：在 DayofMonth使用5W，如果5日是星期六，则将在最近的工作日：星期五，即4日触发。如果5日是星期天，则在6日(周一)触发；如果5日在星期一到星期五中的一天，则就在5日触发。另外一点，W的最近寻找不会跨过月份 。</p>
+<p>　　（8）LW :这两个字符可以连用，表示在某个月最后一个工作日，即最后一个星期五。 </p>
+<p>　　（9）# :用于确定每个月第几个星期几，只能出现在DayofMonth域。例如在4#2，表示某月的第二个星期三。</p>
+<h4 id="例子："><a href="#例子：" class="headerlink" title="例子："></a>例子：</h4><p>0 0/30 9-17 * * ?   朝九晚五工作时间内每半小时</p>
+<p>“0 0 12 * * ?” 每天中午12点触发 </p>
+<p>“0 15 10 * * ? 2005” 2005年的每天上午10:15触发 </p>
+<p>“0 * 14 * * ?” 在每天下午2点到下午2:59期间的每1分钟触发</p>
+<p>“0 0/5 14 * * ?” 在每天下午2点到下午2:55期间的每5分钟触发 </p>
+<p>“0 0-5 14 * * ?” 在每天下午2点到下午2:05期间的每1分钟触发 </p>
+<p>“0 10,44 14 ? 3 WED” 每年三月的星期三的下午2:10和2:44触发 </p>
+<p>“0 15 10 ? * MON-FRI” 周一至周五的上午10:15触发 </p>
+<p>“0 15 10 L * ?” 每月最后一日的上午10:15触发 </p>
+<p>“0 15 10 ? * 6L” 每月的最后一个星期五上午10:15触发 </p>
+<p>“0 15 10 ? * 6L 2002-2005” 2002年至2005年的每月的最后一个星期五上午10:15触发 </p>
+<p>“0 15 10 ? * 6#3” 每月的第三个星期五上午10:15触</p>
+<p>（1）有些子表达式能包含一些范围或列表</p>
+<p>　　例如：子表达式（天（星期））可以为 “MON-FRI”，“MON，WED，FRI”，“MON-WED,SAT”</p>
+<p>“*”字符代表所有可能的值</p>
+<p>　　因此，“<em>”在子表达式（月）里表示每个月的含义，“</em>”在子表达式（天（星期））表示星期的每一天</p>
+<p>　　“？”字符仅被用于天（月）和天（星期）两个子表达式，表示不指定值，当2个子表达式其中之一被指定了值以后，为了避免冲突，需要将另一个子表达式的值设为“？”</p>
+<p>　　“L” 字符仅被用于天（月）和天（星期）两个子表达式，它是单词“last”的缩写<br>　　但是它在两个子表达式里的含义是不同的。<br>　　在天（月）子表达式中，“L”表示一个月的最后一天<br>　　在天（星期）自表达式中，“L”表示一个星期的最后一天，也就是SAT</p>
+<p>　　如果在“L”前有具体的内容，它就具有其他的含义了</p>
+<p>　　例如：“6L”表示这个月的倒数第６天，“FRIL”表示这个月的最一个星期五<br>　　注意：在使用“L”参数时，不要指定列表或范围，因为这会导致问题</p>
+<h3 id="整合Quartz"><a href="#整合Quartz" class="headerlink" title="整合Quartz"></a>整合Quartz</h3><p>Quartz API的关键接口是：</p>
+<p>Scheduler - 与调度程序交互的主要API。</p>
+<p>Job - 由希望由调度程序执行的组件实现的接口。</p>
+<p>JobDetail - 用于定义作业的实例。</p>
+<p>Trigger（即触发器） - 定义执行给定作业的计划的组件。</p>
+<p>JobBuilder - 用于定义/构建JobDetail实例，用于定义作业的实例。</p>
+<p>TriggerBuilder - 用于定义/构建触发器实例。</p>
+<h4 id="Job"><a href="#Job" class="headerlink" title="Job"></a>Job</h4><p>定义job的代码使用的是从JobBuilder静态导入的方法。同样，定义trigger的代码使用的是从TriggerBuilder静态导入的方法 。 另外，也导入了SimpleSchedulerBuilder类的静态方法；</p>
+<p>注解：<br>@DisallowConcurrentExecution：将该注解加到job类上，告诉Quartz不要并发地执行同一个job定义（这里指特定的job类）的多个实例。</p>
+<p>@PersistJobDataAfterExecution：将该注解加在job类上，告诉Quartz在成功执行了job类的execute方法后（没有发生任何异常），更新JobDetail中JobDataMap的数据，使得该job（即JobDetail）在下一次执行的时候，JobDataMap中是更新后的数据，而不是更新前的旧数据。</p>
+<p>以上两个注解虽然都是加到Job类上的，但其限制作用是针对job实例的，而不是job类的。由job类来承载注解，是因为job类的内容经常会影响其行为状态</p>
+<h4 id="JobDetail"><a href="#JobDetail" class="headerlink" title="JobDetail"></a>JobDetail</h4><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//创建一个jobDetail的实例，将该实例与HelloJob Class绑定</span></span><br><span class="line">        JobDetail jobDetail = JobBuilder.newJob(HelloJob.class).withIdentity("myJob").build();</span><br></pre></td></tr></table></figure>
+
+<p>我们传给scheduler一个JobDetail实例，因为我们在创建JobDetail时，将要执行的job的类名传给了JobDetail，所以scheduler就知道了要执行何种类型的job；每次当scheduler执行job时，在调用其execute(…)方法之前会创建该类的一个新的实例；执行完毕，对该实例的引用就被丢弃了，实例会被垃圾回收；这种执行策略带来的一个后果是，job必须有一个无参的构造函数（当使用默认的JobFactory时）；另一个后果是，在job类中，不应该定义有状态的数据属性，因为在job的多次执行中，这些属性的值不会保留。</p>
+<h4 id="JobDataMap，JobDetail对象的一部分。"><a href="#JobDataMap，JobDetail对象的一部分。" class="headerlink" title="JobDataMap，JobDetail对象的一部分。"></a>JobDataMap，JobDetail对象的一部分。</h4><p>给job实例增加属性或配置;在job的多次执行中，跟踪job的状态</p>
+<p>通过JobDetail对象，可以给job实例配置的其它属性有：</p>
+<p>Durability：如果一个job是非持久的，当没有活跃的trigger与之关联的时候，会被自动地从scheduler中删除。也就是说，非持久的job的生命期是由trigger的存在与否决定的；</p>
+<p>RequestsRecovery：如果一个job是可恢复的，并且在其执行的时候，scheduler发生硬关闭（hard shutdown)（比如运行的进程崩溃了，或者关机了），则当scheduler重新启动的时候，该job会被重新执行。此时，该job的JobExecutionContext.isRecovering() 返回true</p>
+<p>在Quartz的描述语言中，我们将保存后的JobDetail称为“job定义”或者“JobDetail实例”,将一个正在执行的job称为“job实例”或者“job定义的实例”。当我们使用“job”时，一般指代的是job定义，或者JobDetail；当我们提到实现Job接口的类时，通常使用“job类”。</p>
+<h4 id="JobDataMap"><a href="#JobDataMap" class="headerlink" title="JobDataMap"></a>JobDataMap</h4><p>JobDataMap中可以包含不限量的（序列化的）数据对象，在job实例执行的时候，可以使用其中的数据；JobDataMap是Java Map接口的一个实现，额外增加了一些便于存取基本类型的数据的方法。</p>
+<h4 id="Tiger"><a href="#Tiger" class="headerlink" title="Tiger"></a>Tiger</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">//创建一个Trigger触发器的实例，定义该job立即执行，并且每2秒执行一次，一直执行</span></span><br><span class="line">SimpleTrigger trigger = TriggerBuilder.newTrigger().withIdentity(<span class="string">"myTrigger"</span>).startNow().withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(<span class="number">2</span>).repeatForever()).build();</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">   <span class="comment">//每日的9点40触发任务</span></span><br><span class="line">CronTrigger cronTrigger = TriggerBuilder.newTrigger().withIdentity(<span class="string">"cronTrigger"</span>).withSchedule(CronScheduleBuilder.cronSchedule(<span class="string">"0 40 9 * * ? "</span>)).build();</span><br></pre></td></tr></table></figure>
+
+<p>Trigger用于触发Job的执行。当你准备调度一个job时，你创建一个Trigger的实例，然后设置调度相关的属性。Trigger也有一个相关联的JobDataMap，用于给Job传递一些触发相关的参数。Quartz自带了各种不同类型的Trigger，最常用的主要是SimpleTrigger和CronTrigger。</p>
+<p>SimpleTrigger主要用于一次性执行的Job（只在某个特定的时间点执行一次），或者Job在特定的时间点执行，重复执行N次，每次执行间隔T个时间单位。CronTrigger在基于日历的调度上非常有用，如“每个星期五的正午”，或者“每月的第十天的上午10:15”等。</p>
+<p>示例代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloScheduler</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> SchedulerException </span>&#123;</span><br><span class="line">        <span class="comment">//创建一个jobDetail的实例，将该实例与HelloJob Class绑定</span></span><br><span class="line">        JobDetail jobDetail = JobBuilder.newJob(HelloJob.class).withIdentity("myJob").build();</span><br><span class="line">        <span class="comment">//创建一个Trigger触发器的实例，定义该job立即执行，并且每2秒执行一次，一直执行</span></span><br><span class="line">        SimpleTrigger trigger = TriggerBuilder.newTrigger().withIdentity(<span class="string">"myTrigger"</span>).startNow().withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(<span class="number">2</span>).repeatForever()).build();</span><br><span class="line">        <span class="comment">//创建schedule实例</span></span><br><span class="line">        StdSchedulerFactory factory = <span class="keyword">new</span> StdSchedulerFactory();</span><br><span class="line">        Scheduler scheduler = factory.getScheduler();</span><br><span class="line">        scheduler.start();</span><br><span class="line">        scheduler.scheduleJob(jobDetail,trigger);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="trigger的属性"><a href="#trigger的属性" class="headerlink" title="trigger的属性:"></a>trigger的属性:</h5><p>所有类型的trigger都有TriggerKey这个属性，表示trigger的身份；除此之外，trigger还有很多其它的公共属性。这些属性，在构建trigger的时候可以通过TriggerBuilder设置。</p>
+<p>公共属性：</p>
+<p>jobKey属性：当trigger触发时被执行的job的身份；</p>
+<p>startTime属性：设置trigger第一次触发的时间；该属性的值是java.util.Date类型，表示某个指定的时间点；有些类型的trigger，会在设置的startTime时立即触发，有些类型的trigger，表示其触发是在startTime之后开始生效。比如，现在是1月份，你设置了一个trigger–“在每个月的第5天执行”，然后你将startTime属性设置为4月1号，则该trigger第一次触发会是在几个月以后了(即4月5号)。</p>
+<p>endTime属性：表示trigger失效的时间点。比如，”每月第5天执行”的trigger，如果其endTime是7月1号，则其最后一次执行时间是6月5号。</p>
+<p>优先级(priority属性):默认优先级为5，只有同时触发的trigger之间才会比较优先级。10:59触发的trigger总是在11:00触发的trigger之前执行。</p>
+<p>注意：如果trigger是可恢复的，在恢复后再调度时，优先级与原trigger是一样的。</p>
+<p>Calender:</p>
+<p>此calendar不是java.util.Calendar，calendar是为了补充Trigger的时间，可以拍除了或加入一下特定的时间。Quartz 的 Calender 专门用于屏闭一个时间区间，使 Trigger 在这个区间中不被触发。</p>
+<p>AnnualCalendar:排除每一年中指定的一天或者多少天 ，精度是天</p>
+<p>CronCalendar:使用表达式排除某些时间段不执行，精度取决于Cron表达式，最大精度到秒</p>
+<p>DailyCalendar：指定的时间范围内的每一天不执行，指定每天的时间段，格式是HH:MM[:SS[:mmm]]。也就是最大精度可以到毫秒。</p>
+<p>HolidayCalendar：排除节假日，精度到天</p>
+<p>MonthlyCalendar：排除月份中的数天，可选值为1-31。精度是天</p>
+<p>WeeklyCalendar：排除星期中的一天或多天，可选值比如为</p>
+<p>java.util.Calendar.SUNDAY，精度是天</p>
+<h5 id="Tigger的实现类"><a href="#Tigger的实现类" class="headerlink" title="Tigger的实现类"></a>Tigger的实现类</h5><p>1.CalendarIntervalTrigger<br>CalendarIntervalTrigger：是一个具体的Trigger，用来触发基于定时重复的JobDetail。</p>
+<p>Trigger将会每隔N个calendar在trigger中定义的时间单元触发一次。这个trigger不适合使用SimpleTrigger完成(例如由于每一个月的时间不是固定的描述)，也不适用于CronTrigger(例如每5个月)。</p>
+<p>相较于SimpleTrigger有两个优势：1、更方便，比如每隔1小时执行，你不用自己去计算1小时等于多少毫秒。 2、支持不是固定长度的间隔，比如间隔为月和年。但劣势是精度只能到秒。</p>
+<p>它适合的任务类似于：9:00 开始执行，并且以后每周 9:00 执行一次</p>
+<p>它的属性有:</p>
+<p>interval 执行间隔</p>
+<p>intervalUnit 执行间隔的单位（秒，分钟，小时，天，月，年，星期）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">CalendarIntervalScheduleBuilder</span><br><span class="line">     .calendarIntervalSchedule()</span><br><span class="line">     .withIntervalInDays(<span class="number">1</span>)  <span class="comment">//每天执行一次</span></span><br><span class="line">   <span class="comment">//.withIntervalInHours(1)</span></span><br><span class="line">   <span class="comment">//.withIntervalInMinutes(1)</span></span><br><span class="line">   <span class="comment">//.withIntervalInMonths(1)</span></span><br><span class="line">   <span class="comment">//.withIntervalInSeconds(1)</span></span><br><span class="line">   <span class="comment">//.withIntervalInWeeks(1)</span></span><br><span class="line">   <span class="comment">//.withIntervalInHours(1)</span></span><br><span class="line">     .build()</span><br></pre></td></tr></table></figure>
+
+<p>2.DailyTimeIntervalTrigger<br>指定每天的某个时间段内，以一定的时间间隔执行任务。并且它可以支持指定星期。</p>
+<p>它适合的任务类似于：指定每天9:00 至 18:00 ，每隔70秒执行一次，并且只要周一至周五执行。</p>
+<p>它的属性有:</p>
+<p>startTimeOfDay 每天开始时间<br>endTimeOfDay 每天结束时间<br>daysOfWeek 需要执行的星期<br>interval 执行间隔<br>intervalUnit 执行间隔的单位（秒，分钟，小时，天，月，年，星期）<br>repeatCount 重复次数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Trigger simpleTrigger = TriggerBuilder.newTrigger().withIdentity(<span class="string">"zhlTrigger"</span>).withSchedule(</span><br><span class="line">    DailyTimeIntervalScheduleBuilder.dailyTimeIntervalSchedule().startingDailyAt(TimeOfDay.hourAndMinuteOfDay(<span class="number">8</span>, <span class="number">0</span>)) <span class="comment">//每天8：00开始</span></span><br><span class="line">    .endingDailyAt(TimeOfDay.hourAndMinuteOfDay(<span class="number">17</span>, <span class="number">0</span>)) <span class="comment">//17：0</span></span><br><span class="line">    .onDaysOfTheWeek(MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY) <span class="comment">//周一至周五执行</span></span><br><span class="line">   .withIntervalInHours(<span class="number">1</span>) <span class="comment">//每间隔1小时执行一次</span></span><br><span class="line">    .withRepeatCount(<span class="number">100</span>) <span class="comment">//最多重复100次（实际执行100+1次）</span></span><br><span class="line">    ).modifiedByCalendar(<span class="string">"holidays"</span>)   <span class="comment">//将我们设置好的Calander与trigger绑定</span></span><br><span class="line">    .build();</span><br></pre></td></tr></table></figure>
+
+            <div class="post-copyright">
+    <div class="content">
+        <p>最后更新： 2020年01月13日 15:50</p>
+        <p>原始链接： <a class="post-url" href="/2019/07/03/SpringBoot_13%E5%AE%9A%E6%97%B6/" title="SpringBoot的定时任务">https://guoshusong.github.io/2019/07/03/SpringBoot_13%E5%AE%9A%E6%97%B6/</a></p>
+        <footer>
+            <a href="https://guoshusong.github.io">
+                <img src="/images/logo.png" alt="GuoShuSong">
+                GuoShuSong
+            </a>
+        </footer>
+    </div>
+</div>
+
+      
+        
+            
+
+        
+    </div>
+    <footer class="article-footer">
+        
+        
+<div class="post-share">
+    <a href="javascript:;" id="share-sub" class="post-share-fab">
+        <i class="fa fa-share-alt"></i>
+    </a>
+    <div class="post-share-list" id="share-list">
+        <ul class="share-icons">
+          <li>
+            <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://guoshusong.github.io/2019/07/03/SpringBoot_13%E5%AE%9A%E6%97%B6/&title=《SpringBoot的定时任务》 — gssplus's Blog&pic=https://guoshusong.github.ioimages/logo.png" data-title="微博">
+              <i class="fa fa-weibo"></i>
+            </a>
+          </li>
+          <li>
+            <a class="weixin share-sns" id="wxFab" href="javascript:;" data-title="微信">
+              <i class="fa fa-weixin"></i>
+            </a>
+          </li>
+          <li>
+            <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://guoshusong.github.io/2019/07/03/SpringBoot_13%E5%AE%9A%E6%97%B6/&title=《SpringBoot的定时任务》 — gssplus's Blog&source=SpringBoot的定时任务学习笔记" data-title="QQ">
+              <i class="fa fa-qq"></i>
+            </a>
+          </li>
+          <li>
+            <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://guoshusong.github.io/2019/07/03/SpringBoot_13%E5%AE%9A%E6%97%B6/" data-title="Facebook">
+              <i class="fa fa-facebook"></i>
+            </a>
+          </li>
+          <li>
+            <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《SpringBoot的定时任务》 — gssplus's Blog&url=https://guoshusong.github.io/2019/07/03/SpringBoot_13%E5%AE%9A%E6%97%B6/&via=https://guoshusong.github.io" data-title="Twitter">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li>
+            <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://guoshusong.github.io/2019/07/03/SpringBoot_13%E5%AE%9A%E6%97%B6/" data-title="Google+">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        </ul>
+     </div>
+</div>
+<div class="post-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;" id="wxShare-close">×</a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://guoshusong.github.io/2019/07/03/SpringBoot_13%E5%AE%9A%E6%97%B6/" alt="微信分享二维码">
+</div>
+
+<div class="mask"></div>
+
+        
+        <ul class="article-footer-menu">
+            
+            
+  <li class="article-footer-tags">
+    <i class="fa fa-tags"></i>
+      
+    <a href="/tags/Spring/" class="color2">Spring</a>
+      
+  </li>
+
+        </ul>
+        
+    </footer>
+  </div>
+</article>
+
+
+    <aside class="post-toc-pos post-toc-top" id="post-toc">
+        <nav class="post-toc-wrap">
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#SpringBoot的定时任务学习笔记"><span class="post-toc-text">SpringBoot的定时任务学习笔记</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Schedule注解"><span class="post-toc-text">Schedule注解</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#cron表达式的写法"><span class="post-toc-text">cron表达式的写法</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#例子："><span class="post-toc-text">例子：</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#整合Quartz"><span class="post-toc-text">整合Quartz</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Job"><span class="post-toc-text">Job</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#JobDetail"><span class="post-toc-text">JobDetail</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#JobDataMap，JobDetail对象的一部分。"><span class="post-toc-text">JobDataMap，JobDetail对象的一部分。</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#JobDataMap"><span class="post-toc-text">JobDataMap</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Tiger"><span class="post-toc-text">Tiger</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#trigger的属性"><span class="post-toc-text">trigger的属性:</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Tigger的实现类"><span class="post-toc-text">Tigger的实现类</span></a></li></ol></li></ol></li></ol></li></ol>
+        </nav>
+    </aside>
+    
+
+<nav id="article-nav">
+  
+    <a href="/2019/07/05/SpringBoot_14%E9%82%AE%E4%BB%B6/" id="article-nav-newer" class="article-nav-link-wrap">
+
+      <span class="article-nav-title">
+        <i class="fa fa-hand-o-left" aria-hidden="true"></i>
+        
+          SpringBoot邮件任务
+        
+      </span>
+    </a>
+  
+  
+    <a href="/2019/06/02/SpringBoot_12Redis/" id="article-nav-older" class="article-nav-link-wrap">
+      <span class="article-nav-title">SpringBoot与Redis学习笔记</span>
+      <i class="fa fa-hand-o-right" aria-hidden="true"></i>
+    </a>
+  
+</nav>
+
+
+
+    
+</section>
+        
+      </div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+
+      <p>
+        Powered by  <a href="http://hexo.io/" target="_blank">Hexo</a>
+        Theme <a href="//github.com/wongminho/hexo-theme-miho" target="_blank">MiHo</a>
+      &copy; 2020 GuoShuSong<br>
+      </p>
+    </div>
+  </div>
+</footer>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script>
+  var mihoConfig = {
+      root: "https://guoshusong.github.io",
+      animate: true,
+      isHome: false,
+      share: true,
+      reward: 0
+  }
+</script>
+<div class="sidebar">
+    <div id="sidebar-search" title="Search">
+        <i class="fa fa-search"></i>
+    </div>
+    <div id="sidebar-category" title="Categories">
+        <i class="fa fa-book"></i>
+    </div>
+    <div id="sidebar-tag" title="Tags">
+        <i class="fa fa-tags"></i>
+    </div>
+    <div id="sidebar-top">
+        <span class="sidebar-top-icon"><i class="fa fa-angle-up"></i></span>
+    </div>
+</div>
+<div class="sidebar-menu-box" id="sidebar-menu-box">
+    <div class="sidebar-menu-box-container">
+        <div id="sidebar-menu-box-categories">
+            <a class="category-link" href="/categories/Docker/">Docker</a><a class="category-link" href="/categories/Java/">Java</a><a class="category-link" href="/categories/Nginx/">Nginx</a><a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a><a class="category-link" href="/categories/%E7%90%90%E7%A2%8E/">琐碎</a><a class="category-link" href="/categories/%E9%9D%A2%E8%AF%95/">面试</a>
+        </div>
+        <div id="sidebar-menu-box-tags">
+            <a href="/tags/Docker/" style="font-size: 12.5px;">Docker</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Java%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">Java基础</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 12.5px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 20px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 10px;">SpringBoot</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 17.5px;">java</a> <a href="/tags/jvm/" style="font-size: 15px;">jvm</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">排序算法</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" style="font-size: 12.5px;">数据结构与算法</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a> <a href="/tags/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/" style="font-size: 10px;">查找算法</a> <a href="/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A1%A8/" style="font-size: 10px;">线性表</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+        </div>
+    </div>
+    <a href="javascript:;" class="sidebar-menu-box-close">&times;</a>
+</div>
+<div class="mobile-header-menu-nav" id="mobile-header-menu-nav">
+    <div class="mobile-header-menu-container">
+        <span class="title">Menus</span>
+        <ul class="mobile-header-menu-navbar">
+            
+            <li>
+                <a  href="/">
+                    <i class="fa fa-home"></i><span>Home</span>
+                </a>
+            </li>
+            
+            <li>
+                <a  href="/archives">
+                    <i class="fa fa-archive"></i><span>Archives</span>
+                </a>
+            </li>
+            
+            <li>
+                <a  href="/about">
+                    <i class="fa fa-user"></i><span>About</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    <div class="mobile-header-tag-container">
+        <span class="title">Tags</span>
+        <div id="mobile-header-container-tags">
+            <a href="/tags/Docker/" style="font-size: 12.5px;">Docker</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Java%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">Java基础</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 12.5px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 20px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 10px;">SpringBoot</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 17.5px;">java</a> <a href="/tags/jvm/" style="font-size: 15px;">jvm</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">排序算法</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" style="font-size: 12.5px;">数据结构与算法</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a> <a href="/tags/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/" style="font-size: 10px;">查找算法</a> <a href="/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A1%A8/" style="font-size: 10px;">线性表</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+        </div>
+    </div>
+</div>
+<div class="search-wrap">
+    <span class="search-close">&times;</span>
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+            <i class="icon icon-lg icon-chevron-left"></i>
+        </a>
+        <input class="search-field" placeholder="Search..." id="keywords">
+        <a id="search-submit" href="javascript:;">
+            <i class="fa fa-search"></i>
+        </a>
+    <div class="search-container" id="search-container">
+        <ul class="search-result" id="search-result">
+        </ul>
+    </div>
+</div>
+
+<div id="search-tpl">
+    <li class="search-result-item">
+        <a href="{url}" class="search-item-li">
+            <span class="search-item-li-title" title="{title}">{title}</span>
+        </a>
+    </li>
+</div>
+
+<script src="/js/search.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+  <script src="//cdn.bootcss.com/particles.js/2.0.0/particles.min.js"></script>
+  <div id="particles"></div>
+  
+<script src="/js/particles.js"></script>
+
+
+
+
+
+
+
+
+  
+<link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+
+  <script src="//cdn.bootcss.com/scrollReveal.js/3.0.5/scrollreveal.js"></script>
+  
+<script src="/js/animate.js"></script>
+
+
+
+  
+<script src="/js/pop-img.js"></script>
+
+  <script>
+     $(".article-entry p img").popImg();
+  </script>
+
+  </div>
+</body>
+</html>

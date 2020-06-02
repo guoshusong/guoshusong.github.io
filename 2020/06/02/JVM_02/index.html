@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>JVM的垃圾回收 | gssplus&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+    <meta name="keywords" content="gss's Blog" />
+  
+  <meta name="description" content="GC、简述垃圾回收机制、判断对象是否存活、垃圾回收器原理、OOMERROE、四大垃圾回收方式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM的垃圾回收">
+<meta property="og:url" content="https://guoshusong.github.io/2020/06/02/JVM_02/index.html">
+<meta property="og:site_name" content="gssplus&#39;s Blog">
+<meta property="og:description" content="GC、简述垃圾回收机制、判断对象是否存活、垃圾回收器原理、OOMERROE、四大垃圾回收方式">
+<meta property="og:image" content="https://i.loli.net/2020/03/10/5OdzKIeHUw2Lfrs.png">
+<meta property="article:published_time" content="2020-06-02T06:08:50.513Z">
+<meta property="article:modified_time" content="2020-05-07T10:28:03.767Z">
+<meta property="article:author" content="GuoShuSong">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="jvm">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2020/03/10/5OdzKIeHUw2Lfrs.png">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+  
+
+  
+  
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+  <div id="container">
+      <header id="header">
+    <div id="banner"></div>
+    <div id="header-outer">
+        <div id="header-menu" class="header-menu-pos animated">
+            <div class="header-menu-container">
+                <a href="/" class="left">
+                    <span class="site-title">Hello,Here is gssplus!</span>
+                </a>
+                <nav id="header-menu-nav" class="right">
+                    
+                    <a  href="/">
+                        <i class="fa fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    
+                    <a  href="/archives">
+                        <i class="fa fa-archive"></i>
+                        <span>Archives</span>
+                    </a>
+                    
+                    <a  href="/about">
+                        <i class="fa fa-user"></i>
+                        <span>About</span>
+                    </a>
+                    
+                </nav>
+                <a class="mobile-header-menu-button">
+                    <i class="fa fa-bars"></i>
+                </a>
+            </div>
+        </div>
+        <div id="header-row">
+            <div id="logo">
+                <a href="/">
+                    <img src="/images/logo.png" alt="logo">
+                </a>
+            </div>
+            <div class="header-info">
+                <div id="header-title">
+                    
+                    <h2>
+                        Hello,Here is gssplus!
+                    </h2>
+                    
+                </div>
+                <div id="header-description">
+                    
+                    <h3>
+                        我见过春日夏风，秋月冬雪，也曾踏遍南水北山，东麓西岭，可这四季春秋，苍山央水，都不及你瞅我展眉一笑
+                    </h3>
+                    
+                </div>
+            </div>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a title="MinHow" target="_blank" href="//guoshusong.github.io/">
+                            <i class="fa fa-home fa-2x"></i></a>
+                    
+                        <a title="Github" target="_blank" href="//github.com/guoshusong">
+                            <i class="fa fa-github fa-2x"></i></a>
+                    
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>
+      <div class="outer">
+        <section id="main" class="body-wrap"><article id="post-JVM_02" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="post-title" itemprop="name">
+      JVM的垃圾回收
+    </h1>
+    <div class="post-title-bar">
+      <ul>
+          
+        <li>
+          <i class="fa fa-calendar"></i>  2020-06-02
+        </li>
+        <li>
+          <i class="fa fa-eye"></i>
+          <span id="busuanzi_value_page_pv"></span>
+        </li>
+      </ul>
+    </div>
+  
+
+          
+      </header>
+    
+    <div class="article-entry post-content" itemprop="articleBody">
+      
+            
+            <h2 id="GC、简述垃圾回收机制、判断对象是否存活、垃圾回收器原理、OOMERROE、四大垃圾回收方式"><a href="#GC、简述垃圾回收机制、判断对象是否存活、垃圾回收器原理、OOMERROE、四大垃圾回收方式" class="headerlink" title="GC、简述垃圾回收机制、判断对象是否存活、垃圾回收器原理、OOMERROE、四大垃圾回收方式"></a>GC、简述垃圾回收机制、判断对象是否存活、垃圾回收器原理、OOMERROE、四大垃圾回收方式</h2><a id="more"></a>
+
+<h3 id="GC"><a href="#GC" class="headerlink" title="GC"></a>GC</h3><p>GC 是垃圾收集的意思（GabageCollection），内存处理是编程人员容易出现问题的地方，忘记或者错误的内存回收会导致程序或系统的不稳定甚至崩溃，Java 提供的 GC 功能可以自动监测对象是否超过作用域从而达到自动回收内存的目的，Java 语言没有提供释放已分配内存的显示操作方法。</p>
+<h3 id="简述垃圾回收机制"><a href="#简述垃圾回收机制" class="headerlink" title="简述垃圾回收机制"></a>简述垃圾回收机制</h3><p>在 Java 中，程序员是不需要显示的去释放一个对象的内存的，而是由虚拟机自行执行。在 JVM 中，有一个垃圾回收线程，它是低优先级的，在正常情况下是不会执行的，只有在虚拟机空闲或者当前堆内存不足时，才会触发执行，扫面那些没有被任何引用的对象，并将它们添加到要回收的集合中，进行回收。</p>
+<h3 id="垃圾回收的优点和原理。并考虑-2-种回收机制。"><a href="#垃圾回收的优点和原理。并考虑-2-种回收机制。" class="headerlink" title="垃圾回收的优点和原理。并考虑 2 种回收机制。"></a>垃圾回收的优点和原理。并考虑 2 种回收机制。</h3><p>Java 语言中一个显著的特点就是引入了垃圾回收机制，使 C++程序员最头疼的内存管理的问题迎刃而解，它使得 Java 程序员在编写程序的时候不再需要考虑内存管理。由于有个垃圾回收机制，Java 中的对象不再有“作用域”的概念，只有对象的引用才有”作用域”。垃圾回收可以有效的防止内存泄露，有效的使用可以使用的内存。垃圾回收器通常是作为一个单独的低级别的线程运行，不可预知的情况下对内存堆中已经死亡的或者长时间没有使用的对象进行清楚和回收成，程序员不能实时的调用垃圾回收器对某个对象或所有对象进行垃圾回收。</p>
+<p>回收机制有分代复制垃圾回收和标记垃圾回收，增量垃圾回收。</p>
+<h3 id="垃圾回收器的基本原理是什么？垃圾回收器可以马上回收内存吗？"><a href="#垃圾回收器的基本原理是什么？垃圾回收器可以马上回收内存吗？" class="headerlink" title="垃圾回收器的基本原理是什么？垃圾回收器可以马上回收内存吗？"></a>垃圾回收器的基本原理是什么？垃圾回收器可以马上回收内存吗？</h3><p>有什么办法主动通知虚拟机进行垃圾回收？</p>
+<p>对于 GC 来说，当程序员创建对象时，GC 就开始监控这个对象的地址、大小以及使用情况。通常，GC 采用有向图的方式记录和管理堆（heap）中的所有对象。通过这种方式确定哪些对象是”可达的”，哪些对象是”不可达的”。当 GC 确定一些对象为“不可达”时，GC 就有责任回收这些内存空间。可以。程序员可以手动执行 System.gc()，通知 GC 运行，但是 Java 语言规范并不保证 GC 一定会执行。</p>
+<h3 id="深拷贝和浅拷贝"><a href="#深拷贝和浅拷贝" class="headerlink" title="深拷贝和浅拷贝"></a>深拷贝和浅拷贝</h3><p>简单来讲就是复制、克隆。</p>
+<p>Person p=new Person(“张三”);</p>
+<p>浅拷贝就是对对象中的数据成员进行简单赋值，如果存在动态成员或者指针就会报错。</p>
+<p>深拷贝就是对对象中存在的动态成员或指针重新开辟内存空间。</p>
+<h3 id="如果对象的引用被置为-null，垃圾收集器是否会立即释放对象占用的内存"><a href="#如果对象的引用被置为-null，垃圾收集器是否会立即释放对象占用的内存" class="headerlink" title="如果对象的引用被置为 null，垃圾收集器是否会立即释放对象占用的内存"></a>如果对象的引用被置为 null，垃圾收集器是否会立即释放对象占用的内存</h3><p>不会，在下一个垃圾回收周期中，这个对象将是可被回收的。</p>
+<h3 id="串行（serial）收集器和吞吐量（throughput）收集器的区别是什么"><a href="#串行（serial）收集器和吞吐量（throughput）收集器的区别是什么" class="headerlink" title="串行（serial）收集器和吞吐量（throughput）收集器的区别是什么"></a>串行（serial）收集器和吞吐量（throughput）收集器的区别是什么</h3><p>吞吐量收集器使用并行版本的新生代垃圾收集器，它用于中等规模和大规模数据的应用程序。 而串行收集器对大多数的小应用（在现代处理器上需要大概 100M 左右的内存）就足够了。</p>
+<h3 id="在-Java-中，对象什么时候可以被垃圾回收？"><a href="#在-Java-中，对象什么时候可以被垃圾回收？" class="headerlink" title="在 Java 中，对象什么时候可以被垃圾回收？"></a>在 Java 中，对象什么时候可以被垃圾回收？</h3><p>当对象对当前使用这个对象的应用程序变得不可触及的时候，这个对象就可以被回收了。</p>
+<h3 id="简述-Java-内存分配与回收策率以及-Minor-GC-和-MajorGC"><a href="#简述-Java-内存分配与回收策率以及-Minor-GC-和-MajorGC" class="headerlink" title="简述 Java 内存分配与回收策率以及 Minor GC 和 MajorGC"></a>简述 Java 内存分配与回收策率以及 Minor GC 和 MajorGC</h3><ul>
+<li>对象优先在堆的 Eden 区分配</li>
+<li>大对象直接进入老年代</li>
+<li>长期存活的对象将直接进入老年代</li>
+</ul>
+<p>当 Eden 区没有足够的空间进行分配时，虚拟机会执行一次Minor GC。Minor GC 通常发生在新生代的 Eden 区，在这个区的对象生存期短，往往发生 Gc 的频率较高，回收速度比较快；Full GC/Major GC 发生在老年代，一般情况下，触发老年代 GC的时候不会触发 Minor GC，但是通过配置，可以在 Full GC 之前进行一次 Minor GC 这样可以加快老年代的回收速度。</p>
+<h3 id="垃圾标记方法"><a href="#垃圾标记方法" class="headerlink" title="垃圾标记方法"></a>垃圾标记方法</h3><p>判断一个对象是否存活有两种方法：</p>
+<ol>
+<li>引用计数法</li>
+</ol>
+<p>所谓引用计数法就是给每一个对象设置一个引用计数器，每当有一个地方引用这个对象时，就将计数器加一，引用失效时，计数器就减一。当一个对象的引用计数器为零时，说明此对象没有被引用，也就是“死对象”,将会被垃圾回收.引用计数法有一个缺陷就是无法解决循环引用问题，也就是说当对象 A 引用对象 B，对象 B 又引用者对象 A，那么此时 A、B 对象的引用计数器都不为零，也就造成无法完成垃圾回收，所以主流的虚拟机都没有采用这种算法。</p>
+<ol start="2">
+<li>可达性算法（引用链法）</li>
+</ol>
+<p>该算法的思想是：从一个被称为 GC Roots 的对象开始向下搜索，如果一个对象到 GC Roots 没有任何引用链相连时，则说明此对象不可用。</p>
+<p>在 Java 中可以作为 GC Roots 的对象有以下几种：</p>
+<ul>
+<li>虚拟机栈中引用的对象</li>
+<li>方法区中的静态成员</li>
+<li>方法区常量池引用的对象（全局变量）</li>
+<li>本地方法栈 JNI(即一般说的Native方法) 引用的对象</li>
+</ul>
+<p>虽然这些算法可以判定一个对象是否能被回收，但是当满足上述条件时，一个对象不一定会被回收。当一个对象不可达 GC Root时，这个对象并不会立马被回收，而是出于一个死缓的阶段，若要被真正的回收需要经历两次标记.</p>
+<p>如果对象在可达性分析中没有与 GC Root 的引用链，那么此时就会被第一次标记并且进行一次筛选，筛选的条件是是否有必要执行finalize() 方法。当对象没有覆盖 finalize() 方法或者已被虚拟机调用过，那么就认为是没必要的。如果该对象有必要执行finalize() 方法，那么这个对象将会放在一个称为 F-Queue 的对队列中，虚拟机会触发一个 Finalize() 线程去执行，此线程是低优先级的，并且虚拟机不会承诺一直等待它运行完，这是因为如果finalize() 执行缓慢或者发生了死锁，那么就会造成 F-Queue 队列一直等待，造成了内存回收系统的崩溃。GC 对处于 F-Queue中的对象进行第二次被标记，这时，该对象将被移除” 即将回收”集合，等待回收。</p>
+<h3 id="GC算法"><a href="#GC算法" class="headerlink" title="GC算法"></a>GC算法</h3><ul>
+<li><p>复制(新生代)</p>
+<p>优化：<br>在新生代中，由于大量的对象都是”朝生夕死”，也就是说一次垃圾收集后存活对象较少，因此我们可以把内存划分为三块：Eden、Survior1、Survior2，大小比例为 8:1:1。分配内存时只使用 Eden + Survior1，当这里的内存将满时，JVM 会出发一次 MinorGC，清除掉废弃对象，并将存活对象复制到另一块 Survior2 中。那么接下来就使用 Eden + Survior2 进行内存分配。<br>通过这种方式只需浪费 10% 的内存空间即可实现复制清除算法，同时避免了内存碎片的问题。</p>
+</li>
+<li><p>标记清除</p>
+</li>
+<li><p>标记整理(老年代)</p>
+</li>
+</ul>
+<h3 id="常见的OOMERROR"><a href="#常见的OOMERROR" class="headerlink" title="常见的OOMERROR"></a>常见的OOMERROR</h3><p><img src="https://i.loli.net/2020/03/10/5OdzKIeHUw2Lfrs.png" alt="OOMERROR.png"></p>
+<h3 id="四大回收垃圾的方式"><a href="#四大回收垃圾的方式" class="headerlink" title="四大回收垃圾的方式"></a>四大回收垃圾的方式</h3><h4 id="串行垃圾回收器-Serial"><a href="#串行垃圾回收器-Serial" class="headerlink" title="串行垃圾回收器(Serial)"></a>串行垃圾回收器(Serial)</h4><p>为单线程环境设计并且只使用一个线程进行垃圾回收，会暂停所有的用户线程</p>
+<h4 id="ParNew收集器"><a href="#ParNew收集器" class="headerlink" title="ParNew收集器"></a>ParNew收集器</h4><p>Serial收集器的多线程并行版本,会暂停所有的用户线程.目前只有其能与CMS配合工作</p>
+<h4 id="并行垃圾回收器-Parallel"><a href="#并行垃圾回收器-Parallel" class="headerlink" title="并行垃圾回收器(Parallel)"></a>并行垃圾回收器(Parallel)</h4><p>多个垃圾收集线程进行工作，此时用户线程是暂停的</p>
+<p>与ParNew收集器的区别:自适应策略，注重吞吐量</p>
+<h4 id="并发垃圾回收器-CMS-Current-Mark-Sweep"><a href="#并发垃圾回收器-CMS-Current-Mark-Sweep" class="headerlink" title="并发垃圾回收器(CMS Current Mark Sweep)"></a>并发垃圾回收器(CMS Current Mark Sweep)</h4><p>用户线程和垃圾回收线程同时进行(不一定是并行，也可能是交替执行)，不需要用户线程停顿</p>
+<h4 id="G1回收器"><a href="#G1回收器" class="headerlink" title="G1回收器"></a>G1回收器</h4><p>将堆内存分割成不同的区域然后并发地对其进行垃圾回收</p>
+<p><a href="https://juejin.im/entry/5af0832c51882567244deb44" target="_blank" rel="noopener">关于G1一篇不错的文章</a></p>
+<h4 id="新生代为什么不使用”标记-整理算法”"><a href="#新生代为什么不使用”标记-整理算法”" class="headerlink" title="新生代为什么不使用”标记-整理算法”"></a>新生代为什么不使用”标记-整理算法”</h4><p>首先要明确的是“新生代使用的是复制算法”！<br>复制算法与标记-整理算法都有标记的过程，标记的过程都是采用可达性分析算法，所以跳过这个步骤接着分析。复制算法接下来是把标记存活的对象复制到另一块内存区域中，标记-整理算法是将标记的对象整理到一端，这个时候需要注意，并没有进行内存空间清理，针对于新生代需要清理的对象数量十分巨大，所以在将存活的对象插入到待清理对象之前，需要大量移动操作，时间复杂度很高；反观复制算法，不需要移动待回收对象的操作，直接将存活对象复制到另一块空闲内存区域中，大大减小了时间复杂度.  v</p>
+
+            <div class="post-copyright">
+    <div class="content">
+        <p>最后更新： 2020年05月07日 18:28</p>
+        <p>原始链接： <a class="post-url" href="/2020/06/02/JVM_02/" title="JVM的垃圾回收">https://guoshusong.github.io/2020/06/02/JVM_02/</a></p>
+        <footer>
+            <a href="https://guoshusong.github.io">
+                <img src="/images/logo.png" alt="GuoShuSong">
+                GuoShuSong
+            </a>
+        </footer>
+    </div>
+</div>
+
+      
+        
+            
+
+        
+    </div>
+    <footer class="article-footer">
+        
+        
+<div class="post-share">
+    <a href="javascript:;" id="share-sub" class="post-share-fab">
+        <i class="fa fa-share-alt"></i>
+    </a>
+    <div class="post-share-list" id="share-list">
+        <ul class="share-icons">
+          <li>
+            <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://guoshusong.github.io/2020/06/02/JVM_02/&title=《JVM的垃圾回收》 — gssplus's Blog&pic=https://guoshusong.github.ioimages/logo.png" data-title="微博">
+              <i class="fa fa-weibo"></i>
+            </a>
+          </li>
+          <li>
+            <a class="weixin share-sns" id="wxFab" href="javascript:;" data-title="微信">
+              <i class="fa fa-weixin"></i>
+            </a>
+          </li>
+          <li>
+            <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://guoshusong.github.io/2020/06/02/JVM_02/&title=《JVM的垃圾回收》 — gssplus's Blog&source=GC、简述垃圾回收机制、判断对象是否存活、垃圾回收器原理、OOMERROE、四大垃圾回收方式" data-title="QQ">
+              <i class="fa fa-qq"></i>
+            </a>
+          </li>
+          <li>
+            <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://guoshusong.github.io/2020/06/02/JVM_02/" data-title="Facebook">
+              <i class="fa fa-facebook"></i>
+            </a>
+          </li>
+          <li>
+            <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JVM的垃圾回收》 — gssplus's Blog&url=https://guoshusong.github.io/2020/06/02/JVM_02/&via=https://guoshusong.github.io" data-title="Twitter">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li>
+            <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://guoshusong.github.io/2020/06/02/JVM_02/" data-title="Google+">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        </ul>
+     </div>
+</div>
+<div class="post-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;" id="wxShare-close">×</a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://guoshusong.github.io/2020/06/02/JVM_02/" alt="微信分享二维码">
+</div>
+
+<div class="mask"></div>
+
+        
+        <ul class="article-footer-menu">
+            
+            
+  <li class="article-footer-tags">
+    <i class="fa fa-tags"></i>
+      
+    <a href="/tags/java/" class="color5">java</a>
+      
+    <a href="/tags/jvm/" class="color4">jvm</a>
+      
+  </li>
+
+        </ul>
+        
+    </footer>
+  </div>
+</article>
+
+
+    <aside class="post-toc-pos post-toc-top" id="post-toc">
+        <nav class="post-toc-wrap">
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#GC、简述垃圾回收机制、判断对象是否存活、垃圾回收器原理、OOMERROE、四大垃圾回收方式"><span class="post-toc-text">GC、简述垃圾回收机制、判断对象是否存活、垃圾回收器原理、OOMERROE、四大垃圾回收方式</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#GC"><span class="post-toc-text">GC</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#简述垃圾回收机制"><span class="post-toc-text">简述垃圾回收机制</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#垃圾回收的优点和原理。并考虑-2-种回收机制。"><span class="post-toc-text">垃圾回收的优点和原理。并考虑 2 种回收机制。</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#垃圾回收器的基本原理是什么？垃圾回收器可以马上回收内存吗？"><span class="post-toc-text">垃圾回收器的基本原理是什么？垃圾回收器可以马上回收内存吗？</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#深拷贝和浅拷贝"><span class="post-toc-text">深拷贝和浅拷贝</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#如果对象的引用被置为-null，垃圾收集器是否会立即释放对象占用的内存"><span class="post-toc-text">如果对象的引用被置为 null，垃圾收集器是否会立即释放对象占用的内存</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#串行（serial）收集器和吞吐量（throughput）收集器的区别是什么"><span class="post-toc-text">串行（serial）收集器和吞吐量（throughput）收集器的区别是什么</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#在-Java-中，对象什么时候可以被垃圾回收？"><span class="post-toc-text">在 Java 中，对象什么时候可以被垃圾回收？</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#简述-Java-内存分配与回收策率以及-Minor-GC-和-MajorGC"><span class="post-toc-text">简述 Java 内存分配与回收策率以及 Minor GC 和 MajorGC</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#垃圾标记方法"><span class="post-toc-text">垃圾标记方法</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#GC算法"><span class="post-toc-text">GC算法</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#常见的OOMERROR"><span class="post-toc-text">常见的OOMERROR</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#四大回收垃圾的方式"><span class="post-toc-text">四大回收垃圾的方式</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#串行垃圾回收器-Serial"><span class="post-toc-text">串行垃圾回收器(Serial)</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#ParNew收集器"><span class="post-toc-text">ParNew收集器</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#并行垃圾回收器-Parallel"><span class="post-toc-text">并行垃圾回收器(Parallel)</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#并发垃圾回收器-CMS-Current-Mark-Sweep"><span class="post-toc-text">并发垃圾回收器(CMS Current Mark Sweep)</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#G1回收器"><span class="post-toc-text">G1回收器</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#新生代为什么不使用”标记-整理算法”"><span class="post-toc-text">新生代为什么不使用”标记-整理算法”</span></a></li></ol></li></ol></li></ol>
+        </nav>
+    </aside>
+    
+
+<nav id="article-nav">
+  
+    <a href="/2020/06/02/JVM_03/" id="article-nav-newer" class="article-nav-link-wrap">
+
+      <span class="article-nav-title">
+        <i class="fa fa-hand-o-left" aria-hidden="true"></i>
+        
+          JVM的栈帧结构
+        
+      </span>
+    </a>
+  
+  
+    <a href="/2020/06/02/JVM_01/" id="article-nav-older" class="article-nav-link-wrap">
+      <span class="article-nav-title">JVM类的加载</span>
+      <i class="fa fa-hand-o-right" aria-hidden="true"></i>
+    </a>
+  
+</nav>
+
+
+
+    
+</section>
+        
+      </div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+
+      <p>
+        Powered by  <a href="http://hexo.io/" target="_blank">Hexo</a>
+        Theme <a href="//github.com/wongminho/hexo-theme-miho" target="_blank">MiHo</a>
+      &copy; 2020 GuoShuSong<br>
+      </p>
+    </div>
+  </div>
+</footer>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script>
+  var mihoConfig = {
+      root: "https://guoshusong.github.io",
+      animate: true,
+      isHome: false,
+      share: true,
+      reward: 0
+  }
+</script>
+<div class="sidebar">
+    <div id="sidebar-search" title="Search">
+        <i class="fa fa-search"></i>
+    </div>
+    <div id="sidebar-category" title="Categories">
+        <i class="fa fa-book"></i>
+    </div>
+    <div id="sidebar-tag" title="Tags">
+        <i class="fa fa-tags"></i>
+    </div>
+    <div id="sidebar-top">
+        <span class="sidebar-top-icon"><i class="fa fa-angle-up"></i></span>
+    </div>
+</div>
+<div class="sidebar-menu-box" id="sidebar-menu-box">
+    <div class="sidebar-menu-box-container">
+        <div id="sidebar-menu-box-categories">
+            <a class="category-link" href="/categories/Docker/">Docker</a><a class="category-link" href="/categories/Java/">Java</a><a class="category-link" href="/categories/Nginx/">Nginx</a><a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a><a class="category-link" href="/categories/%E7%90%90%E7%A2%8E/">琐碎</a><a class="category-link" href="/categories/%E9%9D%A2%E8%AF%95/">面试</a>
+        </div>
+        <div id="sidebar-menu-box-tags">
+            <a href="/tags/Docker/" style="font-size: 12.5px;">Docker</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Java%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">Java基础</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 12.5px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 20px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 10px;">SpringBoot</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 17.5px;">java</a> <a href="/tags/jvm/" style="font-size: 15px;">jvm</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">排序算法</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" style="font-size: 12.5px;">数据结构与算法</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a> <a href="/tags/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/" style="font-size: 10px;">查找算法</a> <a href="/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A1%A8/" style="font-size: 10px;">线性表</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+        </div>
+    </div>
+    <a href="javascript:;" class="sidebar-menu-box-close">&times;</a>
+</div>
+<div class="mobile-header-menu-nav" id="mobile-header-menu-nav">
+    <div class="mobile-header-menu-container">
+        <span class="title">Menus</span>
+        <ul class="mobile-header-menu-navbar">
+            
+            <li>
+                <a  href="/">
+                    <i class="fa fa-home"></i><span>Home</span>
+                </a>
+            </li>
+            
+            <li>
+                <a  href="/archives">
+                    <i class="fa fa-archive"></i><span>Archives</span>
+                </a>
+            </li>
+            
+            <li>
+                <a  href="/about">
+                    <i class="fa fa-user"></i><span>About</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    <div class="mobile-header-tag-container">
+        <span class="title">Tags</span>
+        <div id="mobile-header-container-tags">
+            <a href="/tags/Docker/" style="font-size: 12.5px;">Docker</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Java%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">Java基础</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 12.5px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 20px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 10px;">SpringBoot</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 17.5px;">java</a> <a href="/tags/jvm/" style="font-size: 15px;">jvm</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">排序算法</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" style="font-size: 12.5px;">数据结构与算法</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a> <a href="/tags/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/" style="font-size: 10px;">查找算法</a> <a href="/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A1%A8/" style="font-size: 10px;">线性表</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+        </div>
+    </div>
+</div>
+<div class="search-wrap">
+    <span class="search-close">&times;</span>
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+            <i class="icon icon-lg icon-chevron-left"></i>
+        </a>
+        <input class="search-field" placeholder="Search..." id="keywords">
+        <a id="search-submit" href="javascript:;">
+            <i class="fa fa-search"></i>
+        </a>
+    <div class="search-container" id="search-container">
+        <ul class="search-result" id="search-result">
+        </ul>
+    </div>
+</div>
+
+<div id="search-tpl">
+    <li class="search-result-item">
+        <a href="{url}" class="search-item-li">
+            <span class="search-item-li-title" title="{title}">{title}</span>
+        </a>
+    </li>
+</div>
+
+<script src="/js/search.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+  <script src="//cdn.bootcss.com/particles.js/2.0.0/particles.min.js"></script>
+  <div id="particles"></div>
+  
+<script src="/js/particles.js"></script>
+
+
+
+
+
+
+
+
+  
+<link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+
+  <script src="//cdn.bootcss.com/scrollReveal.js/3.0.5/scrollreveal.js"></script>
+  
+<script src="/js/animate.js"></script>
+
+
+
+  
+<script src="/js/pop-img.js"></script>
+
+  <script>
+     $(".article-entry p img").popImg();
+  </script>
+
+  </div>
+</body>
+</html>

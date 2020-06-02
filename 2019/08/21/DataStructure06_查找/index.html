@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>查找 | gssplus&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+    <meta name="keywords" content="gss's Blog" />
+  
+  <meta name="description" content="ASL、有序表、线性索引查找，二叉排序树、平衡二叉树、多路查找树、折半查找(二分查找)及其二叉判定树、散列表(哈希表)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="查找">
+<meta property="og:url" content="https://guoshusong.github.io/2019/08/21/DataStructure06_%E6%9F%A5%E6%89%BE/index.html">
+<meta property="og:site_name" content="gssplus&#39;s Blog">
+<meta property="og:description" content="ASL、有序表、线性索引查找，二叉排序树、平衡二叉树、多路查找树、折半查找(二分查找)及其二叉判定树、散列表(哈希表)">
+<meta property="og:image" content="https://i.loli.net/2019/12/26/LA2COcY3uwN6QX8.png">
+<meta property="og:image" content="https://i.loli.net/2019/08/28/q68p45b17hHjdAK.png">
+<meta property="og:image" content="https://i.loli.net/2019/08/29/VuGrAZRXQsgUO8o.png">
+<meta property="og:image" content="https://i.loli.net/2019/08/29/L6hYbTKAJPwkesm.png">
+<meta property="og:image" content="https://i.loli.net/2019/08/29/HLPjfoSd8mAE3eh.png">
+<meta property="og:image" content="https://i.loli.net/2019/09/01/KNjkQLHhFmnp4GC.png">
+<meta property="og:image" content="https://i.loli.net/2019/09/02/iylu7EnXLkxKfqc.png">
+<meta property="og:image" content="https://i.loli.net/2019/09/02/df6SgV2lZc4xWFi.png">
+<meta property="og:image" content="https://i.loli.net/2019/09/02/GNhZYnQ9e7rpJ84.png">
+<meta property="og:image" content="https://i.loli.net/2019/09/02/zNWGZlHVwPY5TpK.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2018120113561778.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0JsZXZNZU0=,size_16,color_FFFFFF,t_70">
+<meta property="article:published_time" content="2019-08-21T01:21:05.000Z">
+<meta property="article:modified_time" content="2020-06-02T07:25:11.714Z">
+<meta property="article:author" content="GuoShuSong">
+<meta property="article:tag" content="查找算法">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2019/12/26/LA2COcY3uwN6QX8.png">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+  
+
+  
+  
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+  <div id="container">
+      <header id="header">
+    <div id="banner"></div>
+    <div id="header-outer">
+        <div id="header-menu" class="header-menu-pos animated">
+            <div class="header-menu-container">
+                <a href="/" class="left">
+                    <span class="site-title">Hello,Here is gssplus!</span>
+                </a>
+                <nav id="header-menu-nav" class="right">
+                    
+                    <a  href="/">
+                        <i class="fa fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    
+                    <a  href="/archives">
+                        <i class="fa fa-archive"></i>
+                        <span>Archives</span>
+                    </a>
+                    
+                    <a  href="/about">
+                        <i class="fa fa-user"></i>
+                        <span>About</span>
+                    </a>
+                    
+                </nav>
+                <a class="mobile-header-menu-button">
+                    <i class="fa fa-bars"></i>
+                </a>
+            </div>
+        </div>
+        <div id="header-row">
+            <div id="logo">
+                <a href="/">
+                    <img src="/images/logo.png" alt="logo">
+                </a>
+            </div>
+            <div class="header-info">
+                <div id="header-title">
+                    
+                    <h2>
+                        Hello,Here is gssplus!
+                    </h2>
+                    
+                </div>
+                <div id="header-description">
+                    
+                    <h3>
+                        我见过春日夏风，秋月冬雪，也曾踏遍南水北山，东麓西岭，可这四季春秋，苍山央水，都不及你瞅我展眉一笑
+                    </h3>
+                    
+                </div>
+            </div>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a title="MinHow" target="_blank" href="//guoshusong.github.io/">
+                            <i class="fa fa-home fa-2x"></i></a>
+                    
+                        <a title="Github" target="_blank" href="//github.com/guoshusong">
+                            <i class="fa fa-github fa-2x"></i></a>
+                    
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>
+      <div class="outer">
+        <section id="main" class="body-wrap"><article id="post-DataStructure06_查找" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="post-title" itemprop="name">
+      查找
+    </h1>
+    <div class="post-title-bar">
+      <ul>
+          
+              <li>
+                  <i class="fa fa-book"></i>
+                  
+                      <a href="/categories/数据结构与算法/">数据结构与算法</a>
+                  
+              </li>
+          
+        <li>
+          <i class="fa fa-calendar"></i>  2019-08-21
+        </li>
+        <li>
+          <i class="fa fa-eye"></i>
+          <span id="busuanzi_value_page_pv"></span>
+        </li>
+      </ul>
+    </div>
+  
+
+          
+      </header>
+    
+    <div class="article-entry post-content" itemprop="articleBody">
+      
+            
+            <h2 id="ASL、有序表、线性索引查找，二叉排序树、平衡二叉树、多路查找树、折半查找-二分查找-及其二叉判定树、散列表-哈希表"><a href="#ASL、有序表、线性索引查找，二叉排序树、平衡二叉树、多路查找树、折半查找-二分查找-及其二叉判定树、散列表-哈希表" class="headerlink" title="ASL、有序表、线性索引查找，二叉排序树、平衡二叉树、多路查找树、折半查找(二分查找)及其二叉判定树、散列表(哈希表)"></a>ASL、有序表、线性索引查找，二叉排序树、平衡二叉树、多路查找树、折半查找(二分查找)及其二叉判定树、散列表(哈希表)</h2><a id="more"></a>
+
+<h3 id="ASL"><a href="#ASL" class="headerlink" title="ASL"></a>ASL</h3><p>ASL（Average Search Length），即平均查找长度，在查找运算中，由于所费时间在关键字的比较上，所以把平均需要和待查找值比较的关键字次数成为平均查找长度。</p>
+<p>一个算法的ASL越大，说明时间性能差，反之，时间性能好，这也是显而易见的。</p>
+<p><img src="https://i.loli.net/2019/12/26/LA2COcY3uwN6QX8.png" alt="捕获.PNG"></p>
+<p>其中n为查找表中元素个数，Pi为查找第i个元素的概率，通常假设每个元素查找概率相同，Pi=1/n，Ci是找到第i个元素的比较次数。</p>
+<h3 id="有序表查找"><a href="#有序表查找" class="headerlink" title="有序表查找"></a>有序表查找</h3><h4 id="折半查找"><a href="#折半查找" class="headerlink" title="折半查找"></a>折半查找</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Binary_Search</span><span class="params">(<span class="keyword">int</span> *a,<span class="keyword">int</span> n,<span class="keyword">int</span> key)</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> low,high,mid;</span><br><span class="line">    low = <span class="number">1</span>;</span><br><span class="line">    high = n;</span><br><span class="line">    <span class="keyword">while</span>(low &lt;= high)&#123;</span><br><span class="line">        mid = (low+high)/<span class="number">2</span>;</span><br><span class="line">        <span class="keyword">if</span>(key &lt; a[mid])&#123;</span><br><span class="line">            high=mid<span class="number">-1</span>;</span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(key &gt; a[mid])&#123;</span><br><span class="line">            low = mid+<span class="number">1</span>;</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="keyword">return</span> mid;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>算法时间复杂度为O(logn)</p>
+<h4 id="插值查找"><a href="#插值查找" class="headerlink" title="插值查找"></a>插值查找</h4><p>折半查找的改进，适用于表长较长，而关键字分布又比较均匀的查找表。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mid &#x3D; (low+high)&#x2F;2;</span><br></pre></td></tr></table></figure>
+
+<p>这句代码可以改进为如下语句</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mid &#x3D; low+ (high-low)*(key-a[low])&#x2F;(a[high]-a[low]);</span><br></pre></td></tr></table></figure>
+
+<h4 id="斐波那契查找"><a href="#斐波那契查找" class="headerlink" title="斐波那契查找"></a>斐波那契查找</h4><p>斐波那契查找(Fibonacci Search)，也是一种改进的二分查找，通过运用黄金比例的概念在数列中选择查找点进行查找，提高查找效率。同样地，斐波那契查找也属于一种有序查找算法。</p>
+<p>首先介绍斐波那契数列。斐波那契数列如下所示：0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89…….（从第三个数开始，后边每一个数都是前两个数的和）。然后我们会发现，随着斐波那契数列的递增，前后两个数的比值会越来越接近0.618，利用这个特性，我们就可以将黄金比例运用到查找技术中。</p>
+<p>斐波那契查找与折半查找很相似，他是根据斐波那契序列的特点对有序表进行分割的。他要求开始表中记录的个数为某个斐波那契数小1，及n=F(k)-1。所以如果表中记录的个数不足够的话，需要手动添加一部分数据。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//F为一个斐波那契数列</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">F_Search</span><span class="params">(<span class="keyword">int</span> *a,<span class="keyword">int</span> n,<span class="keyword">int</span> key)</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> low,high,mid,i,k;</span><br><span class="line">    low = <span class="number">1</span>;</span><br><span class="line">    high = n;</span><br><span class="line">    k = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span>(n &gt; F[k]<span class="number">-1</span>)&#123;<span class="comment">//计算n位于斐波那契数列的位置</span></span><br><span class="line">        k++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span>(i = n;i&lt;F[k]<span class="number">-1</span>;i++)&#123;</span><br><span class="line">        a][i]=a[n];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span>(low &lt;= high)&#123;</span><br><span class="line">        mid = low + F[k<span class="number">-1</span>]<span class="number">-1</span>;</span><br><span class="line">        <span class="keyword">if</span>(key &lt; a[mid])&#123;</span><br><span class="line">            high = mid <span class="number">-1</span>;</span><br><span class="line">            k= k<span class="number">-1</span>;</span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(k &gt; a[mid])&#123;</span><br><span class="line">            low = mid +<span class="number">1</span>;</span><br><span class="line">            k = k<span class="number">-2</span>;</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="keyword">if</span>(mid &lt;= n)</span><br><span class="line">                <span class="keyword">return</span> mid;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                <span class="keyword">return</span> n;<span class="comment">//若mid&gt;n说明是补全数值</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>时间复杂度为O(n)</p>
+<h3 id="二叉排序树"><a href="#二叉排序树" class="headerlink" title="二叉排序树"></a>二叉排序树</h3><ul>
+<li>若它的左子树不空，则左子树上所有结点的值均小于它的根结点的值</li>
+<li>若它的右子树不空，则右子树上所有结点的值均大于它的根结点的值</li>
+<li>它的左右子树也分别为二叉排序树</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">BiTNode</span> &#123;</span></span><br><span class="line">	<span class="keyword">int</span> data;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">BiTNode</span>* <span class="title">lchild</span>, * <span class="title">rchild</span>;</span></span><br><span class="line">&#125;BiTNode,*BiTree;</span><br></pre></td></tr></table></figure>
+
+<h4 id="查找操作"><a href="#查找操作" class="headerlink" title="查找操作"></a>查找操作</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">递归查找二叉排序树T中是否存在key</span></span><br><span class="line"><span class="comment">指针f指向T的双亲，其初始调用值为Null</span></span><br><span class="line"><span class="comment">若查找成功，则指针p指向该数据元素结点，并返回1</span></span><br><span class="line"><span class="comment">否则指针p指向查找路径上访问的最后一个结点并返回0</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">SearchBST</span><span class="params">(BiTree T, <span class="keyword">int</span> key, BiTree f, BiTree* p)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (!T)<span class="comment">//查找不成功</span></span><br><span class="line">	&#123;</span><br><span class="line">		*p = f;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span>(key == T-&gt;data)<span class="comment">//查找成功</span></span><br><span class="line">	&#123;</span><br><span class="line">		*p = T;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> (key &lt; T-&gt;data)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> SearchBST(T-&gt;lchild, key, T, p);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> SearchBST(T-&gt;rchild, key, T, p);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="插入操作"><a href="#插入操作" class="headerlink" title="插入操作"></a>插入操作</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//插入操作</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">InsertBST</span><span class="params">(BiTree* T, <span class="keyword">int</span> key)</span> </span>&#123;</span><br><span class="line">	BiTree p, s;</span><br><span class="line">	<span class="keyword">if</span> (!SearchBST(*T,key,<span class="literal">NULL</span>,&amp;p))<span class="comment">//查找不成功</span></span><br><span class="line">	&#123;</span><br><span class="line">		s = (BiTree)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(BiTNode));</span><br><span class="line">		s-&gt;data = key;</span><br><span class="line">		s-&gt;lchild = s-&gt;rchild = <span class="literal">NULL</span>;</span><br><span class="line">		<span class="keyword">if</span> (!p)</span><br><span class="line">			* T = s;<span class="comment">//插入s为新的根结点。</span></span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (key &lt; p-&gt;data)</span><br><span class="line">			p-&gt;lchild = s;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">			p-&gt;rchild = s;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">struct TNode &#123;</span><br><span class="line">    int Data;</span><br><span class="line">    struct TNode *Left, *Right;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">struct TNode *Insert(struct TNode *BST, int X)  &#x2F;&#x2F;搜索二叉树的插入</span><br><span class="line">&#123; </span><br><span class="line">    if(!BST) &#123;</span><br><span class="line">        BST &#x3D; (struct TNode *)malloc(sizeof(struct TNode));</span><br><span class="line">        BST-&gt;Data &#x3D; X;</span><br><span class="line">        BST-&gt;Left &#x3D; BST-&gt;Right &#x3D; NULL;</span><br><span class="line">    &#125;</span><br><span class="line">    else &#123;</span><br><span class="line">        if(X &gt; BST-&gt;Data) &#123;</span><br><span class="line">            BST-&gt;Left &#x3D; Insert(BST-&gt;Left, X);</span><br><span class="line">        &#125;</span><br><span class="line">        else if(X &lt; BST-&gt;Data) &#123;</span><br><span class="line">            BST-&gt;Right &#x3D; Insert(BST-&gt;Right, X);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return BST;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="二叉树删除操作"><a href="#二叉树删除操作" class="headerlink" title="二叉树删除操作"></a>二叉树删除操作</h4><ul>
+<li>叶子结点</li>
+<li>仅有左子树和右子树的结点</li>
+<li>左右子树都有的结点</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//若二叉排序树T中存在关键字等于key的数据元素时，则删除该数据结点</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">DeleteBST</span><span class="params">(BiTree* T, <span class="keyword">int</span> key)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (!T)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> (key == (*T)-&gt;data)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">return</span> Delete(T);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (key &lt; (*T)-&gt;data)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">return</span> DeleteBST(&amp;(*T)-&gt;lchild, key);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">return</span> DeleteBST(&amp;(*T)-&gt;rchild, key);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Delete</span><span class="params">(BiTree* p)</span> </span>&#123;</span><br><span class="line">	BiTree q, s;</span><br><span class="line">	<span class="keyword">if</span> ((*p)-&gt;rchild ==<span class="literal">NULL</span>)<span class="comment">//若右子树为空，只需要重接左子树</span></span><br><span class="line">	&#123;</span><br><span class="line">		q = *p;</span><br><span class="line">		*p = (*p)-&gt;lchild;</span><br><span class="line">		<span class="built_in">free</span>(q);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> ((*q)-&gt;rchild == <span class="literal">NULL</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		q = *p;</span><br><span class="line">		*p = (*p)-&gt;rchild;</span><br><span class="line">		<span class="built_in">free</span>(q);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> &#123;</span><br><span class="line">		q = *p;</span><br><span class="line">		s = (*p)-&gt;lchild;</span><br><span class="line">		<span class="keyword">while</span> (s-&gt;rchild)<span class="comment">//转左，然后向右走到尽头(找到待删除结点的前驱)</span></span><br><span class="line">		&#123;</span><br><span class="line">			q = s;</span><br><span class="line">			s = s-&gt;rchild;</span><br><span class="line">		&#125;</span><br><span class="line">		(*p)-&gt;data = s-&gt;data;<span class="comment">//s指向被删除结点的前驱</span></span><br><span class="line">		<span class="keyword">if</span> (q!=*p)</span><br><span class="line">		&#123;</span><br><span class="line">			q-&gt;rchild = s-&gt;lchild;<span class="comment">//重接q的右子树</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">			q-&gt;lchild = s-&gt;rchild;<span class="comment">//重接q的左子树</span></span><br><span class="line">		<span class="built_in">free</span>(s);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://leetcode-cn.com/problems/validate-binary-search-tree/" target="_blank" rel="noopener">98. 验证二叉搜索树</a></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Definition for a binary tree node.</span></span><br><span class="line"><span class="comment"> * struct TreeNode &#123;</span></span><br><span class="line"><span class="comment"> *     int val;</span></span><br><span class="line"><span class="comment"> *     struct TreeNode *left;</span></span><br><span class="line"><span class="comment"> *     struct TreeNode *right;</span></span><br><span class="line"><span class="comment"> * &#125;;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">helper</span><span class="params">(struct TreeNode* root,<span class="keyword">int</span> lower,<span class="keyword">int</span> upper)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(root ==<span class="literal">NULL</span>) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> val =root-&gt;val;</span><br><span class="line">     <span class="keyword">if</span> (lower != <span class="number">-999</span>&amp;&amp; val &lt;= lower) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">if</span> (upper != <span class="number">-999</span>&amp;&amp; val &gt;= upper) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (! helper(root-&gt;right, val, upper)) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">if</span> (! helper(root-&gt;left, lower, val)) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">isValidBST</span><span class="params">(struct TreeNode* root)</span></span>&#123;</span><br><span class="line"><span class="keyword">return</span> helper(root, <span class="number">-999</span>, <span class="number">-999</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://leetcode-cn.com/problems/recover-binary-search-tree/" target="_blank" rel="noopener">恢复二叉搜索树</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">大致思路：</span><br><span class="line">中序遍历正常的二叉搜索树，得到的应该是一个递增数列。</span><br><span class="line">中序遍历给出的二叉树，从前到后寻找第一个比两边都大的数</span><br><span class="line">从后往前找第一个比两边都小的数</span><br><span class="line">!不能从前到后找第一比两边小的数</span><br><span class="line"></span><br><span class="line">然后再把两个数的位置互换，最后中序遍历二叉树对二叉树进行赋值</span><br></pre></td></tr></table></figure>
+
+<h3 id="平衡二叉树"><a href="#平衡二叉树" class="headerlink" title="平衡二叉树"></a>平衡二叉树</h3><p>平衡二叉树是一种二叉排序树，其中每一个结点的左子树和右子树的高度相差至多等于1.</p>
+<p>将二叉树上结点的左子树深度减去右子树深度的值称为平衡因子BF。</p>
+<p>距离插入结点最近的，且平衡因子的绝对值大于1的结点为根的子树，我们称为最小不平衡子树。</p>
+<h4 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h4><p>每当插入一个新节点时，先检查是否因插入而破坏了树的平衡性，若是，则找出最小不平衡子树。保持二叉排序树的前提下，调整最小不平衡子树中各结点的链接关系(旋转)，进行旋转，使之成为新的平衡二叉树。</p>
+<h4 id="实现算法"><a href="#实现算法" class="headerlink" title="实现算法"></a>实现算法</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">BiTNode</span> &#123;</span></span><br><span class="line">	<span class="keyword">int</span> data;</span><br><span class="line">	<span class="keyword">int</span> bf; <span class="comment">//结点的平衡因子</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">BiTNode</span>* <span class="title">lchild</span>, * <span class="title">rchild</span>;</span></span><br><span class="line">&#125;BiTNode,*BiTree;</span><br></pre></td></tr></table></figure>
+
+<p>右旋操作的代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*右旋代码</span></span><br><span class="line"><span class="comment">对以p为根的二叉排序树作右旋处理</span></span><br><span class="line"><span class="comment">处理之后p指向新的树根结点，即旋转处理之前的左子树的根结点</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">R_Rotate</span><span class="params">(BiTree* p)</span> </span>&#123;</span><br><span class="line">	BiTree L;</span><br><span class="line">	L = (*p)-&gt;lchild;</span><br><span class="line">	(*p)-&gt;lchild = L-&gt;rchild;<span class="comment">//L的右子树挂接为p的左子树</span></span><br><span class="line">	L-&gt;rchild = (*p);</span><br><span class="line">	*p = L;<span class="comment">//p指向新的根结点</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2019/08/28/q68p45b17hHjdAK.png" alt="右旋操作.PNG"></p>
+<p>左旋操作</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">l_Rotate</span><span class="params">(BiTree* p)</span> </span>&#123;</span><br><span class="line">	BiTree r;</span><br><span class="line">	r = (*p)-&gt;rchild;</span><br><span class="line">	(*p)-&gt;rchild = r-&gt;lchild;</span><br><span class="line">	r-&gt;lchild = (*p);</span><br><span class="line">	*p = r;<span class="comment">//p指向新的根结点</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>左平衡旋转处理</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//左平衡旋转处理，结束时，指针T指向新的根结点</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">LeftBalance</span><span class="params">(BiTree* t)</span> </span>&#123;</span><br><span class="line">	BiTree l, lr;</span><br><span class="line">	l = (*t)-&gt;lchild;<span class="comment">//l指向t的左子树结点</span></span><br><span class="line">	<span class="keyword">switch</span> (l.bf)</span><br><span class="line">	&#123;</span><br><span class="line">	<span class="keyword">case</span> LH:<span class="comment">//新结点插入在T的左孩子的左子树上，要作右旋处理</span></span><br><span class="line">		(*t)-&gt;bf = l-&gt;bf = EH;</span><br><span class="line">		R_Rotate(t);</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	<span class="keyword">case</span> RH:<span class="comment">//新结点在T左孩子的右树上,要做双旋处理</span></span><br><span class="line">		lr = l-&gt;rchild;<span class="comment">//lr指向T的左孩子的右子树根</span></span><br><span class="line">		<span class="keyword">switch</span> (lr-&gt;bf)<span class="comment">//修改T及其左孩子的平衡因子</span></span><br><span class="line">		&#123;</span><br><span class="line">		<span class="keyword">case</span> LH: (*t)-&gt;bf = RH;</span><br><span class="line">			l-&gt;bf = EH;</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		<span class="keyword">case</span> EH: (*t)-&gt;bf = l-&gt;bf = EH;</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		<span class="keyword">case</span> RH: (*t)-&gt;bf = l-&gt;bf = EH;</span><br><span class="line">			l-&gt;bf = LH;</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		lr-&gt;bf = EH;</span><br><span class="line">		l_Rotate(&amp;(*t)-&gt;lchild);<span class="comment">//对t的左子树作左旋平衡处理</span></span><br><span class="line">		R_Rotate(t);<span class="comment">//对t作右旋平衡处理</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2019/08/29/VuGrAZRXQsgUO8o.png" alt="左平衡旋转过程.PNG"></p>
+<p><img src="https://i.loli.net/2019/08/29/L6hYbTKAJPwkesm.png" alt="左平衡旋转.PNG"></p>
+<p>主函数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">若在平衡的二叉排序树T中不存在和e有相同关键字的结点，则插入一个</span></span><br><span class="line"><span class="comment">数据元素为e的新结点并返回1，否则返回0.若因插入而使二叉排序树</span></span><br><span class="line"><span class="comment">失去平衡，则做平衡旋转处理，taller反映T长高与否</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">InsertAVL</span><span class="params">(BiTree* t, <span class="keyword">int</span> e, <span class="keyword">int</span>* taller)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (!*T)</span><br><span class="line">	&#123;<span class="comment">//插入新结点，树长高，则taller为1</span></span><br><span class="line">		*t = (BiTree)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(BiTNode));</span><br><span class="line">		(*t)-&gt;data = e;</span><br><span class="line">		(*t)-&gt;lchild = (*t)-&gt;rchild = <span class="literal">NULL</span>;</span><br><span class="line">		(*t)-&gt;bf = EH;</span><br><span class="line">		*taller = <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> (e == (*t)-&gt;data)</span><br><span class="line">		&#123;<span class="comment">//树中已存在和e有相同关键字的结点则不再插入</span></span><br><span class="line">			*taller = <span class="number">0</span>;</span><br><span class="line">			<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (e &lt; (*t)-&gt;data)</span><br><span class="line">		&#123;<span class="comment">//应继续在T的左子树中进行搜索</span></span><br><span class="line">			<span class="keyword">if</span> (!InsertAVL(&amp;(*t)-&gt;lchild,e,taller))</span><br><span class="line">			&#123;<span class="comment">//未插入</span></span><br><span class="line">				<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span> (taller)</span><br><span class="line">			&#123;<span class="comment">//已插入到T的左子树中且左子树长高</span></span><br><span class="line">				<span class="keyword">switch</span> ((*t)-&gt;bf)</span><br><span class="line">				&#123;</span><br><span class="line">				<span class="keyword">case</span> LH:<span class="comment">//原来左子树比右子树高，需要做平衡处理</span></span><br><span class="line">						LeftBalance(t);</span><br><span class="line">						*taller = <span class="number">0</span>;</span><br><span class="line">						<span class="keyword">break</span>;</span><br><span class="line">				<span class="keyword">case</span> EH: <span class="comment">//原本左右子树等高，现因左子树增高而树增高</span></span><br><span class="line">					(*t)-&gt;bf = LH;</span><br><span class="line">					*taller = <span class="number">0</span>;</span><br><span class="line">					<span class="keyword">break</span>;</span><br><span class="line">				<span class="keyword">case</span> RH:<span class="comment">//原本右子树比左子树高,现左右子树等高</span></span><br><span class="line">					(*t)-&gt;bf = EH;</span><br><span class="line">					*taller = <span class="number">0</span>;</span><br><span class="line">					<span class="keyword">break</span>;</span><br><span class="line">				&#125;</span><br><span class="line"></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">		&#123;<span class="comment">//应继续在T的右子树中搜寻</span></span><br><span class="line"></span><br><span class="line">			<span class="keyword">if</span> (!InsertAVL(&amp;(*t)-&gt;rchild, e, taller))</span><br><span class="line">			&#123;<span class="comment">//未插入</span></span><br><span class="line">				<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span> (taller)</span><br><span class="line">			&#123;<span class="comment">//已插入到T的右子树中且右子树长高</span></span><br><span class="line">				<span class="keyword">switch</span> ((*t)-&gt;bf)</span><br><span class="line">				&#123;</span><br><span class="line">				<span class="keyword">case</span> LH:<span class="comment">//原来左子树比右子树高，现左右子树等高</span></span><br><span class="line">					(*t)-&gt;bf = EH;</span><br><span class="line">					*taller = <span class="number">0</span>;</span><br><span class="line">					<span class="keyword">break</span>;</span><br><span class="line">				<span class="keyword">case</span> EH: <span class="comment">//原本左右子树等高，现因右子树增高而树增高</span></span><br><span class="line">					(*t)-&gt;bf = RH;</span><br><span class="line">					*taller = <span class="number">0</span>;</span><br><span class="line">					<span class="keyword">break</span>;</span><br><span class="line">				<span class="keyword">case</span> RH:<span class="comment">//原本右子树比左子树高,</span></span><br><span class="line">					RightBalance(t);</span><br><span class="line">					*taller = <span class="number">0</span>;</span><br><span class="line">					<span class="keyword">break</span>;</span><br><span class="line">				&#125;</span><br><span class="line"></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2019/08/29/HLPjfoSd8mAE3eh.png" alt="主函数.PNG"></p>
+<p>平衡二叉树的查找、插入、删除时间复杂度为O(log n)，</p>
+<h3 id="多路查找树-B树"><a href="#多路查找树-B树" class="headerlink" title="多路查找树(B树)"></a>多路查找树(B树)</h3><p>多路查找树，其每一个结点的孩子数可以多于两个，而且一个结点处可以存储多个元素。主要分为4种树：2-3树、2-3-4树、B树、B+树。</p>
+<h4 id="2-3树"><a href="#2-3树" class="headerlink" title="2-3树"></a>2-3树</h4><p>2-3树是一棵多路查找树：其中的每一个结点都具有两个孩子(我们称它为2结点)或三个孩子(3结点).</p>
+<h5 id="插入的实现"><a href="#插入的实现" class="headerlink" title="插入的实现"></a>插入的实现</h5><p>2-3树的插入来说，与二叉排序树相同。与二叉排序树不同的是，2-3树插入一个元素的过程可能会对该树的结构产生连锁反应</p>
+<p>二叉树的插入分三种情况</p>
+<ul>
+<li>1.对于空树，插入一个2结点即可。</li>
+<li>2.插入结点到一个2结点的叶子上。只需要升级为3结点即可</li>
+<li>3.要往3结点中插入一个新元素。因为3结点本身已经是2-3树的结点的最大容量。因此需要将其拆分，且将树中两元素或插入元素的三者选择其中一向上移动一层。</li>
+</ul>
+<p><img src="https://i.loli.net/2019/09/01/KNjkQLHhFmnp4GC.png" alt="2-3树.PNG"></p>
+<h5 id="删除的实现"><a href="#删除的实现" class="headerlink" title="删除的实现"></a>删除的实现</h5><p><img src="https://i.loli.net/2019/09/02/iylu7EnXLkxKfqc.png" alt="删除-1.PNG"><br><img src="https://i.loli.net/2019/09/02/df6SgV2lZc4xWFi.png" alt="删除-2.PNG"><br><img src="https://i.loli.net/2019/09/02/GNhZYnQ9e7rpJ84.png" alt="删除-3.PNG"></p>
+<h4 id="2-3-4树"><a href="#2-3-4树" class="headerlink" title="2-3-4树"></a>2-3-4树</h4><p>一个四结点包括小中大三个元素和四个孩子(或没有孩子)，一个4结点要么没有孩子，要么具有四个孩子。如果具有四个孩子的话，左子树包含小于最小元素的元素，第二棵子树包含大于最小元素，小于第二元素的元素。第三棵子树包含大于第二元素，小于最大元素的元素，小于最大元素的元素；右子树包含大于最大元素的元素。</p>
+<p><img src="https://i.loli.net/2019/09/02/zNWGZlHVwPY5TpK.png" alt="2-4树.PNG"></p>
+<h4 id="B树"><a href="#B树" class="headerlink" title="B树"></a>B树</h4><p>B树是一种平衡的多路查找树。2-3树和2-3-4树都是B树的特例，结点最大的孩子数目称为B树的阶(order)。</p>
+<p>一个m阶的B树具有如下属性：</p>
+<ul>
+<li>如果根结点不是叶结点，则其至少有两棵子树</li>
+<li>每一个非根的分支结点都有k-1个元素和k个孩子，其中[m/2]≤k≤m。每一个叶子结点n都有k-1个元素，其中[m/2]≤k≤m。</li>
+<li>所有叶子结点都位于同一层次</li>
+<li>所有分支结点包含下列信息数据(n,A0,K1,A1,K2……),其中K1为关键字，且Ki小于K(i+1)，Ai为指向子树根结点的指针，且指针Ai-1所指子树中所有结点的关键字均小于Ki，An所指的关键树中所有结点的关键字均大于Kn,n([m/2]-1≤n≤m-1)为关键字的个数(或n+1为子树的个数)。</li>
+</ul>
+<p>在含有n个关键字的B树上查找时，从根结点到关键字结点的路径上涉及的结点数不超过<br>log[m/2] ((n+1)/2+1)</p>
+<h4 id="B-树"><a href="#B-树" class="headerlink" title="B+树"></a>B+树</h4><p>在B树结构中，中序遍历一棵树时，每次经过结点遍历时，都会对结点中的元素进行一次遍历。为了解决这个问题，在原有的B树加上了新的元素组织方式，这就是B+树。</p>
+<p>B+树是应文件系统所需而出的一种B树的变形树吗，严格来说已经不是树了，在B树中，每一个元素在该树中只出现一次。在B+树中，出现在分支结点中的元素会被当作他们在该分支结点位置的中序后继者(叶子结点)中再次出现。另外，每一个叶子结点都会保存一个指向后一叶子结点的指针。</p>
+<p>一棵m阶的B+树和m阶的B树的差异在于：</p>
+<ul>
+<li>有n棵子树的结点中包含有n个关键字</li>
+<li>所有的叶子结点包含全部关键字的信息，及指向含这些关键字记录的指针，叶子结点本身依关键字的大小自小而大顺序链接</li>
+<li>所有分支结点都可以看成是索引，结点中仅含有其子树中的最大(或最小)关键字</li>
+</ul>
+<p>最大好处是如果随机查找，我们就从根结点出发，与B树的查找方式相同，只不过即使在分支结点找到了待查找的关键字，它也只是用来索引的，不能提供的实际记录的访问，还需要到达包含此关键字的终端结点。、</p>
+<p>如果我们是需要最小关键字进行从小到大的查找，我们就可以从最左侧的叶子结点出发，不经过分支结点，而是沿着指向下一叶子的指针就可以遍历所有的关键字。</p>
+<h3 id="折半查找-1"><a href="#折半查找-1" class="headerlink" title="折半查找"></a>折半查找</h3><p>折半查找又叫二分查找</p>
+<h4 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h4><ul>
+<li><p>只能对有序的顺序表进行查找。</p>
+</li>
+<li><p>是一种静态查找。</p>
+</li>
+<li><p>查找的平均时间复杂度为o（log2n）。</p>
+</li>
+<li><p>成功平均查找长度ASL约log2（n+1）-1。</p>
+</li>
+</ul>
+<p>这里要注意折半查找和二叉排序树查找的区别。折半查找和二叉排序树查找的平均查找长度均取决于树高h（或折半查找判定树的高h），折半查找的判定树的高只与序列长度n相关（必为平衡二叉树AVL树），而二叉排序树查找构建二叉排序树时树的高度还取决于序列顺序。所以折半判定树树高始终为log2（n+1）向上取整，而在最优情况下二叉排序树树高最低为log2（n+1）向上取整，最坏情况下（序列有序）树高h为n；因此折半查找最多比较次数为log2（n+1）向上取整，而二叉排序树最优情况下与此相等，最坏情况下为n次。</p>
+<h4 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h4><p>在计算mid值时，使用的时mid=（low+high）/2  。这里由于mid为int类型，自动默认为向下取整，因此对于一个长度为n序列进行划分之后的序列为 （0，1，2，……，mid-1）mid（mid+1，mid+2，……n-1），此时出现两种情况：</p>
+<p>左子序列长==右子序列长      （n=2k+1    k=0，1，2，……）</p>
+<p>左子序列长==右子序列长-1   （n=2k        k=1，2，3，……）</p>
+<p>因此可以得知，折半查找的二叉判定树对于所有结点，左子树结点个数&lt;=右子树结点个数。即：</p>
+<p>若某序列总长n为奇数，左右子树结点个数相等；</p>
+<p>若某序列总长n为偶数，左字数结点个数=右子树结点个数-1.</p>
+<h4 id="构建折半查找判定树"><a href="#构建折半查找判定树" class="headerlink" title="构建折半查找判定树"></a>构建折半查找判定树</h4><p>类似于二叉排序树</p>
+<p>2，5，7，10，14，15，18，23，35，41，52的折半查找判定树</p>
+<p><img src="https://img-blog.csdnimg.cn/2018120113561778.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0JsZXZNZU0=,size_16,color_FFFFFF,t_70" alt="折半查找树"></p>
+<h3 id="散列表查找-哈希表-概述"><a href="#散列表查找-哈希表-概述" class="headerlink" title="散列表查找(哈希表)概述"></a>散列表查找(哈希表)概述</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">存储位置&#x3D;f(关键字);</span><br></pre></td></tr></table></figure>
+
+<p>散列技术是在记录的存储位置和它的关键字之间建立一个确定的对应关系f，使得每个关键字key对应的一个存储位置f(key)。</p>
+<p>f为散列函数，又称哈希函数。采用散列技术将记录存储在一块连续的存储空间中，这块连续存储空间称为散列表或哈希表。</p>
+<h4 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h4><ul>
+<li>在存储时，通过散列函数计算记录的散列地址，并按此散列地址存储该记录。</li>
+<li>当查找该记录时，需要通过同样的散列函数计算记录的散列地址，按此散列地址访问该记录。</li>
+</ul>
+<p>散列技术既是一种存储方法，也是一种查找方法。散列技术最适合的求解问题是查找与给定值相等的记录。</p>
+<p>如果遇到两个关键字key1≠key2，但却有f(key1)=f(key2)，这种现象我们称之为冲突，并把key1和key2称为这个散列函数的同义词。</p>
+<h3 id="散列函数的构造方法"><a href="#散列函数的构造方法" class="headerlink" title="散列函数的构造方法"></a>散列函数的构造方法</h3><ul>
+<li>1.计算简单</li>
+<li>2.散列地址均匀分布</li>
+</ul>
+<h4 id="直接定址法"><a href="#直接定址法" class="headerlink" title="直接定址法"></a>直接定址法</h4><p>取关键字的某个线性函数值为散列地址</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">f(key)&#x3D;a*key+b;</span><br></pre></td></tr></table></figure>
+
+<p>简单、均匀、不会产生冲突。但需要事先知道关键字的分布情况，适合查找表比较小且连续的情况。</p>
+<h4 id="数字分析法"><a href="#数字分析法" class="headerlink" title="数字分析法"></a>数字分析法</h4><p>抽取使用关键字中的一部分来计算散列存储位置的计算方法。通常适合处理关键字位数比较大的情况，适合事先知道关键字的若干位分布较均匀。</p>
+<h4 id="平方取中法"><a href="#平方取中法" class="headerlink" title="平方取中法"></a>平方取中法</h4><p>适合不知道关键字的分布情况，而位数又不是很大的情况</p>
+<h4 id="折叠法"><a href="#折叠法" class="headerlink" title="折叠法"></a>折叠法</h4><p>将关键字从左到右分割成位数相等的及部分(注意最后一部分位数不够时可以短些)，然后将这及部分叠加求和，并按散列表表长，取后几位作为散列地址。</p>
+<h4 id="除留余数法"><a href="#除留余数法" class="headerlink" title="除留余数法"></a>除留余数法</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">f(key)&#x3D;key mod p (p≤m)</span><br></pre></td></tr></table></figure>
+
+<p>mod是取模(求余数)的意思。这种方法不仅可以对关键字直接取模，也可以在折叠，平方过程中取模。难点在于选择合适的p。</p>
+<p>若散列表表长为m，通常p为小于或等于表长(最好接近m)的最小质数或不包含小于20质因子的合数。</p>
+<h4 id="随机数法"><a href="#随机数法" class="headerlink" title="随机数法"></a>随机数法</h4><p>选择一个随机数，取关键字的随机函数值作为它的散列地址。</p>
+<ul>
+<li>计算散列地址需要的时间</li>
+<li>关键字的长度</li>
+<li>散列表的大小</li>
+<li>关键字的分布情况</li>
+<li>记录查找的频率。</li>
+</ul>
+<h3 id="处理散列冲突的方法"><a href="#处理散列冲突的方法" class="headerlink" title="处理散列冲突的方法"></a>处理散列冲突的方法</h3><h4 id="开放定址法"><a href="#开放定址法" class="headerlink" title="开放定址法"></a>开放定址法</h4><p>一旦发生了冲突，就去寻找下一个空的散列地址，只要散列表足够大，空的散列地址总能找到，并将记录存入。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">f(key)&#x3D;(f(key)+d) MOD m  (d&#x3D;1,2,3……m-1)</span><br></pre></td></tr></table></figure>
+
+<p>解决冲突的开放定址法称为线性探测法。</p>
+<p>不是同义词却要争夺一个地址的情况，我们称这种现象为堆积。</p>
+<p>增加平方运算的目的是为了不让关键字都聚集在某一块区域，我们称这种方式为二次探测法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">f(key)&#x3D;(f(key)+d) MOD m (d&#x3D;1²，2²……q²，-q²,q≤m&#x2F;2)</span><br></pre></td></tr></table></figure>
+
+<p>在冲突时，对于位移量d采用随机函数计算得到，我们称之为随机探测法，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">f(key)&#x3D;(f(key)+d) MOD m (d是以一个随机数列)</span><br></pre></td></tr></table></figure>
+
+<h4 id="再散列函数法"><a href="#再散列函数法" class="headerlink" title="再散列函数法"></a>再散列函数法</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">f(key)&#x3D;RH(key)</span><br></pre></td></tr></table></figure>
+
+<p>每当散列地址发生冲突时，就换一个散列函数计算。这种方法能够使得关键字不产生聚集，当然，相应地也增加了计算时间.</p>
+<h4 id="链地址法"><a href="#链地址法" class="headerlink" title="链地址法"></a>链地址法</h4><p>将所有关键字为同义词的记录存储再一个单链表中，我们称这种表为同义词子表，在散列表中只存储所有同义词子表的头指针。</p>
+<p>链地址法对可能会在成很多冲突的散列函数来书，提供了绝不会出现找不到地址的保证。当然这也带来了查找时需要遍历单链表的性能损耗。</p>
+<h4 id="公共溢出法"><a href="#公共溢出法" class="headerlink" title="公共溢出法"></a>公共溢出法</h4><p>在查找时，对给定值通过散列函数计算出散列地址后，先与基本表的相应位置进行对比，如果相等，则查找成功；如果不相等，则到溢出表进行顺序查找。有冲突数据很少的情况下，公共溢出区的结构对查找性能来说还是非常高的。</p>
+<h3 id="散列表的实现"><a href="#散列表的实现" class="headerlink" title="散列表的实现"></a>散列表的实现</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//HsahTable是散列表结构，结构中elem为一个动态数组</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SUCCESS 1</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> fault 0</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> HashSize 12</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> NULIIKEY -32768</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">	<span class="keyword">int</span>* elem;<span class="comment">//数据元素存储基址，动态分配数组</span></span><br><span class="line">	<span class="keyword">int</span> count;<span class="comment">//数据元素个数</span></span><br><span class="line">&#125;HashTable;</span><br><span class="line"><span class="keyword">int</span> m = <span class="number">0</span>;<span class="comment">//散列表表长，全局变量</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//初始化散列表</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">InitHashTable</span><span class="params">(HashTable* h)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">int</span> i;</span><br><span class="line">	m = HashSize;</span><br><span class="line">	h-&gt;count = m;</span><br><span class="line">	h-&gt;elem = (<span class="keyword">int</span>*)<span class="built_in">malloc</span>(m * <span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br><span class="line">	<span class="keyword">for</span> ( i = <span class="number">0</span>; i &lt; m; i++)</span><br><span class="line">		h-&gt;elem[i] = NULIIKEY;</span><br><span class="line">	<span class="keyword">return</span> SUCCESS;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//散列函数</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Hash</span><span class="params">(<span class="keyword">int</span> key)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> key % m;<span class="comment">//除留余数法</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//插入关键字</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">InsertHash</span><span class="params">(HashTable* h, <span class="keyword">int</span> key)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">int</span> addr = Hash(key);<span class="comment">//散列地址</span></span><br><span class="line">	<span class="keyword">while</span> (h-&gt;elem[addr]!= NULIIKEY)<span class="comment">//如果不是空，则冲突</span></span><br><span class="line">		addr = (addr + <span class="number">1</span>) % m;<span class="comment">//开放地址法的线性探测</span></span><br><span class="line">	h-&gt;elem[addr] = key;<span class="comment">//有空位插入关键字</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//查找</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">SearchHash</span><span class="params">(HashTable* h,<span class="keyword">int</span> key, <span class="keyword">int</span>* addr)</span> </span>&#123;</span><br><span class="line">	*addr = Hash(key);</span><br><span class="line">	<span class="keyword">while</span> (h-&gt;elem[*addr]!=key)</span><br><span class="line">	&#123;</span><br><span class="line">		*addr = (*addr + <span class="number">1</span>) % m;</span><br><span class="line">		<span class="keyword">if</span> (h-&gt;elem[*addr] ==NULIIKEY || *addr == Hash(key))</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">return</span> UNSUCCESS;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="散列表查找查找性能分析"><a href="#散列表查找查找性能分析" class="headerlink" title="散列表查找查找性能分析"></a>散列表查找查找性能分析</h3><p>如果没有冲突，则时间复杂度为O(1)</p>
+<p>1.散列函数是否均匀</p>
+<p>2.处理冲出的办法</p>
+<p>3.散列表的装填因子</p>
+<p>装填因子=填入表中的记录个数/散列表长度.标志着散列表的装满的程度。越大，产生冲突的可能性就越高，</p>
+
+            <div class="post-copyright">
+    <div class="content">
+        <p>最后更新： 2020年06月02日 15:25</p>
+        <p>原始链接： <a class="post-url" href="/2019/08/21/DataStructure06_%E6%9F%A5%E6%89%BE/" title="查找">https://guoshusong.github.io/2019/08/21/DataStructure06_%E6%9F%A5%E6%89%BE/</a></p>
+        <footer>
+            <a href="https://guoshusong.github.io">
+                <img src="/images/logo.png" alt="GuoShuSong">
+                GuoShuSong
+            </a>
+        </footer>
+    </div>
+</div>
+
+      
+        
+            
+
+        
+    </div>
+    <footer class="article-footer">
+        
+        
+<div class="post-share">
+    <a href="javascript:;" id="share-sub" class="post-share-fab">
+        <i class="fa fa-share-alt"></i>
+    </a>
+    <div class="post-share-list" id="share-list">
+        <ul class="share-icons">
+          <li>
+            <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://guoshusong.github.io/2019/08/21/DataStructure06_%E6%9F%A5%E6%89%BE/&title=《查找》 — gssplus's Blog&pic=https://guoshusong.github.ioimages/logo.png" data-title="微博">
+              <i class="fa fa-weibo"></i>
+            </a>
+          </li>
+          <li>
+            <a class="weixin share-sns" id="wxFab" href="javascript:;" data-title="微信">
+              <i class="fa fa-weixin"></i>
+            </a>
+          </li>
+          <li>
+            <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://guoshusong.github.io/2019/08/21/DataStructure06_%E6%9F%A5%E6%89%BE/&title=《查找》 — gssplus's Blog&source=ASL、有序表、线性索引查找，二叉排序树、平衡二叉树、多路查找树、折半查找(二分查找)及其二叉判定树、散列表(哈希表)" data-title="QQ">
+              <i class="fa fa-qq"></i>
+            </a>
+          </li>
+          <li>
+            <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://guoshusong.github.io/2019/08/21/DataStructure06_%E6%9F%A5%E6%89%BE/" data-title="Facebook">
+              <i class="fa fa-facebook"></i>
+            </a>
+          </li>
+          <li>
+            <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《查找》 — gssplus's Blog&url=https://guoshusong.github.io/2019/08/21/DataStructure06_%E6%9F%A5%E6%89%BE/&via=https://guoshusong.github.io" data-title="Twitter">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li>
+            <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://guoshusong.github.io/2019/08/21/DataStructure06_%E6%9F%A5%E6%89%BE/" data-title="Google+">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        </ul>
+     </div>
+</div>
+<div class="post-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;" id="wxShare-close">×</a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://guoshusong.github.io/2019/08/21/DataStructure06_%E6%9F%A5%E6%89%BE/" alt="微信分享二维码">
+</div>
+
+<div class="mask"></div>
+
+        
+        <ul class="article-footer-menu">
+            
+            
+  <li class="article-footer-tags">
+    <i class="fa fa-tags"></i>
+      
+    <a href="/tags/查找算法/" class="color5">查找算法</a>
+      
+  </li>
+
+        </ul>
+        
+    </footer>
+  </div>
+</article>
+
+
+    <aside class="post-toc-pos post-toc-top" id="post-toc">
+        <nav class="post-toc-wrap">
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#ASL、有序表、线性索引查找，二叉排序树、平衡二叉树、多路查找树、折半查找-二分查找-及其二叉判定树、散列表-哈希表"><span class="post-toc-text">ASL、有序表、线性索引查找，二叉排序树、平衡二叉树、多路查找树、折半查找(二分查找)及其二叉判定树、散列表(哈希表)</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#ASL"><span class="post-toc-text">ASL</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#有序表查找"><span class="post-toc-text">有序表查找</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#折半查找"><span class="post-toc-text">折半查找</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#插值查找"><span class="post-toc-text">插值查找</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#斐波那契查找"><span class="post-toc-text">斐波那契查找</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#二叉排序树"><span class="post-toc-text">二叉排序树</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#查找操作"><span class="post-toc-text">查找操作</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#插入操作"><span class="post-toc-text">插入操作</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#二叉树删除操作"><span class="post-toc-text">二叉树删除操作</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#平衡二叉树"><span class="post-toc-text">平衡二叉树</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#实现原理"><span class="post-toc-text">实现原理</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#实现算法"><span class="post-toc-text">实现算法</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#多路查找树-B树"><span class="post-toc-text">多路查找树(B树)</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#2-3树"><span class="post-toc-text">2-3树</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#插入的实现"><span class="post-toc-text">插入的实现</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#删除的实现"><span class="post-toc-text">删除的实现</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#2-3-4树"><span class="post-toc-text">2-3-4树</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#B树"><span class="post-toc-text">B树</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#B-树"><span class="post-toc-text">B+树</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#折半查找-1"><span class="post-toc-text">折半查找</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#特点"><span class="post-toc-text">特点</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#思路"><span class="post-toc-text">思路</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#构建折半查找判定树"><span class="post-toc-text">构建折半查找判定树</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#散列表查找-哈希表-概述"><span class="post-toc-text">散列表查找(哈希表)概述</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#查找"><span class="post-toc-text">查找</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#散列函数的构造方法"><span class="post-toc-text">散列函数的构造方法</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#直接定址法"><span class="post-toc-text">直接定址法</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#数字分析法"><span class="post-toc-text">数字分析法</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#平方取中法"><span class="post-toc-text">平方取中法</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#折叠法"><span class="post-toc-text">折叠法</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#除留余数法"><span class="post-toc-text">除留余数法</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#随机数法"><span class="post-toc-text">随机数法</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#处理散列冲突的方法"><span class="post-toc-text">处理散列冲突的方法</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#开放定址法"><span class="post-toc-text">开放定址法</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#再散列函数法"><span class="post-toc-text">再散列函数法</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#链地址法"><span class="post-toc-text">链地址法</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#公共溢出法"><span class="post-toc-text">公共溢出法</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#散列表的实现"><span class="post-toc-text">散列表的实现</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#散列表查找查找性能分析"><span class="post-toc-text">散列表查找查找性能分析</span></a></li></ol></li></ol>
+        </nav>
+    </aside>
+    
+
+<nav id="article-nav">
+  
+    <a href="/2019/08/30/SpringBoot_01Docker%E8%BF%9C%E7%A8%8B%E9%83%A8%E7%BD%B2/" id="article-nav-newer" class="article-nav-link-wrap">
+
+      <span class="article-nav-title">
+        <i class="fa fa-hand-o-left" aria-hidden="true"></i>
+        
+          IDEA+Docker远程部署SpringBoot项目
+        
+      </span>
+    </a>
+  
+  
+    <a href="/2019/08/15/nginx01%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/" id="article-nav-older" class="article-nav-link-wrap">
+      <span class="article-nav-title">Centos下Nginx的安装与使用</span>
+      <i class="fa fa-hand-o-right" aria-hidden="true"></i>
+    </a>
+  
+</nav>
+
+
+
+    
+</section>
+        
+      </div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+
+      <p>
+        Powered by  <a href="http://hexo.io/" target="_blank">Hexo</a>
+        Theme <a href="//github.com/wongminho/hexo-theme-miho" target="_blank">MiHo</a>
+      &copy; 2020 GuoShuSong<br>
+      </p>
+    </div>
+  </div>
+</footer>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script>
+  var mihoConfig = {
+      root: "https://guoshusong.github.io",
+      animate: true,
+      isHome: false,
+      share: true,
+      reward: 0
+  }
+</script>
+<div class="sidebar">
+    <div id="sidebar-search" title="Search">
+        <i class="fa fa-search"></i>
+    </div>
+    <div id="sidebar-category" title="Categories">
+        <i class="fa fa-book"></i>
+    </div>
+    <div id="sidebar-tag" title="Tags">
+        <i class="fa fa-tags"></i>
+    </div>
+    <div id="sidebar-top">
+        <span class="sidebar-top-icon"><i class="fa fa-angle-up"></i></span>
+    </div>
+</div>
+<div class="sidebar-menu-box" id="sidebar-menu-box">
+    <div class="sidebar-menu-box-container">
+        <div id="sidebar-menu-box-categories">
+            <a class="category-link" href="/categories/Docker/">Docker</a><a class="category-link" href="/categories/Java/">Java</a><a class="category-link" href="/categories/Nginx/">Nginx</a><a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a><a class="category-link" href="/categories/%E7%90%90%E7%A2%8E/">琐碎</a><a class="category-link" href="/categories/%E9%9D%A2%E8%AF%95/">面试</a>
+        </div>
+        <div id="sidebar-menu-box-tags">
+            <a href="/tags/Docker/" style="font-size: 12.5px;">Docker</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Java%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">Java基础</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 12.5px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 20px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 10px;">SpringBoot</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 17.5px;">java</a> <a href="/tags/jvm/" style="font-size: 15px;">jvm</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">排序算法</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" style="font-size: 12.5px;">数据结构与算法</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a> <a href="/tags/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/" style="font-size: 10px;">查找算法</a> <a href="/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A1%A8/" style="font-size: 10px;">线性表</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+        </div>
+    </div>
+    <a href="javascript:;" class="sidebar-menu-box-close">&times;</a>
+</div>
+<div class="mobile-header-menu-nav" id="mobile-header-menu-nav">
+    <div class="mobile-header-menu-container">
+        <span class="title">Menus</span>
+        <ul class="mobile-header-menu-navbar">
+            
+            <li>
+                <a  href="/">
+                    <i class="fa fa-home"></i><span>Home</span>
+                </a>
+            </li>
+            
+            <li>
+                <a  href="/archives">
+                    <i class="fa fa-archive"></i><span>Archives</span>
+                </a>
+            </li>
+            
+            <li>
+                <a  href="/about">
+                    <i class="fa fa-user"></i><span>About</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    <div class="mobile-header-tag-container">
+        <span class="title">Tags</span>
+        <div id="mobile-header-container-tags">
+            <a href="/tags/Docker/" style="font-size: 12.5px;">Docker</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Java%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">Java基础</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 12.5px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 20px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 10px;">SpringBoot</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 17.5px;">java</a> <a href="/tags/jvm/" style="font-size: 15px;">jvm</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">排序算法</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" style="font-size: 12.5px;">数据结构与算法</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a> <a href="/tags/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/" style="font-size: 10px;">查找算法</a> <a href="/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A1%A8/" style="font-size: 10px;">线性表</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+        </div>
+    </div>
+</div>
+<div class="search-wrap">
+    <span class="search-close">&times;</span>
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+            <i class="icon icon-lg icon-chevron-left"></i>
+        </a>
+        <input class="search-field" placeholder="Search..." id="keywords">
+        <a id="search-submit" href="javascript:;">
+            <i class="fa fa-search"></i>
+        </a>
+    <div class="search-container" id="search-container">
+        <ul class="search-result" id="search-result">
+        </ul>
+    </div>
+</div>
+
+<div id="search-tpl">
+    <li class="search-result-item">
+        <a href="{url}" class="search-item-li">
+            <span class="search-item-li-title" title="{title}">{title}</span>
+        </a>
+    </li>
+</div>
+
+<script src="/js/search.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+  <script src="//cdn.bootcss.com/particles.js/2.0.0/particles.min.js"></script>
+  <div id="particles"></div>
+  
+<script src="/js/particles.js"></script>
+
+
+
+
+
+
+
+
+  
+<link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+
+  <script src="//cdn.bootcss.com/scrollReveal.js/3.0.5/scrollreveal.js"></script>
+  
+<script src="/js/animate.js"></script>
+
+
+
+  
+<script src="/js/pop-img.js"></script>
+
+  <script>
+     $(".article-entry p img").popImg();
+  </script>
+
+  </div>
+</body>
+</html>

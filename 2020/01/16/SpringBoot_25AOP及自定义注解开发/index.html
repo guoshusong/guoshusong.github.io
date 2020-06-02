@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>SpringAOP及自定义注解开发 | gssplus&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+    <meta name="keywords" content="gss's Blog" />
+  
+  <meta name="description" content="SpringAOP讲解及实现自定义注解进行日志记录">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringAOP及自定义注解开发">
+<meta property="og:url" content="https://guoshusong.github.io/2020/01/16/SpringBoot_25AOP%E5%8F%8A%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91/index.html">
+<meta property="og:site_name" content="gssplus&#39;s Blog">
+<meta property="og:description" content="SpringAOP讲解及实现自定义注解进行日志记录">
+<meta property="article:published_time" content="2020-01-16T09:14:57.000Z">
+<meta property="article:modified_time" content="2020-02-04T11:00:58.764Z">
+<meta property="article:author" content="GuoShuSong">
+<meta property="article:tag" content="Spring">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+  
+
+  
+  
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+  <div id="container">
+      <header id="header">
+    <div id="banner"></div>
+    <div id="header-outer">
+        <div id="header-menu" class="header-menu-pos animated">
+            <div class="header-menu-container">
+                <a href="/" class="left">
+                    <span class="site-title">Hello,Here is gssplus!</span>
+                </a>
+                <nav id="header-menu-nav" class="right">
+                    
+                    <a  href="/">
+                        <i class="fa fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    
+                    <a  href="/archives">
+                        <i class="fa fa-archive"></i>
+                        <span>Archives</span>
+                    </a>
+                    
+                    <a  href="/about">
+                        <i class="fa fa-user"></i>
+                        <span>About</span>
+                    </a>
+                    
+                </nav>
+                <a class="mobile-header-menu-button">
+                    <i class="fa fa-bars"></i>
+                </a>
+            </div>
+        </div>
+        <div id="header-row">
+            <div id="logo">
+                <a href="/">
+                    <img src="/images/logo.png" alt="logo">
+                </a>
+            </div>
+            <div class="header-info">
+                <div id="header-title">
+                    
+                    <h2>
+                        Hello,Here is gssplus!
+                    </h2>
+                    
+                </div>
+                <div id="header-description">
+                    
+                    <h3>
+                        我见过春日夏风，秋月冬雪，也曾踏遍南水北山，东麓西岭，可这四季春秋，苍山央水，都不及你瞅我展眉一笑
+                    </h3>
+                    
+                </div>
+            </div>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a title="MinHow" target="_blank" href="//guoshusong.github.io/">
+                            <i class="fa fa-home fa-2x"></i></a>
+                    
+                        <a title="Github" target="_blank" href="//github.com/guoshusong">
+                            <i class="fa fa-github fa-2x"></i></a>
+                    
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>
+      <div class="outer">
+        <section id="main" class="body-wrap"><article id="post-SpringBoot_25AOP及自定义注解开发" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="post-title" itemprop="name">
+      SpringAOP及自定义注解开发
+    </h1>
+    <div class="post-title-bar">
+      <ul>
+          
+        <li>
+          <i class="fa fa-calendar"></i>  2020-01-16
+        </li>
+        <li>
+          <i class="fa fa-eye"></i>
+          <span id="busuanzi_value_page_pv"></span>
+        </li>
+      </ul>
+    </div>
+  
+
+          
+      </header>
+    
+    <div class="article-entry post-content" itemprop="articleBody">
+      
+            
+            <h2 id="SpringAOP讲解及实现自定义注解进行日志记录"><a href="#SpringAOP讲解及实现自定义注解进行日志记录" class="headerlink" title="SpringAOP讲解及实现自定义注解进行日志记录"></a>SpringAOP讲解及实现自定义注解进行日志记录</h2><a id="more"></a>
+
+<h3 id="AOP-核心概念"><a href="#AOP-核心概念" class="headerlink" title="AOP 核心概念"></a>AOP 核心概念</h3><h4 id="Aspect"><a href="#Aspect" class="headerlink" title="Aspect"></a>Aspect</h4><p>即切面，切面一般定义为一个 Java 类， 每个切面侧重于特定的跨领域功能，比如，事务管理或者日志打印等。</p>
+<h4 id="Joinpoint"><a href="#Joinpoint" class="headerlink" title="Joinpoint"></a>Joinpoint</h4><p>即连接点，程序执行的某个点，比如方法执行。构造函数调用或者字段赋值等。在 Spring AOP 中，连接点只会有方法调用 (Method execution)。</p>
+<h4 id="Advice"><a href="#Advice" class="headerlink" title="Advice"></a>Advice</h4><p>“切面”对于某个“连接点”所产生的动作</p>
+<ul>
+<li><p>前置通知（Before advice） ：在某连接点（JoinPoint）之前执行的通知，但这个通知不能阻止连接点前的执行。xml中在<a href="aop:aspect">aop:aspect</a>里面使用<a href="aop:before">aop:before</a>元素进行声明；例如，TestAspect中的doBefore方法。注解中使用@Before声明；例如，TestAnnotationAspect中的doBefore方法。</p>
+</li>
+<li><p>后通知（After advice） ：当某连接点退出的时候执行的通知（不论是正常返回还是异常退出）。xml中在<a href="aop:aspect">aop:aspect</a>里面使用<a href="aop:after">aop:after</a>元素进行声明。例如，TestAspect中的doAfter方法，所以AOPTest中调用BServiceImpl.barB抛出异常时，doAfter方法仍然执行。注解中使用@After声明。</p>
+</li>
+<li><p>返回后通知（After return advice） ：在某连接点正常完成后执行的通知，不包括抛出异常的情况。xml中在<a href="aop:aspect">aop:aspect</a>里面使用<after-returning>元素进行声明。注解中使用@AfterReturning声明；</p>
+</li>
+<li><p>环绕通知（Around advice） ：包围一个连接点的通知，类似Web中Servlet规范中的Filter的doFilter方法。可以在方法的调用前后完成自定义的行为，也可以选择不执行。xml中在<a href="aop:aspect">aop:aspect</a>里面使用<a href="aop:around">aop:around</a>元素进行声明。例如，TestAspect中的doAround方法。注解中使用@Around声明。</p>
+</li>
+<li><p>抛出异常后通知（After throwing advice） ： 在方法抛出异常退出时执行的通知。xml中在<a href="aop:aspect">aop:aspect</a>里面使用<a href="aop:after-throwing">aop:after-throwing</a>元素进行声明。例如，TestAspect中的doThrowing方法。注解中使用@AfterThrowing声明。</p>
+</li>
+</ul>
+<p>通知执行顺序：前置通知→环绕通知连接点之前→连接点执行→环绕通知连接点之后→返回通知→后通知→(如果发生异常)异常通知→后通知</p>
+<h4 id="Pointcut"><a href="#Pointcut" class="headerlink" title="Pointcut"></a>Pointcut</h4><p>切点，在AOP中通知和一个切入点表达式关联。</p>
+<h5 id="切入点表达式"><a href="#切入点表达式" class="headerlink" title="切入点表达式"></a>切入点表达式</h5><p>● 匹配语法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">* 匹配任何数量字符；</span><br><span class="line"></span><br><span class="line">.. 匹配任何数量字符的重复，如在类型模式中匹配任何数量子包；而在方法参数模式中匹配任何数量参数。</span><br><span class="line"></span><br><span class="line">+ 匹配指定类型的子类型；仅能作为后缀放在类型模式后边。</span><br><span class="line"></span><br><span class="line">例如：</span><br><span class="line"></span><br><span class="line">java.lang.String   匹配String类型；</span><br><span class="line"></span><br><span class="line">java.*.String   匹配java包下的任何“一级子包”下的String类型；如匹配java.lang.String，但不匹配java.lang.ss.String。</span><br><span class="line"></span><br><span class="line">java..*   匹配java包及任何子包下的任何类型；如匹配java.lang.String、java.lang.annotation.Annotation。</span><br><span class="line"></span><br><span class="line">java.lang.*ing   匹配任何java.lang包下的以ing结尾的类型；</span><br><span class="line"></span><br><span class="line">java.lang.Number+   匹配java.lang包下的任何Number的自类型；如匹配java.lang.Integer，也匹配java.math.BigInteger。</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>匹配种类:</li>
+</ul>
+<ol>
+<li>类</li>
+</ol>
+<p>注解 类名<br>注解：可选，类上持有的注解，如@Deprecated；</p>
+<p>类名：必填，任何类的完整名称。</p>
+<ol start="2">
+<li>方法</li>
+</ol>
+<p>注解 修饰符 返回值类型 类名 方法名(参数列表) 异常列表<br>注解：可选，方法上持有的注解，如@Deprecated；</p>
+<p>修饰符：可选，如public、protected；</p>
+<p>返回值类型：必填，可以是任何类型模式；“*”表示所有类型；</p>
+<p>类名：可选，任何类的完整名称；</p>
+<p>方法名：必填，可以使用“*”进行模式匹配；</p>
+<p>参数列表：“()”表示方法没有任何参数；“(..)”表示匹配接受任意个参数的方法，“(..,java.lang.String)”表示匹配接受java.lang.String类型的参数结束，且其前边可以接受有任意个参数的方法；“(java.lang.String,..)” 表示匹配接受java.lang.String类型的参数开始，且其后边可以接受任意个参数的方法；“(*,java.lang.String)” 表示匹配接受java.lang.String类型的参数结束，且其前边接受有一个任意类型参数的方法；</p>
+<p>异常列表：可选，以“throws 异常全限定名列表”声明，异常全限定名列表如有多个以“,”分割，如throws java.lang.IllegalArgumentException, java.lang.ArrayIndexOutOfBoundsException。</p>
+<ol start="3">
+<li>Bean</li>
+</ol>
+<p>可以使用Bean的id或name进行匹配，并且可使用通配符“*”</p>
+<h5 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h5><ul>
+<li>execution(用于匹配方法执行的连接点)</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>public * *(..)</td>
+<td>任何公共方法的执行</td>
+</tr>
+<tr>
+<td>* cn.javass..IPointcutService.*()</td>
+<td>cn.javass包及所有子包下IPointcutService接口中的任何无参方法</td>
+</tr>
+<tr>
+<td>* cn.javass..<em>.</em>(..)</td>
+<td>cn.javass包及所有子包下任何类的任何方法</td>
+</tr>
+<tr>
+<td>* cn.javass..IPointcutService.<em>(</em>)</td>
+<td>cn.javass包及所有子包下IPointcutService接口的任何只有一个参数方法</td>
+</tr>
+<tr>
+<td>* (!cn.javass..IPointcutService+).*(..)</td>
+<td>非“cn.javass包及所有子包下IPointcutService接口及子类型”的任何方法</td>
+</tr>
+<tr>
+<td>* cn.javass..IPointcutService+.*()</td>
+<td>cn.javass包及所有子包下IPointcutService接口及子类型的的任何无参方法</td>
+</tr>
+<tr>
+<td>*  cn.javass..IPointcut<em>.test</em>(java.util.Date)</td>
+<td>cn.javass包及所有子包下IPointcut前缀类型的的以test开头的只有一个参数类型为java.util.Date的方法，注意该匹配是根据方法签名的参数类型进行匹配的，而不是根据执行时传入的参数类型决定的如定义方法：public void test(Object obj);即使执行时传入java.util.Date，也不会匹配的；</td>
+</tr>
+<tr>
+<td>* cn.javass..IPointcut<em>.test</em>(..) throws IllegalArgumentException, ArrayIndexOutOfBoundsException</td>
+<td>cn.javass包及所有子包下IPointcut前缀类型的的任何方法，且抛出IllegalArgumentException和ArrayIndexOutOfBoundsException异常</td>
+</tr>
+<tr>
+<td>* (cn.javass..IPointcutService+&amp;&amp; java.io.Serializable+).*(..)</td>
+<td>任何实现了cn.javass包及所有子包下IPointcutService接口和java.io.Serializable接口的类型的任何方法</td>
+</tr>
+<tr>
+<td>@java.lang.Deprecated * *(..)</td>
+<td>任何持有@java.lang.Deprecated注解的方法</td>
+</tr>
+<tr>
+<td>@java.lang.Deprecated @cn.javass..Secure  * *(..)</td>
+<td>任何持有@java.lang.Deprecated和@cn.javass..Secure注解的方法</td>
+</tr>
+<tr>
+<td>@(java.lang.Deprecated</td>
+<td></td>
+</tr>
+<tr>
+<td>(@cn.javass..Secure *) *(..)</td>
+<td>任何返回值类型持有@cn.javass..Secure的方法</td>
+</tr>
+<tr>
+<td>* (@cn.javass..Secure <em>).</em>(..)</td>
+<td>任何定义方法的类型持有@cn.javass..Secure的方法</td>
+</tr>
+<tr>
+<td>* <em>(@cn.javass..Secure (</em>) ,  @cn.javass..Secure (*))</td>
+<td>任何签名带有两个参数的方法，且这个两个参数都被@ Secure标记了，如public void test(@Secure String str1,@Secure String str1);</td>
+</tr>
+<tr>
+<td>* <em>((@ cn.javass..Secure *))或</em> *(@ cn.javass..Secure *)</td>
+<td>任何带有一个参数的方法，且该参数类型持有@ cn.javass..Secure；如public void test(Model model);且Model类上持有@Secure注解</td>
+</tr>
+<tr>
+<td>* *(@cn.javass..Secure (@cn.javass..Secure *)  ,@ cn.javass..Secure (@cn.javass..Secure  *))</td>
+<td>任何带有两个参数的方法，且这两个参数都被@ cn.javass..Secure标记了；且这两个参数的类型上都持有@  cn.javass..Secure；</td>
+</tr>
+<tr>
+<td>* *(java.util.Map&lt;cn.javass..Model, cn.javass..Model&gt;, ..)</td>
+<td>任何带有一个java.util.Map参数的方法，且该参数类型是以&lt;  cn.javass..Model, cn.javass..Model &gt;为泛型参数；注意只匹配第一个参数为java.util.Map,不包括子类型；如public void test(HashMap&lt;Model, Model&gt; map, String str);将不匹配，必须使用“* *(java.util.HashMap&lt;cn.javass..Model,cn.javass..Model&gt;, ..)”进行匹配；而public void test(Map map, int i);也将不匹配，因为泛型参数不匹配</td>
+</tr>
+<tr>
+<td>*  *(java.util.Collection&lt;@cn.javass..Secure *&gt;)</td>
+<td>任何带有一个参数（类型为java.util.Collection）的方法，且该参数类型是有一个泛型参数，该泛型参数类型上持有@cn.javass..Secure注解；如public void test(Collection<Model> collection);Model类型上持有@cn.javass..Secure</td>
+</tr>
+</tbody></table>
+<ul>
+<li>within(用于匹配指定类型内的方法执行)</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>within(cn.javass..*)</td>
+<td>cn.javass包及子包下的任何方法执行</td>
+</tr>
+<tr>
+<td>within(cn.javass..IPointcutService+)</td>
+<td>cn.javass包或所有子包下IPointcutService类型及子类型的任何方法</td>
+</tr>
+<tr>
+<td>within(@cn.javass..Secure *)</td>
+<td>持有cn.javass..Secure注解的任何类型的任何方法必须是在目标对象上声明这个注解，在接口上声明的对它不起作用</td>
+</tr>
+</tbody></table>
+<ul>
+<li>this(用于匹配当前AOP代理对象类型的执行方法)</li>
+</ul>
+<p>注意是AOP代理对象的类型匹配，这样就可能包括引入接口也类型匹配；注意this中使用的表达式必须是完整类名，不支持通配符；</p>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>this(cn.javass.spring.chapter6.service.IPointcutService)</td>
+<td>当前AOP对象实现了 IPointcutService接口的任何方法</td>
+</tr>
+<tr>
+<td>this(cn.javass.spring.chapter6.service.IIntroductionService)</td>
+<td>当前AOP对象实现了 IIntroductionService接口的任何方法也可能是引入接口</td>
+</tr>
+</tbody></table>
+<ul>
+<li>target(用于匹配当前目标对象类型的执行方法)</li>
+</ul>
+<p>注意是目标对象的类型匹配，这样就不包括引入接口也类型匹配；注意target中使用的表达式必须是完整类名，不支持通配符；</p>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>target(cn.javass.spring.chapter6.service.IPointcutService)</td>
+<td>当前目标对象（非AOP对象）实现了 IPointcutService接口的任何方法</td>
+</tr>
+<tr>
+<td>target(cn.javass.spring.chapter6.service.IIntroductionService)</td>
+<td>当前目标对象（非AOP对象） 实现了IIntroductionService 接口的任何方法不可能是引入接口</td>
+</tr>
+</tbody></table>
+<ul>
+<li>args(用于匹配当前执行的方法传入的参数为指定类型的执行方法)</li>
+</ul>
+<p>参数类型列表中的参数必须是完整类名，通配符不支持；args属于动态切入点，这种切入点开销非常大，非特殊情况最好不要使用；</p>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>args (java.io.Serializable,..)</td>
+<td>任何一个以接受“传入参数类型为 java.io.Serializable” 开头，且其后可跟任意个任意类型的参数的方法执行，args指定的参数类型是在运行时动态匹配的</td>
+</tr>
+</tbody></table>
+<ul>
+<li>@within(用于匹配所以持有指定注解类型内的方法；注解类型也必须是完整类名)</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>@within (cn.javass.spring.chapter6.Secure)</td>
+<td>任何目标对象对应的类型持有Secure注解的类方法；必须是在目标对象上声明这个注解，在接口上声明的对它不起作用</td>
+</tr>
+</tbody></table>
+<ul>
+<li>@target(用于匹配当前目标对象类型的执行方法，其中目标对象持有指定的注解；注解类型也必须是完整类名；)</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>@target (cn.javass.spring.chapter6.Secure)</td>
+<td>任何目标对象持有Secure注解的类方法；必须是在目标对象上声明这个注解，在接口上声明的对它不起作用</td>
+</tr>
+</tbody></table>
+<ul>
+<li>@args(用于匹配当前执行的方法传入的参数持有指定注解的执行；注解类型也必须是完整类名)</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>@args (cn.javass.spring.chapter6.Secure)</td>
+<td>任何一个只接受一个参数的方法，且方法运行时传入的参数持有注解 cn.javass.spring.chapter6.Secure；动态切入点，类似于arg指示符</td>
+</tr>
+</tbody></table>
+<ul>
+<li>@annotation(用于匹配当前执行方法持有指定注解的方法；注解类型也必须是完整类名)</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>@annotation(cn.javass.spring.chapter6.Secure)</td>
+<td>当前执行方法上持有注解  cn.javass.spring.chapter6.Secure将被匹配</td>
+</tr>
+</tbody></table>
+<ul>
+<li>bean</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>bean(*Service)</td>
+<td>匹配所有以Service命名（id或name）结尾的Bean</td>
+</tr>
+</tbody></table>
+<h5 id="通知方法参数注入"><a href="#通知方法参数注入" class="headerlink" title="通知方法参数注入"></a>通知方法参数注入</h5><p>在Spring AOP中，除了execution和bean指示符不能传递参数给通知方法，其他指示符都可以将匹配的相应参数或对象自动传递给通知方法。例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Before</span>(value=<span class="string">"execution(* test(*)) &amp;&amp; args(param)"</span>,argNames=<span class="string">"param"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">before1</span><span class="params">(String param)</span> </span>&#123;</span><br><span class="line">    System.out.println(<span class="string">"===param:"</span> + param);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>首先execution(* test(*))匹配任何方法名为test，且有一个任何类型的参数；</p>
+<p>args(param)将首先查找通知方法上同名的参数，并在方法执行时（运行时）匹配传入的参数是使用该同名参数类型，即java.lang.String；如果匹配将把该被通知参数传递给通知方法上同名参数。</p>
+<p>其他指示符（除了execution和bean指示符）都可以使用这种方式进行参数绑定。</p>
+<h3 id="AOP实际应用"><a href="#AOP实际应用" class="headerlink" title="AOP实际应用"></a>AOP实际应用</h3><p>依赖</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-aop<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="日志记录及性能监控"><a href="#日志记录及性能监控" class="headerlink" title="日志记录及性能监控"></a>日志记录及性能监控</h4><ol>
+<li>记录日志的注解</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Target</span>(ElementType.METHOD)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> LogInfo &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function">String <span class="title">value</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>切面的设计</li>
+</ol>
+<p>SpringAOP中有多种方式来实现，比如通过环绕来实现，或者通过前置以及后置来实现</p>
+<ul>
+<li>环绕实现</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LogAspect</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Pointcut</span>(<span class="string">"@annotation(cn.xuhuanfeng.annnotation.LogInfo)"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">logPointCut</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Around</span>(value = <span class="string">"logPointCut()"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">logAround</span><span class="params">(ProceedingJoinPoint joinPoint)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 获取执行方法签名，这里强转为MethodSignature</span></span><br><span class="line">        MethodSignature signature = (MethodSignature) joinPoint.getSignature();</span><br><span class="line">        Object[] args = joinPoint.getArgs();</span><br><span class="line">        <span class="comment">// 通过反射来获取注解内容</span></span><br><span class="line">        LogInfo loginfo = signature.getMethod().getAnnotation(LogInfo<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">        String description = loginfo.value();</span><br><span class="line">        System.out.println(<span class="string">"****** "</span>+ description + <span class="string">" Before: "</span> + signature + <span class="string">" args "</span> + Arrays.toString(args));</span><br><span class="line"></span><br><span class="line">        Object result = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 调用原来的方法</span></span><br><span class="line">            result = joinPoint.proceed();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable throwable) &#123;</span><br><span class="line">            throwable.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">long</span> end = System.currentTimeMillis();</span><br><span class="line">        System.out.println(<span class="string">"****** "</span> + description +<span class="string">" After: "</span> + signature + <span class="string">" "</span> + result + <span class="string">"total time: "</span> + (end - start) + <span class="string">" ms"</span>);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>简单的操作类</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BlogService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@LogInfo</span>(<span class="string">"获取博客"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getBlog</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"Blog info"</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@LogInfo</span>(<span class="string">"增加博客"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">addBlog</span><span class="params">(String blog)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"adding blog"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>测试类</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="meta">@RunWith</span>(SpringRunner<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">BlogServiceTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> BlogService blogService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getBlog</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        blogService.getBlog();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addBlog</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        blogService.addBlog(<span class="string">"blog"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">****** 增加博客 Before: boolean cn.xuhuanfeng.blog.BlogService.addBlog(String) args [blog]</span><br><span class="line">adding blog</span><br><span class="line">****** 增加博客 After: boolean cn.xuhuanfeng.blog.BlogService.addBlog(String) truetotal time: 4 ms</span><br><span class="line">****** 获取博客 Before: String cn.xuhuanfeng.blog.BlogService.getBlog() args []</span><br><span class="line">****** 获取博客 After: String cn.xuhuanfeng.blog.BlogService.getBlog() Blog infototal time: 0 ms</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>前置以及后置实现</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LogAspect</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Pointcut</span>(<span class="string">"@annotation(com.cmft.springbootdemo.annnotation.LogInfo)"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">logPointCut</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 通过ThreadLocal来记录进入方法的时间</span></span><br><span class="line">    <span class="keyword">private</span> ThreadLocal&lt;Long&gt; logRecorder = <span class="keyword">new</span> ThreadLocal&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">getDescription</span><span class="params">(JoinPoint joinPoint)</span> </span>&#123;</span><br><span class="line">        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();</span><br><span class="line">        <span class="keyword">return</span> methodSignature.getMethod().getAnnotation(LogInfo<span class="class">.<span class="keyword">class</span>).<span class="title">value</span>()</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">long</span> <span class="title">calculateExecutionTime</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> end = System.currentTimeMillis();</span><br><span class="line">        <span class="keyword">long</span> duration = end - logRecorder.get();</span><br><span class="line">        logRecorder.remove();</span><br><span class="line">        <span class="keyword">return</span> duration;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Before</span>(<span class="string">"logPointCut()"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">beforeMethod</span><span class="params">(JoinPoint joinPoint)</span> </span>&#123;</span><br><span class="line">        logRecorder.set(System.currentTimeMillis());</span><br><span class="line">        String description = getDescription(joinPoint);</span><br><span class="line">        System.out.println(<span class="string">"****** "</span>+ description +</span><br><span class="line">                <span class="string">" Before: "</span> + joinPoint.getSignature() +</span><br><span class="line">                <span class="string">" args "</span> + Arrays.toString(joinPoint.getArgs()));</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@AfterReturning</span>(value = <span class="string">"logPointCut()"</span>, returning = <span class="string">"result"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterReturning</span><span class="params">(JoinPoint joinPoint, Object result)</span> </span>&#123;</span><br><span class="line">        String description = getDescription(joinPoint);</span><br><span class="line">        System.out.println(<span class="string">"****** "</span> + description +</span><br><span class="line">                <span class="string">" After: "</span> + joinPoint.getSignature() +</span><br><span class="line">                <span class="string">" "</span> + result +</span><br><span class="line">                <span class="string">" total time: "</span> + calculateExecutionTime() + <span class="string">" ms"</span>);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第二种操作中存在一个问题，就是当方法抛出异常的时候，@AfterReturing是不会执行的，原因在于，@AfterReturing是在方法调用结束，返回之前进行织入的，所以一旦抛出异常，就无法处理了。这时候有两种解决方案，第一种是使用@After，@After是在方法调用结束之后织入的，所以可以正常记录，另一种方案就是使用@AfterThrowing在异常抛出的时候进行处理.</p>
+<h3 id="参考博客"><a href="#参考博客" class="headerlink" title="参考博客"></a>参考博客</h3><p><a href="https://blog.csdn.net/wangpeng047/article/details/8556800" target="_blank" rel="noopener">Spring AOP详尽教程</a></p>
+
+            <div class="post-copyright">
+    <div class="content">
+        <p>最后更新： 2020年02月04日 19:00</p>
+        <p>原始链接： <a class="post-url" href="/2020/01/16/SpringBoot_25AOP%E5%8F%8A%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91/" title="SpringAOP及自定义注解开发">https://guoshusong.github.io/2020/01/16/SpringBoot_25AOP%E5%8F%8A%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91/</a></p>
+        <footer>
+            <a href="https://guoshusong.github.io">
+                <img src="/images/logo.png" alt="GuoShuSong">
+                GuoShuSong
+            </a>
+        </footer>
+    </div>
+</div>
+
+      
+        
+            
+
+        
+    </div>
+    <footer class="article-footer">
+        
+        
+<div class="post-share">
+    <a href="javascript:;" id="share-sub" class="post-share-fab">
+        <i class="fa fa-share-alt"></i>
+    </a>
+    <div class="post-share-list" id="share-list">
+        <ul class="share-icons">
+          <li>
+            <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://guoshusong.github.io/2020/01/16/SpringBoot_25AOP%E5%8F%8A%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91/&title=《SpringAOP及自定义注解开发》 — gssplus's Blog&pic=https://guoshusong.github.ioimages/logo.png" data-title="微博">
+              <i class="fa fa-weibo"></i>
+            </a>
+          </li>
+          <li>
+            <a class="weixin share-sns" id="wxFab" href="javascript:;" data-title="微信">
+              <i class="fa fa-weixin"></i>
+            </a>
+          </li>
+          <li>
+            <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://guoshusong.github.io/2020/01/16/SpringBoot_25AOP%E5%8F%8A%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91/&title=《SpringAOP及自定义注解开发》 — gssplus's Blog&source=SpringAOP讲解及实现自定义注解进行日志记录" data-title="QQ">
+              <i class="fa fa-qq"></i>
+            </a>
+          </li>
+          <li>
+            <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://guoshusong.github.io/2020/01/16/SpringBoot_25AOP%E5%8F%8A%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91/" data-title="Facebook">
+              <i class="fa fa-facebook"></i>
+            </a>
+          </li>
+          <li>
+            <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《SpringAOP及自定义注解开发》 — gssplus's Blog&url=https://guoshusong.github.io/2020/01/16/SpringBoot_25AOP%E5%8F%8A%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91/&via=https://guoshusong.github.io" data-title="Twitter">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li>
+            <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://guoshusong.github.io/2020/01/16/SpringBoot_25AOP%E5%8F%8A%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91/" data-title="Google+">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        </ul>
+     </div>
+</div>
+<div class="post-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;" id="wxShare-close">×</a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://guoshusong.github.io/2020/01/16/SpringBoot_25AOP%E5%8F%8A%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91/" alt="微信分享二维码">
+</div>
+
+<div class="mask"></div>
+
+        
+        <ul class="article-footer-menu">
+            
+            
+  <li class="article-footer-tags">
+    <i class="fa fa-tags"></i>
+      
+    <a href="/tags/Spring/" class="color2">Spring</a>
+      
+  </li>
+
+        </ul>
+        
+    </footer>
+  </div>
+</article>
+
+
+    <aside class="post-toc-pos post-toc-top" id="post-toc">
+        <nav class="post-toc-wrap">
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#SpringAOP讲解及实现自定义注解进行日志记录"><span class="post-toc-text">SpringAOP讲解及实现自定义注解进行日志记录</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#AOP-核心概念"><span class="post-toc-text">AOP 核心概念</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Aspect"><span class="post-toc-text">Aspect</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Joinpoint"><span class="post-toc-text">Joinpoint</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Advice"><span class="post-toc-text">Advice</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Pointcut"><span class="post-toc-text">Pointcut</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#切入点表达式"><span class="post-toc-text">切入点表达式</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#示例"><span class="post-toc-text">示例</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#通知方法参数注入"><span class="post-toc-text">通知方法参数注入</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#AOP实际应用"><span class="post-toc-text">AOP实际应用</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#日志记录及性能监控"><span class="post-toc-text">日志记录及性能监控</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#参考博客"><span class="post-toc-text">参考博客</span></a></li></ol></li></ol>
+        </nav>
+    </aside>
+    
+
+<nav id="article-nav">
+  
+    <a href="/2020/01/28/SpringBoot_24%E5%8F%82%E6%95%B0%E6%A0%A1%E9%AA%8C/" id="article-nav-newer" class="article-nav-link-wrap">
+
+      <span class="article-nav-title">
+        <i class="fa fa-hand-o-left" aria-hidden="true"></i>
+        
+          SpringBoot参数校验
+        
+      </span>
+    </a>
+  
+  
+    <a href="/2020/01/13/Spring_00%E9%9D%A2%E8%AF%95%E5%9F%BA%E6%9C%AC/" id="article-nav-older" class="article-nav-link-wrap">
+      <span class="article-nav-title">SpringBoot基本面试题</span>
+      <i class="fa fa-hand-o-right" aria-hidden="true"></i>
+    </a>
+  
+</nav>
+
+
+
+    
+</section>
+        
+      </div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+
+      <p>
+        Powered by  <a href="http://hexo.io/" target="_blank">Hexo</a>
+        Theme <a href="//github.com/wongminho/hexo-theme-miho" target="_blank">MiHo</a>
+      &copy; 2020 GuoShuSong<br>
+      </p>
+    </div>
+  </div>
+</footer>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script>
+  var mihoConfig = {
+      root: "https://guoshusong.github.io",
+      animate: true,
+      isHome: false,
+      share: true,
+      reward: 0
+  }
+</script>
+<div class="sidebar">
+    <div id="sidebar-search" title="Search">
+        <i class="fa fa-search"></i>
+    </div>
+    <div id="sidebar-category" title="Categories">
+        <i class="fa fa-book"></i>
+    </div>
+    <div id="sidebar-tag" title="Tags">
+        <i class="fa fa-tags"></i>
+    </div>
+    <div id="sidebar-top">
+        <span class="sidebar-top-icon"><i class="fa fa-angle-up"></i></span>
+    </div>
+</div>
+<div class="sidebar-menu-box" id="sidebar-menu-box">
+    <div class="sidebar-menu-box-container">
+        <div id="sidebar-menu-box-categories">
+            <a class="category-link" href="/categories/Docker/">Docker</a><a class="category-link" href="/categories/Java/">Java</a><a class="category-link" href="/categories/Nginx/">Nginx</a><a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a><a class="category-link" href="/categories/%E7%90%90%E7%A2%8E/">琐碎</a><a class="category-link" href="/categories/%E9%9D%A2%E8%AF%95/">面试</a>
+        </div>
+        <div id="sidebar-menu-box-tags">
+            <a href="/tags/Docker/" style="font-size: 12.5px;">Docker</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Java%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">Java基础</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 12.5px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 20px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 10px;">SpringBoot</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 17.5px;">java</a> <a href="/tags/jvm/" style="font-size: 15px;">jvm</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">排序算法</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" style="font-size: 12.5px;">数据结构与算法</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a> <a href="/tags/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/" style="font-size: 10px;">查找算法</a> <a href="/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A1%A8/" style="font-size: 10px;">线性表</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+        </div>
+    </div>
+    <a href="javascript:;" class="sidebar-menu-box-close">&times;</a>
+</div>
+<div class="mobile-header-menu-nav" id="mobile-header-menu-nav">
+    <div class="mobile-header-menu-container">
+        <span class="title">Menus</span>
+        <ul class="mobile-header-menu-navbar">
+            
+            <li>
+                <a  href="/">
+                    <i class="fa fa-home"></i><span>Home</span>
+                </a>
+            </li>
+            
+            <li>
+                <a  href="/archives">
+                    <i class="fa fa-archive"></i><span>Archives</span>
+                </a>
+            </li>
+            
+            <li>
+                <a  href="/about">
+                    <i class="fa fa-user"></i><span>About</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    <div class="mobile-header-tag-container">
+        <span class="title">Tags</span>
+        <div id="mobile-header-container-tags">
+            <a href="/tags/Docker/" style="font-size: 12.5px;">Docker</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Java%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">Java基础</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 12.5px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 20px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 10px;">SpringBoot</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 17.5px;">java</a> <a href="/tags/jvm/" style="font-size: 15px;">jvm</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">排序算法</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" style="font-size: 12.5px;">数据结构与算法</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a> <a href="/tags/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/" style="font-size: 10px;">查找算法</a> <a href="/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A1%A8/" style="font-size: 10px;">线性表</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+        </div>
+    </div>
+</div>
+<div class="search-wrap">
+    <span class="search-close">&times;</span>
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+            <i class="icon icon-lg icon-chevron-left"></i>
+        </a>
+        <input class="search-field" placeholder="Search..." id="keywords">
+        <a id="search-submit" href="javascript:;">
+            <i class="fa fa-search"></i>
+        </a>
+    <div class="search-container" id="search-container">
+        <ul class="search-result" id="search-result">
+        </ul>
+    </div>
+</div>
+
+<div id="search-tpl">
+    <li class="search-result-item">
+        <a href="{url}" class="search-item-li">
+            <span class="search-item-li-title" title="{title}">{title}</span>
+        </a>
+    </li>
+</div>
+
+<script src="/js/search.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+  <script src="//cdn.bootcss.com/particles.js/2.0.0/particles.min.js"></script>
+  <div id="particles"></div>
+  
+<script src="/js/particles.js"></script>
+
+
+
+
+
+
+
+
+  
+<link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+
+  <script src="//cdn.bootcss.com/scrollReveal.js/3.0.5/scrollreveal.js"></script>
+  
+<script src="/js/animate.js"></script>
+
+
+
+  
+<script src="/js/pop-img.js"></script>
+
+  <script>
+     $(".article-entry p img").popImg();
+  </script>
+
+  </div>
+</body>
+</html>

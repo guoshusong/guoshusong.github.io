@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>瞎写点儿零零碎碎的东西 | gssplus&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+    <meta name="keywords" content="gss's Blog" />
+  
+  <meta name="description" content="Java中经纬度、时间日期的加减的问题、Mysql中各种整数类型的区别、自定义异常类">
+<meta property="og:type" content="article">
+<meta property="og:title" content="瞎写点儿零零碎碎的东西">
+<meta property="og:url" content="https://guoshusong.github.io/2020/06/02/JavaNote_01/index.html">
+<meta property="og:site_name" content="gssplus&#39;s Blog">
+<meta property="og:description" content="Java中经纬度、时间日期的加减的问题、Mysql中各种整数类型的区别、自定义异常类">
+<meta property="article:published_time" content="2020-06-02T06:08:50.480Z">
+<meta property="article:modified_time" content="2020-06-02T07:15:07.596Z">
+<meta property="article:author" content="GuoShuSong">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+  
+
+  
+  
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+  <div id="container">
+      <header id="header">
+    <div id="banner"></div>
+    <div id="header-outer">
+        <div id="header-menu" class="header-menu-pos animated">
+            <div class="header-menu-container">
+                <a href="/" class="left">
+                    <span class="site-title">Hello,Here is gssplus!</span>
+                </a>
+                <nav id="header-menu-nav" class="right">
+                    
+                    <a  href="/">
+                        <i class="fa fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    
+                    <a  href="/archives">
+                        <i class="fa fa-archive"></i>
+                        <span>Archives</span>
+                    </a>
+                    
+                    <a  href="/about">
+                        <i class="fa fa-user"></i>
+                        <span>About</span>
+                    </a>
+                    
+                </nav>
+                <a class="mobile-header-menu-button">
+                    <i class="fa fa-bars"></i>
+                </a>
+            </div>
+        </div>
+        <div id="header-row">
+            <div id="logo">
+                <a href="/">
+                    <img src="/images/logo.png" alt="logo">
+                </a>
+            </div>
+            <div class="header-info">
+                <div id="header-title">
+                    
+                    <h2>
+                        Hello,Here is gssplus!
+                    </h2>
+                    
+                </div>
+                <div id="header-description">
+                    
+                    <h3>
+                        我见过春日夏风，秋月冬雪，也曾踏遍南水北山，东麓西岭，可这四季春秋，苍山央水，都不及你瞅我展眉一笑
+                    </h3>
+                    
+                </div>
+            </div>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a title="MinHow" target="_blank" href="//guoshusong.github.io/">
+                            <i class="fa fa-home fa-2x"></i></a>
+                    
+                        <a title="Github" target="_blank" href="//github.com/guoshusong">
+                            <i class="fa fa-github fa-2x"></i></a>
+                    
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>
+      <div class="outer">
+        <section id="main" class="body-wrap"><article id="post-JavaNote_01" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="post-title" itemprop="name">
+      瞎写点儿零零碎碎的东西
+    </h1>
+    <div class="post-title-bar">
+      <ul>
+          
+              <li>
+                  <i class="fa fa-book"></i>
+                  
+                      <a href="/categories/琐碎/">琐碎</a>
+                  
+              </li>
+          
+        <li>
+          <i class="fa fa-calendar"></i>  2020-06-02
+        </li>
+        <li>
+          <i class="fa fa-eye"></i>
+          <span id="busuanzi_value_page_pv"></span>
+        </li>
+      </ul>
+    </div>
+  
+
+          
+      </header>
+    
+    <div class="article-entry post-content" itemprop="articleBody">
+      
+            
+            <h2 id="Java中经纬度、时间日期的加减的问题、Mysql中各种整数类型的区别、自定义异常类"><a href="#Java中经纬度、时间日期的加减的问题、Mysql中各种整数类型的区别、自定义异常类" class="headerlink" title="Java中经纬度、时间日期的加减的问题、Mysql中各种整数类型的区别、自定义异常类"></a>Java中经纬度、时间日期的加减的问题、Mysql中各种整数类型的区别、自定义异常类</h2><a id="more"></a>
+
+<h3 id="经纬度"><a href="#经纬度" class="headerlink" title="经纬度"></a>经纬度</h3><p>创建 MySQL 表时，应当特别注意 lat 和 lng 属性。</p>
+<p>我们都知道经纬度范围是-180~180。但是经纬度有可能是这样的值40.69847032728747。</p>
+<p>肯定是存储数据精度越高，最终位置定位越准确。但是考虑到数据库资源以及可定位到精准性.</p>
+<p>根据谷歌官方的建议,鉴于 Google Maps 目前的缩放能力，您只需要精确到小数点后六位数。为了让表占用的存储空间降至最低，您可以将 lat 和 lng 属性指定为大小是 (10,6) 的浮点数。这样，这些字段将会存储小数点后 6 位数以及小数点前最多 4 位数，如 -123.456789 度。</p>
+<p>经纬度的定义字段类型使用 decimal(10,6) ， 在Java 中映射成Double.</p>
+<h3 id="Java中根据经纬度计距离"><a href="#Java中根据经纬度计距离" class="headerlink" title="Java中根据经纬度计距离"></a>Java中根据经纬度计距离</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 地球半径</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">double</span> EARTH_RADIUS = <span class="number">6378.137</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 利用经纬度计算出现在所处的位置与签到地点之间的距离(单位:米)</span></span><br><span class="line"><span class="comment">     * * <span class="doctag">@param</span> checkLocationLng 规定经度</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> checkLocationLat 规定纬度</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> nowLocationLng 所处经度</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> nowLocationLat 所处纬度</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 距离(米)</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">calculateDistance</span><span class="params">(Double checkLocationLng,Double checkLocationLat,Double nowLocationLng,Double nowLocationLat)</span></span>&#123;</span><br><span class="line">        <span class="keyword">double</span> radLat1=rad(checkLocationLat);</span><br><span class="line">        <span class="keyword">double</span> radLat2=rad(nowLocationLat);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">double</span> radLatDiff = radLat1-radLat2;</span><br><span class="line">        <span class="keyword">double</span> radLngDiff=rad(checkLocationLng)-rad(nowLocationLng);</span><br><span class="line">        <span class="keyword">double</span> s = <span class="number">2</span>*Math.asin(Math.sqrt(Math.pow(Math.sin(radLatDiff/<span class="number">2</span>),<span class="number">2</span>)</span><br><span class="line">                +Math.cos(radLat1)*Math.cos(radLat2)</span><br><span class="line">                *Math.pow(Math.sin(radLngDiff/<span class="number">2</span>),<span class="number">2</span>)));</span><br><span class="line">        s=s*EARTH_RADIUS;</span><br><span class="line">        s=Math.round(s*<span class="number">10000</span>d)/<span class="number">10000</span>d;</span><br><span class="line">        s=s*<span class="number">1000</span>;</span><br><span class="line">        <span class="keyword">return</span>  s;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span>  <span class="keyword">double</span> <span class="title">rad</span><span class="params">(<span class="keyword">double</span> d)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> d*Math.PI/<span class="number">180.0</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Mysql中各种整数类型的区别"><a href="#Mysql中各种整数类型的区别" class="headerlink" title="Mysql中各种整数类型的区别"></a>Mysql中各种整数类型的区别</h3><p>bigint</p>
+<p>从 -2^63 (-9223372036854775808) 到 2^63-1 (9223372036854775807) 的整型数据（所有数字）。存储大小为 8 个字节。</p>
+<p>P.S. bigint已经有长度了，在mysql建表中的length，只是用于显示的位数</p>
+<p>int</p>
+<p>从 -2^31 (-2,147,483,648) 到 2^31 – 1 (2,147,483,647) 的整型数据（所有数字）。存储大小为 4 个字节。int 的 SQL-92 同义字为 integer。</p>
+<p>smallint</p>
+<p>从 -2^15 (-32,768) 到 2^15 – 1 (32,767) 的整型数据。存储大小为 2 个字节。</p>
+<p>tinyint</p>
+<p>从 0 到 255 的整型数据。存储大小为 1 字节。</p>
+<p>注释<br>在支持整数值的地方支持 bigint 数据类型。但是，bigint 用于某些特殊的情况，当整数值超过 int 数据类型支持的范围时，就可以采用 bigint。在 SQL Server 中，int 数据类型是主要的整数数据类型。</p>
+<p>在数据类型优先次序表中，bigint 位于 smallmoney 和 int 之间。</p>
+<p>只有当参数表达式是 bigint 数据类型时，函数才返回 bigint。SQL Server 不会自动将其它整数数据类型（tinyint、smallint 和 int）提升为 bigint。</p>
+<p>int(M) 在 integer 数据类型中，M 表示最大显示宽度。在 int(M) 中，M 的值跟 int(M) 所占多少存储空间并无任何关系。和数字位数也无关系 int(3)、int(4)、int(8) 在磁盘上都是占用 4 btyes 的存储空间(int的默认长度是11，bigint是20，smallint是6，tinyint是4)</p>
+<h3 id="Mysql中查询最后一条插入记录"><a href="#Mysql中查询最后一条插入记录" class="headerlink" title="Mysql中查询最后一条插入记录"></a>Mysql中查询最后一条插入记录</h3><p>项目中每一个数据记录就会产生一个自增Id，如何把这个自增的id返回给前端。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">第一条： <span class="keyword">select</span> * <span class="keyword">from</span> 表名 <span class="keyword">limit</span> <span class="number">1</span>;</span><br><span class="line">最后一条：<span class="keyword">select</span> * <span class="keyword">from</span>表名 <span class="keyword">order</span> <span class="keyword">by</span> 唯一<span class="keyword">id</span>的字段名 <span class="keyword">desc</span> <span class="keyword">limit</span> <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p><a href="https://blog.csdn.net/he140622hwt/article/details/78458684" target="_blank" rel="noopener">可以参考这篇文章</a></p>
+<h3 id="Mysql中Delete、Drop、truncate的区别"><a href="#Mysql中Delete、Drop、truncate的区别" class="headerlink" title="Mysql中Delete、Drop、truncate的区别"></a>Mysql中Delete、Drop、truncate的区别</h3><p>delete，drop，truncate 都有删除表的作用，区别在于：</p>
+<p> 1、delete 和 truncate 仅仅删除表数据，drop 连表数据和表结构一起删除，打个比方，delete 是单杀，truncate 是团灭，drop 是把电脑摔了。</p>
+<p> 2、delete 是 DML 语句，操作完以后如果没有不想提交事务还可以回滚，truncate 和 drop 是 DDL 语句，操作完马上生效，不能回滚，打个比方，delete 是发微信说分手，后悔还可以撤回，truncate 和 drop 是直接扇耳光说滚，不能反悔。</p>
+<p> 3、执行的速度上，drop&gt;truncate&gt;delete，打个比方，drop 是神舟火箭，truncate 是和谐号动车，delete 是自行车。</p>
+<h3 id="Mybatis中jdbcType没有DATETIME类型"><a href="#Mybatis中jdbcType没有DATETIME类型" class="headerlink" title="Mybatis中jdbcType没有DATETIME类型"></a>Mybatis中jdbcType没有DATETIME类型</h3><p>MyBatis的jdbcType是一个枚举类,没有Mtsql中的DATETIME类型，只有DATE和TIME类型</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> JdbcType &#123;</span><br><span class="line">    ARRAY(<span class="number">2003</span>),</span><br><span class="line">    BIT(-<span class="number">7</span>),</span><br><span class="line">    TINYINT(-<span class="number">6</span>),</span><br><span class="line">    SMALLINT(<span class="number">5</span>),</span><br><span class="line">    INTEGER(<span class="number">4</span>),</span><br><span class="line">    BIGINT(-<span class="number">5</span>),</span><br><span class="line">    FLOAT(<span class="number">6</span>),</span><br><span class="line">    REAL(<span class="number">7</span>),</span><br><span class="line">    DOUBLE(<span class="number">8</span>),</span><br><span class="line">    NUMERIC(<span class="number">2</span>),</span><br><span class="line">    DECIMAL(<span class="number">3</span>),</span><br><span class="line">    CHAR(<span class="number">1</span>),</span><br><span class="line">    VARCHAR(<span class="number">12</span>),</span><br><span class="line">    LONGVARCHAR(-<span class="number">1</span>),</span><br><span class="line">    DATE(<span class="number">91</span>),</span><br><span class="line">    TIME(<span class="number">92</span>),</span><br><span class="line">    TIMESTAMP(<span class="number">93</span>),</span><br><span class="line">    BINARY(-<span class="number">2</span>),</span><br><span class="line">    VARBINARY(-<span class="number">3</span>),</span><br><span class="line">    LONGVARBINARY(-<span class="number">4</span>),</span><br><span class="line">    NULL(<span class="number">0</span>),</span><br><span class="line">    OTHER(<span class="number">1111</span>),</span><br><span class="line">    BLOB(<span class="number">2004</span>),</span><br><span class="line">    CLOB(<span class="number">2005</span>),</span><br><span class="line">    BOOLEAN(<span class="number">16</span>),</span><br><span class="line">    CURSOR(-<span class="number">10</span>),</span><br><span class="line">    UNDEFINED(-<span class="number">2147482648</span>),</span><br><span class="line">    NVARCHAR(-<span class="number">9</span>),</span><br><span class="line">    NCHAR(-<span class="number">15</span>),</span><br><span class="line">    NCLOB(<span class="number">2011</span>),</span><br><span class="line">    STRUCT(<span class="number">2002</span>),</span><br><span class="line">    JAVA_OBJECT(<span class="number">2000</span>),</span><br><span class="line">    DISTINCT(<span class="number">2001</span>),</span><br><span class="line">    REF(<span class="number">2006</span>),</span><br><span class="line">    DATALINK(<span class="number">70</span>),</span><br><span class="line">    ROWID(-<span class="number">8</span>),</span><br><span class="line">    LONGNVARCHAR(-<span class="number">16</span>),</span><br><span class="line">    SQLXML(<span class="number">2009</span>),</span><br><span class="line">    DATETIMEOFFSET(-<span class="number">155</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="Java中时间的加减"><a href="#Java中时间的加减" class="headerlink" title="Java中时间的加减"></a>Java中时间的加减</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">DateFormat df = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>);</span><br><span class="line">    <span class="keyword">try</span></span><br><span class="line">    &#123;</span><br><span class="line">      Date d1 = df.parse(<span class="string">"2004-03-26 13:31:40"</span>);<span class="comment">//晚的时间</span></span><br><span class="line">      Date d2 = df.parse(<span class="string">"2004-01-02 11:30:24"</span>);<span class="comment">//早的时间</span></span><br><span class="line">      <span class="keyword">long</span> diff = d1.getTime() - d2.getTime();<span class="comment">//这样得到的差值是微秒级别</span></span><br><span class="line">      <span class="keyword">long</span> days = diff / (<span class="number">1000</span> * <span class="number">60</span> * <span class="number">60</span> * <span class="number">24</span>);</span><br><span class="line">      <span class="keyword">long</span> hours = (diff-days*(<span class="number">1000</span> * <span class="number">60</span> * <span class="number">60</span> * <span class="number">24</span>))/(<span class="number">1000</span>* <span class="number">60</span> * <span class="number">60</span>);</span><br><span class="line">      <span class="keyword">long</span> minutes = (diff-days*(<span class="number">1000</span> * <span class="number">60</span> * <span class="number">60</span> * <span class="number">24</span>)-hours*(<span class="number">1000</span>* <span class="number">60</span> * <span class="number">60</span>))/(<span class="number">1000</span>* <span class="number">60</span>);</span><br><span class="line">      System.out.println(<span class="string">""</span>+days+<span class="string">"天"</span>+hours+<span class="string">"小时"</span>+minutes+<span class="string">"分"</span>);</span><br><span class="line">    &#125;<span class="keyword">catch</span> (Exception e)</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="自定义异常类"><a href="#自定义异常类" class="headerlink" title="自定义异常类"></a>自定义异常类</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span>  ExceptionEnum &#123;</span><br><span class="line"></span><br><span class="line">    SUCCESS(<span class="number">1</span>,<span class="string">"成功"</span>),</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 参数错误 1001-1999</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    PARAM_IS_INVALID(<span class="number">1002</span>,<span class="string">"参数无效"</span>),</span><br><span class="line">    PARAM_IS_BLANK(<span class="number">1003</span>,<span class="string">"参数为空"</span>),</span><br><span class="line">    PARAM_TYPE_BIND_ERROR(<span class="number">1004</span>,<span class="string">"参数类型错误"</span>),</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 用户错误 2001-2999</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    USER_NOT_LOGGED_IN(<span class="number">2001</span>,<span class="string">"用户未登录，请登录"</span>),</span><br><span class="line">    USER_LOGIN_ERROR(<span class="number">2002</span>,<span class="string">"账号不存在或密码错误"</span>),</span><br><span class="line">    USER_ACCOUNT_FORBIDDEN(<span class="number">2003</span>,<span class="string">"账号已被禁用"</span>),</span><br><span class="line">    USER_NOT_EXIST(<span class="number">2004</span>,<span class="string">"用户不存在"</span>),</span><br><span class="line">    USER_HAS_EXISTED(<span class="number">2005</span>,<span class="string">"用户已存在"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Integer code;</span><br><span class="line">    <span class="keyword">private</span> String message;</span><br><span class="line"></span><br><span class="line">    ExceptionEnum(Integer code, String message) &#123;</span><br><span class="line">        <span class="keyword">this</span>.code = code;</span><br><span class="line">        <span class="keyword">this</span>.message = message;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+            <div class="post-copyright">
+    <div class="content">
+        <p>最后更新： 2020年06月02日 15:15</p>
+        <p>原始链接： <a class="post-url" href="/2020/06/02/JavaNote_01/" title="瞎写点儿零零碎碎的东西">https://guoshusong.github.io/2020/06/02/JavaNote_01/</a></p>
+        <footer>
+            <a href="https://guoshusong.github.io">
+                <img src="/images/logo.png" alt="GuoShuSong">
+                GuoShuSong
+            </a>
+        </footer>
+    </div>
+</div>
+
+      
+        
+            
+
+        
+    </div>
+    <footer class="article-footer">
+        
+        
+<div class="post-share">
+    <a href="javascript:;" id="share-sub" class="post-share-fab">
+        <i class="fa fa-share-alt"></i>
+    </a>
+    <div class="post-share-list" id="share-list">
+        <ul class="share-icons">
+          <li>
+            <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://guoshusong.github.io/2020/06/02/JavaNote_01/&title=《瞎写点儿零零碎碎的东西》 — gssplus's Blog&pic=/images/Java.jpg" data-title="微博">
+              <i class="fa fa-weibo"></i>
+            </a>
+          </li>
+          <li>
+            <a class="weixin share-sns" id="wxFab" href="javascript:;" data-title="微信">
+              <i class="fa fa-weixin"></i>
+            </a>
+          </li>
+          <li>
+            <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://guoshusong.github.io/2020/06/02/JavaNote_01/&title=《瞎写点儿零零碎碎的东西》 — gssplus's Blog&source=Java中经纬度、时间日期的加减的问题、Mysql中各种整数类型的区别、自定义异常类" data-title="QQ">
+              <i class="fa fa-qq"></i>
+            </a>
+          </li>
+          <li>
+            <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://guoshusong.github.io/2020/06/02/JavaNote_01/" data-title="Facebook">
+              <i class="fa fa-facebook"></i>
+            </a>
+          </li>
+          <li>
+            <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《瞎写点儿零零碎碎的东西》 — gssplus's Blog&url=https://guoshusong.github.io/2020/06/02/JavaNote_01/&via=https://guoshusong.github.io" data-title="Twitter">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li>
+            <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://guoshusong.github.io/2020/06/02/JavaNote_01/" data-title="Google+">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        </ul>
+     </div>
+</div>
+<div class="post-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;" id="wxShare-close">×</a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://guoshusong.github.io/2020/06/02/JavaNote_01/" alt="微信分享二维码">
+</div>
+
+<div class="mask"></div>
+
+        
+        <ul class="article-footer-menu">
+            
+            
+  <li class="article-footer-tags">
+    <i class="fa fa-tags"></i>
+      
+    <a href="/tags/Java/" class="color5">Java</a>
+      
+    <a href="/tags/MySQL/" class="color1">MySQL</a>
+      
+  </li>
+
+        </ul>
+        
+    </footer>
+  </div>
+</article>
+
+
+    <aside class="post-toc-pos post-toc-top" id="post-toc">
+        <nav class="post-toc-wrap">
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Java中经纬度、时间日期的加减的问题、Mysql中各种整数类型的区别、自定义异常类"><span class="post-toc-text">Java中经纬度、时间日期的加减的问题、Mysql中各种整数类型的区别、自定义异常类</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#经纬度"><span class="post-toc-text">经纬度</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Java中根据经纬度计距离"><span class="post-toc-text">Java中根据经纬度计距离</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Mysql中各种整数类型的区别"><span class="post-toc-text">Mysql中各种整数类型的区别</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Mysql中查询最后一条插入记录"><span class="post-toc-text">Mysql中查询最后一条插入记录</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Mysql中Delete、Drop、truncate的区别"><span class="post-toc-text">Mysql中Delete、Drop、truncate的区别</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Mybatis中jdbcType没有DATETIME类型"><span class="post-toc-text">Mybatis中jdbcType没有DATETIME类型</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Java中时间的加减"><span class="post-toc-text">Java中时间的加减</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#自定义异常类"><span class="post-toc-text">自定义异常类</span></a></li></ol></li></ol>
+        </nav>
+    </aside>
+    
+
+<nav id="article-nav">
+  
+    <a href="/2020/06/02/JavaNote_02/" id="article-nav-newer" class="article-nav-link-wrap">
+
+      <span class="article-nav-title">
+        <i class="fa fa-hand-o-left" aria-hidden="true"></i>
+        
+          Java中的异常处理
+        
+      </span>
+    </a>
+  
+  
+    <a href="/2020/03/05/Mysql1/" id="article-nav-older" class="article-nav-link-wrap">
+      <span class="article-nav-title">MySQL常见面试题</span>
+      <i class="fa fa-hand-o-right" aria-hidden="true"></i>
+    </a>
+  
+</nav>
+
+
+
+    
+</section>
+        
+      </div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+
+      <p>
+        Powered by  <a href="http://hexo.io/" target="_blank">Hexo</a>
+        Theme <a href="//github.com/wongminho/hexo-theme-miho" target="_blank">MiHo</a>
+      &copy; 2020 GuoShuSong<br>
+      </p>
+    </div>
+  </div>
+</footer>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script>
+  var mihoConfig = {
+      root: "https://guoshusong.github.io",
+      animate: true,
+      isHome: false,
+      share: true,
+      reward: 0
+  }
+</script>
+<div class="sidebar">
+    <div id="sidebar-search" title="Search">
+        <i class="fa fa-search"></i>
+    </div>
+    <div id="sidebar-category" title="Categories">
+        <i class="fa fa-book"></i>
+    </div>
+    <div id="sidebar-tag" title="Tags">
+        <i class="fa fa-tags"></i>
+    </div>
+    <div id="sidebar-top">
+        <span class="sidebar-top-icon"><i class="fa fa-angle-up"></i></span>
+    </div>
+</div>
+<div class="sidebar-menu-box" id="sidebar-menu-box">
+    <div class="sidebar-menu-box-container">
+        <div id="sidebar-menu-box-categories">
+            <a class="category-link" href="/categories/Docker/">Docker</a><a class="category-link" href="/categories/Java/">Java</a><a class="category-link" href="/categories/Nginx/">Nginx</a><a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a><a class="category-link" href="/categories/%E7%90%90%E7%A2%8E/">琐碎</a><a class="category-link" href="/categories/%E9%9D%A2%E8%AF%95/">面试</a>
+        </div>
+        <div id="sidebar-menu-box-tags">
+            <a href="/tags/Docker/" style="font-size: 12.5px;">Docker</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Java%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">Java基础</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 12.5px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 20px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 10px;">SpringBoot</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 17.5px;">java</a> <a href="/tags/jvm/" style="font-size: 15px;">jvm</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">排序算法</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" style="font-size: 12.5px;">数据结构与算法</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a> <a href="/tags/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/" style="font-size: 10px;">查找算法</a> <a href="/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A1%A8/" style="font-size: 10px;">线性表</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+        </div>
+    </div>
+    <a href="javascript:;" class="sidebar-menu-box-close">&times;</a>
+</div>
+<div class="mobile-header-menu-nav" id="mobile-header-menu-nav">
+    <div class="mobile-header-menu-container">
+        <span class="title">Menus</span>
+        <ul class="mobile-header-menu-navbar">
+            
+            <li>
+                <a  href="/">
+                    <i class="fa fa-home"></i><span>Home</span>
+                </a>
+            </li>
+            
+            <li>
+                <a  href="/archives">
+                    <i class="fa fa-archive"></i><span>Archives</span>
+                </a>
+            </li>
+            
+            <li>
+                <a  href="/about">
+                    <i class="fa fa-user"></i><span>About</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    <div class="mobile-header-tag-container">
+        <span class="title">Tags</span>
+        <div id="mobile-header-container-tags">
+            <a href="/tags/Docker/" style="font-size: 12.5px;">Docker</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Java%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">Java基础</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 12.5px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 20px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 10px;">SpringBoot</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 17.5px;">java</a> <a href="/tags/jvm/" style="font-size: 15px;">jvm</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">排序算法</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" style="font-size: 12.5px;">数据结构与算法</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a> <a href="/tags/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/" style="font-size: 10px;">查找算法</a> <a href="/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A1%A8/" style="font-size: 10px;">线性表</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+        </div>
+    </div>
+</div>
+<div class="search-wrap">
+    <span class="search-close">&times;</span>
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+            <i class="icon icon-lg icon-chevron-left"></i>
+        </a>
+        <input class="search-field" placeholder="Search..." id="keywords">
+        <a id="search-submit" href="javascript:;">
+            <i class="fa fa-search"></i>
+        </a>
+    <div class="search-container" id="search-container">
+        <ul class="search-result" id="search-result">
+        </ul>
+    </div>
+</div>
+
+<div id="search-tpl">
+    <li class="search-result-item">
+        <a href="{url}" class="search-item-li">
+            <span class="search-item-li-title" title="{title}">{title}</span>
+        </a>
+    </li>
+</div>
+
+<script src="/js/search.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+  <script src="//cdn.bootcss.com/particles.js/2.0.0/particles.min.js"></script>
+  <div id="particles"></div>
+  
+<script src="/js/particles.js"></script>
+
+
+
+
+
+
+
+
+  
+<link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+
+  <script src="//cdn.bootcss.com/scrollReveal.js/3.0.5/scrollreveal.js"></script>
+  
+<script src="/js/animate.js"></script>
+
+
+
+  
+<script src="/js/pop-img.js"></script>
+
+  <script>
+     $(".article-entry p img").popImg();
+  </script>
+
+  </div>
+</body>
+</html>

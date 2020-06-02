@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>设计模式 | gssplus&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+    <meta name="keywords" content="gss's Blog" />
+  
+  <meta name="description" content="常见设计模式及解析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式">
+<meta property="og:url" content="https://guoshusong.github.io/2020/06/02/JavaNote_07/index.html">
+<meta property="og:site_name" content="gssplus&#39;s Blog">
+<meta property="og:description" content="常见设计模式及解析">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9pbWcyMDE4LmNuYmxvZ3MuY29tL2Jsb2cvNDg2MDc0LzIwMTkwOC80ODYwNzQtMjAxOTA4MTIxNjI1MzY5MDgtNDYyMzg0OTcucG5n?x-oss-process=image/format,png">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy80MjM2NTUzLTliMDEzNmVlZGY5MzcwYWEucG5n?x-oss-process=image/format,png">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy80MjM2NTUzLTlmODkwNzVhN2I4MjM2OWUucG5n?x-oss-process=image/format,png">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy80MjM2NTUzLTM1MWEzZTNjNjk2M2E1ODEucG5n?x-oss-process=image/format,png">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy80MjM2NTUzLWUyYjQyODM4YzAwYTAwM2YucG5n?x-oss-process=image/format,png">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy80MjM2NTUzLTI0YjgyOTE1MDk2ZjFiMTIucG5n?x-oss-process=image/format,png">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy80MjM2NTUzLTg4ODAzMTMwNzk5YmJiNDkucG5n?x-oss-process=image/format,png">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy80MjM2NTUzLWY4MjM0ZTkwY2MxYzcwZjMucG5n?x-oss-process=image/format,png">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy80MjM2NTUzLWE1ODcyZGY1MmJlZmQ2MDIucG5n?x-oss-process=image/format,png">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy80MjM2NTUzLTBjZTZiMzdhNzNlMTk1ZjMucG5n?x-oss-process=image/format,png">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy80MjM2NTUzLTBkNzhkM2U2NzkzYmQ1MTIucG5n?x-oss-process=image/format,png">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly93d3cucnVub29iLmNvbS93cC1jb250ZW50L3VwbG9hZHMvMjAxNC8wOC9NVkMxLnBuZw?x-oss-process=image/format,png">
+<meta property="article:published_time" content="2020-06-02T06:08:50.495Z">
+<meta property="article:modified_time" content="2020-03-23T05:49:17.893Z">
+<meta property="article:author" content="GuoShuSong">
+<meta property="article:tag" content="java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9pbWcyMDE4LmNuYmxvZ3MuY29tL2Jsb2cvNDg2MDc0LzIwMTkwOC80ODYwNzQtMjAxOTA4MTIxNjI1MzY5MDgtNDYyMzg0OTcucG5n?x-oss-process=image/format,png">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+  
+
+  
+  
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+  <div id="container">
+      <header id="header">
+    <div id="banner"></div>
+    <div id="header-outer">
+        <div id="header-menu" class="header-menu-pos animated">
+            <div class="header-menu-container">
+                <a href="/" class="left">
+                    <span class="site-title">Hello,Here is gssplus!</span>
+                </a>
+                <nav id="header-menu-nav" class="right">
+                    
+                    <a  href="/">
+                        <i class="fa fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    
+                    <a  href="/archives">
+                        <i class="fa fa-archive"></i>
+                        <span>Archives</span>
+                    </a>
+                    
+                    <a  href="/about">
+                        <i class="fa fa-user"></i>
+                        <span>About</span>
+                    </a>
+                    
+                </nav>
+                <a class="mobile-header-menu-button">
+                    <i class="fa fa-bars"></i>
+                </a>
+            </div>
+        </div>
+        <div id="header-row">
+            <div id="logo">
+                <a href="/">
+                    <img src="/images/logo.png" alt="logo">
+                </a>
+            </div>
+            <div class="header-info">
+                <div id="header-title">
+                    
+                    <h2>
+                        Hello,Here is gssplus!
+                    </h2>
+                    
+                </div>
+                <div id="header-description">
+                    
+                    <h3>
+                        我见过春日夏风，秋月冬雪，也曾踏遍南水北山，东麓西岭，可这四季春秋，苍山央水，都不及你瞅我展眉一笑
+                    </h3>
+                    
+                </div>
+            </div>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a title="MinHow" target="_blank" href="//guoshusong.github.io/">
+                            <i class="fa fa-home fa-2x"></i></a>
+                    
+                        <a title="Github" target="_blank" href="//github.com/guoshusong">
+                            <i class="fa fa-github fa-2x"></i></a>
+                    
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>
+      <div class="outer">
+        <section id="main" class="body-wrap"><article id="post-JavaNote_07" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="post-title" itemprop="name">
+      设计模式
+    </h1>
+    <div class="post-title-bar">
+      <ul>
+          
+        <li>
+          <i class="fa fa-calendar"></i>  2020-06-02
+        </li>
+        <li>
+          <i class="fa fa-eye"></i>
+          <span id="busuanzi_value_page_pv"></span>
+        </li>
+      </ul>
+    </div>
+  
+
+          
+      </header>
+    
+    <div class="article-entry post-content" itemprop="articleBody">
+      
+            
+            <h2 id="常见设计模式及解析"><a href="#常见设计模式及解析" class="headerlink" title="常见设计模式及解析"></a>常见设计模式及解析</h2><a id="more"></a>
+
+<h3 id="1-设计模式分类"><a href="#1-设计模式分类" class="headerlink" title="1.设计模式分类"></a>1.设计模式分类</h3><p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9pbWcyMDE4LmNuYmxvZ3MuY29tL2Jsb2cvNDg2MDc0LzIwMTkwOC80ODYwNzQtMjAxOTA4MTIxNjI1MzY5MDgtNDYyMzg0OTcucG5n?x-oss-process=image/format,png" alt="img"></p>
+<h3 id="2-设计模式的优点"><a href="#2-设计模式的优点" class="headerlink" title="2.设计模式的优点"></a>2.设计模式的优点</h3><p>　　设计模式可在多个项目中重用。</p>
+<p>　　设计模式提供了一个帮助定义系统架构的解决方案。</p>
+<p>　　设计模式吸收了软件工程的经验。</p>
+<p>　　设计模式为应用程序的设计提供了透明性。</p>
+<p>　　设计模式是被实践证明切实有效的，由于它们是建立在专家软件开发人员的知识和经验之上的。</p>
+<h3 id="3-单例模式的七种实现"><a href="#3-单例模式的七种实现" class="headerlink" title="3.单例模式的七种实现"></a>3.单例模式的七种实现</h3><h4 id="第一种：懒汉式加载"><a href="#第一种：懒汉式加载" class="headerlink" title="第一种：懒汉式加载"></a>第一种：懒汉式加载</h4><blockquote>
+<p>懒汉式加载：最简单的单例模式：2步，1.把自己的构造方法设置为私有的，不让别人访问你的实例，2.提供一个static方法给别人获取你的实例.</p>
+</blockquote>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy80MjM2NTUzLTliMDEzNmVlZGY5MzcwYWEucG5n?x-oss-process=image/format,png" alt="img"></p>
+<p>懒汉式加载版本单例模式</p>
+<p>我们可以看到，这是一个简单的获取单例的一个类，首先我们定义一个静态实例 single, 如何将构造方法变成私有的。并且给外界一个静态获取实例的方法。如果对象不是null，就直接返回实例，从而保证实例。也可以保证不浪费内存。这是我们的第一个实现单例模式的例子。很简单。但是有问题，我们后面再讲。</p>
+<h4 id="第二种：饿汉式加载"><a href="#第二种：饿汉式加载" class="headerlink" title="第二种：饿汉式加载"></a>第二种：饿汉式加载</h4><p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy80MjM2NTUzLTlmODkwNzVhN2I4MjM2OWUucG5n?x-oss-process=image/format,png" alt="img"></p>
+<p>饿汉式加载版本单例模式</p>
+<p>我们看到第二种单例模式，代码量比第一个少了很多，而为什么叫饿汉式呢？我们看代码，我们定义了一个静态的final的实例，并且直接new了一个对象，这样就会导致Single2 类在加载字节码到虚拟机的时候就会实例化这个实例，当你调用getInstance方法的时候，就会直接返回，不必做任何判断，这样做的好处是代码量明显减少了，坏处是，在你没有使用该单例的时候，该单例却被加载了，如果该单例很大的话，将会浪费很多的内存。</p>
+<h4 id="我们停下来思考一下"><a href="#我们停下来思考一下" class="headerlink" title="我们停下来思考一下"></a>我们停下来思考一下</h4><blockquote>
+<p>我们如何选择这两种实现方式呢？如果你的项目对性能没有要求，那么请直接使用饿汉式方法实现单例模式，既简单又方便。但是，大部分程序员都是有追求的，岂能不追求性能。那么我们看第一种方式，就是懒汉式，我们刚刚说过，懒汉式既保证了单例，又保证了性能。但是，他真的能保证单例吗？可以确定的是：在单线程模式下，毫无问题，但在复杂的多线程模式下，会怎么样呢？show me code .</p>
+</blockquote>
+<h4 id="测试用例：我们测试一下-测试用例"><a href="#测试用例：我们测试一下-测试用例" class="headerlink" title="测试用例：我们测试一下   测试用例"></a>测试用例：我们测试一下  <img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy80MjM2NTUzLTM1MWEzZTNjNjk2M2E1ODEucG5n?x-oss-process=image/format,png" alt="img"> 测试用例</h4><p>我们分析一下上面的代码，首先，我们验证的是什么呢？我们想验证多线程下获取懒汉式单例会不会出现错误。也就是出现一个以上的单例，我们如何做呢？首先我们定义一个Set对实例进行去重，然后创建1000个线程（Windows每个进程最多1000个线程，Linux每个进程最多2000个线程），每个线程都去获取实例，并添加到set中，实际上，我们应该使用Collections.synchronizedSet(set)获取一个线程安全的set，但是，这里为了方便，就直接使用HashSet了，然后main线程等待10秒，让1000个线程尽量都执行完毕。最后循环打印set的内容。在某些情况下，会出现2个实例，注意，是某些情况下，一定要多测试几次。下面是我们测试的结果：</p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy80MjM2NTUzLWUyYjQyODM4YzAwYTAwM2YucG5n?x-oss-process=image/format,png" alt="img"></p>
+<p>测试结果</p>
+<h4 id="我们停下来思考一下："><a href="#我们停下来思考一下：" class="headerlink" title="我们停下来思考一下："></a>我们停下来思考一下：</h4><blockquote>
+<p>我们通过测试用例发现：高并发情况下，我们的懒加载确实存在bug。为什么会这样呢？我们假设第一个线程进入getInstance方法，判断实例为null，准备进入if块内执行实例化，这时线程突然让出时间片，第二个线程也进入方法，判断实例也为null，并且进入if块执行实例化，第一个线程唤醒也进入if块进行实例化。这时就会出现2个实例。所以出现了bug。So,  我们想要性能（避免上面说的消耗不需要的内存），又要线程安全。那我们该怎么办呢？有点经验的同学心里肯定有数了。show me code.</p>
+</blockquote>
+<h4 id="第三种方式：synchronized-同步式"><a href="#第三种方式：synchronized-同步式" class="headerlink" title="第三种方式：synchronized 同步式"></a>第三种方式：synchronized 同步式</h4><p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy80MjM2NTUzLTI0YjgyOTE1MDk2ZjFiMTIucG5n?x-oss-process=image/format,png" alt="img"></p>
+<p>这是我们的第三种方式，我们分析一下代码，我们可以看到，我们仅仅是在第一种懒汉式中加入了一个关键字，synchronized, 使用synchronized保证线程同步，保证同时只有一个进程进入此方法。从而保证并发安全。但是这样做完美吗？我们思考一下我们的代码：我们使用synchronized关键字，相当于每个想要进入该方法的获取实例的线程都要阻塞排队，我们仔细思考一下：需要吗？当实例已经初始化之后，我们还需要做同步控制吗？这对性能的影响是巨大的。是的，我们只需要在实例第一次初始化的时候同步就足够了。我们继续优化。</p>
+<h4 id="第四种方式：双重检验锁："><a href="#第四种方式：双重检验锁：" class="headerlink" title="第四种方式：双重检验锁："></a>第四种方式：双重检验锁：</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;</span><br><span class="line">    <span class="comment">//private static Singleton instance = null;</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">volatile</span> Singleton instance = <span class="keyword">null</span>;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Singleton</span><span class="params">()</span> </span>&#123; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//第一次判断</span></span><br><span class="line">        <span class="keyword">if</span>(instance == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (Singleton<span class="class">.<span class="keyword">class</span>) </span>&#123;</span><br><span class="line">                <span class="keyword">if</span>(instance == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    <span class="comment">//初始化，并非原子操作</span></span><br><span class="line">                    instance = <span class="keyword">new</span> Singleton(); </span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>双重检验锁</p>
+<p>我们继续分析一下代码：首先看getInstance方法，我们在方法声明上去除了synchronized关键字，多线程进入方法内部，判断是否为null，如果为null，多个线程同时进入if块内，此时，我们是用Single4 Class对象同步一段方法。保证只有一个线程进入该方法。并且判断是否为null，如果为null，就进行初始化。我们想象一下，如果第一个线程进入进入同步块，发现该实例为null，于是进入if块实例化，第二个线程进入同步内则发现实例已经不是null，直接就返回 了，从而保证了并发安全。那么这个和第三种方式又什么区别呢？第三种方式的缺陷是：每个线程每次进入该方法都需要被同步，成本巨大。而第四种方式呢？每个线程最多只有在第一次的时候才会进入同步块，也就是说，只要实例被初始化了，那么之后进入该方法的线程就不必进入同步块了。就解决并发下线程安全和性能的平衡。虽然第一次还是会被阻塞。但相比较于第三种，已经好多了。</p>
+<p>我们还对一个东西感兴趣，就是修饰变量的volatile关键字，为什么要用volatile关键字呢？这是个有趣的问题。我们好好分析一下：<br> 首先我们看，Java虚拟机初始化一个对象都干了些什么？总的来说，3件事情：</p>
+<ol>
+<li>在堆空间分配内存</li>
+<li>执行构造方法进行初始化</li>
+<li>将对象指向内存中分配的内存空间，也就是地址</li>
+</ol>
+<p>但是由于当我们编译的时候，编译器在生成汇编代码的时候会对流程进行优化（这里涉及到happen-before原则和Java内存模型和CPU流水线执行的知识，就不展开讲了），优化的结果式有可能是123顺序执行，</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">memory =allocate();    <span class="comment">//1. 分配对象的内存空间 </span></span><br><span class="line">ctorInstance(memory);  <span class="comment">//2. 初始化对象 </span></span><br><span class="line">instance =memory;     <span class="comment">//3. 设置instance指向刚分配的内存地址</span></span><br></pre></td></tr></table></figure>
+
+<p>上面三个指令中，步骤2依赖步骤1，但是步骤3不依赖步骤2，所以JVM可能针对他们进行指令重拍序优化,所以也有可能是132执行，</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">memory =allocate();    <span class="comment">//1. 分配对象的内存空间 </span></span><br><span class="line">instance =memory;     <span class="comment">//3. 设置instance指向刚分配的内存地址</span></span><br><span class="line">ctorInstance(memory);  <span class="comment">//2. 初始化对象</span></span><br></pre></td></tr></table></figure>
+
+<p>但是，如果是按照132的顺序执行，走到第三步（还没到第二步）的时候，这时突然另一个线程来访问，走到if(single4 == null)块，会发现single4已经不是null了，就直接返回了，但是此时对象还没有完成初始化，如果另一个线程对实例的某些需要初始化的参数进行操作，就有可能报错。使用volatile关键字，能够告诉编译器不要对代码进行重排序的优化。就不会出现这种问题了。</p>
+<p>我们看到，小小的单例模式被我们弄得很复杂。但这就是一个程序员的追求，追求最好的性能，追求最好的代码。</p>
+<p>那还有没有别的更好的办法呢？这个代码也太多了，代码可读性也不好。而且线程第一次进入还会阻塞，还能更完美吗？</p>
+<h4 id="第五种方式：既要懒汉式加载，又要线程安全：静态内部类。"><a href="#第五种方式：既要懒汉式加载，又要线程安全：静态内部类。" class="headerlink" title="第五种方式：既要懒汉式加载，又要线程安全：静态内部类。"></a>第五种方式：既要懒汉式加载，又要线程安全：静态内部类。</h4><p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy80MjM2NTUzLTg4ODAzMTMwNzk5YmJiNDkucG5n?x-oss-process=image/format,png" alt="img"></p>
+<p>我们来分析一下代码：相比较饿汉式（也就是第二种），我们增加了一个内部类，内部类中有一个外部类的实例，并且已经初始化了。我们回忆一下饿汉式有什么问题，饿汉式的问题是：<strong>在你没有使用该单例的时候，该单例却被加载了，如果该单例很大的话，将会浪费很多的内存</strong>.但是，我们现在引入了内部类的方式，虚拟机的机制是，如果你没有访问一个类，那么是不会载入该类进入虚拟机的。当我们使用外部类的时候其他属性的时候，是不会浪费内存载入内部类中的单例的。从而也就保证了并发安全和防止内存浪费。<br> 但是，这样就能完美了吗？</p>
+<h4 id="第六种方式：反射和反序列化破坏单例"><a href="#第六种方式：反射和反序列化破坏单例" class="headerlink" title="第六种方式：反射和反序列化破坏单例"></a>第六种方式：反射和反序列化破坏单例</h4><p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy80MjM2NTUzLWY4MjM0ZTkwY2MxYzcwZjMucG5n?x-oss-process=image/format,png" alt="img"></p>
+<p>我们知道Java的反射几乎是什么事情都能做，管你什么私有的公有的。都能破坏。我们是没有还手之力的。精心编写的代码就被破坏了，而反序列化也很厉害，但是稍微还有点办法遏制。什么办法呢？重写readResolve方法。show me code。</p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy80MjM2NTUzLWE1ODcyZGY1MmJlZmQ2MDIucG5n?x-oss-process=image/format,png" alt="img"></p>
+<p>我们看到：我们重写了readResolve方法，在该方法中直接返回了我们的内部类实例。重写readResolve() 方法，防止反序列化破坏单例机制，这是因为：反序列化的机制在反序列化的时候，会判断如果实现了serializable或者externalizable接口的类中包含readResolve方法的话，会直接调用readResolve方法来获取实例。这样我们就制止了反序列化破坏我们的单例模式。那反射呢？我们有办法吗？</p>
+<h4 id="第七种方式：最后一招，使用枚举"><a href="#第七种方式：最后一招，使用枚举" class="headerlink" title="第七种方式：最后一招，使用枚举"></a>第七种方式：最后一招，使用枚举</h4><p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy80MjM2NTUzLTBjZTZiMzdhNzNlMTk1ZjMucG5n?x-oss-process=image/format,png" alt="img"></p>
+<p>为什么使用枚举可以呢？枚举类型反编译之后可以看到实际上是一个继承自Enum的类。所以本质还是一个类。 因为枚举的特点，你只会有一个实例。我们看一下反编译的枚举类。</p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy80MjM2NTUzLTBkNzhkM2U2NzkzYmQ1MTIucG5n?x-oss-process=image/format,png" alt="img"></p>
+<p>反编译的class字节码</p>
+<p>我们看到，我们的hello包下的Single7枚举继承了java.lang.Enum&lt;&gt; 类。事实上就是一个类，但是我们这样就能防止反射破坏我们辛苦写的单例模式了。因为枚举的特点，而他也能保证单例。堪称完美！！！</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>回到开始，我们引用了一些维基百科的话，我们再看看维基百科关于并发是怎么说的：</p>
+<blockquote>
+<p>单例模式在多线程的应用场合下必须小心使用。如果当唯一实例尚未创建时，有两个线程同时调用创建方法，那么它们同时没有检测到唯一实例的存在，从而同时各自创建了一个实例，这样就有两个实例被构造出来，从而违反了单例模式中实例唯一的原则。 解决这个问题的办法是为指示类是否已经实例化的变量提供一个互斥锁(虽然这样会降低效率).</p>
+</blockquote>
+<p>我们看到维基百科还是靠谱的。告诉了我们可以使用互斥锁来防止并发出现的问题。</p>
+<p>而单例模式带来了什么好处呢？</p>
+<ol>
+<li>对于频繁使用的对象，可以省略创建对象所花费的时间，这对于那些重量级对象而言，是非常可观的一笔系统开销；</li>
+<li>由于 new 操作的次数减少，因而对系统内存的使用频率也会降低，这将减轻 GC 压力，缩短 GC 停顿时间。</li>
+</ol>
+<h4 id="4-jdk中使用了哪些设计模式？"><a href="#4-jdk中使用了哪些设计模式？" class="headerlink" title="4.jdk中使用了哪些设计模式？"></a>4.jdk中使用了哪些设计模式？</h4><h4 id="Structural（结构模式）"><a href="#Structural（结构模式）" class="headerlink" title="Structural（结构模式）"></a><strong>Structural（结构模式）</strong></h4><p><strong>Adapter(适配器):</strong></p>
+<ul>
+<li>java.util.Arrays#asList()</li>
+<li>javax.swing.JTable(TableModel)</li>
+<li>java.io.InputStreamReader(InputStream)</li>
+<li>java.io.OutputStreamWriter(OutputStream)</li>
+<li>javax.xml.bind.annotation.adapters.XmlAdapter#marshal()</li>
+<li>javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal()</li>
+</ul>
+<p><strong>Bridge(桥接模式):</strong></p>
+<p>Bridge模式的作用是将两样东西连接起来，它们分别是类的功能层次结构与类的实现层次结构。该模式在类的功能层次结构与类的实现层次结构之间搭建桥梁。</p>
+<p><a href="https://www.cnblogs.com/betterboyz/p/9361784.html" target="_blank" rel="noopener">参考文章</a></p>
+<ul>
+<li>AWT (提供了抽象层映射于实际的操作系统)</li>
+<li>JDBC</li>
+</ul>
+<p><strong>Composite(组合模式):</strong><br>让使用者把单独的对象和组合对象混用。</p>
+<ul>
+<li>javax.swing.JComponent#add(Component)</li>
+<li>java.awt.Container#add(Component)</li>
+<li>java.util.Map#putAll(Map)</li>
+<li>java.util.List#addAll(Collection)</li>
+<li>java.util.Set#addAll(Collection)</li>
+</ul>
+<p><strong>Decorator(修饰模式):</strong></p>
+<p>为一个对象动态的加上一系列的动作，而不需要因为这些动作的不同而产生大量的继承类。这个模式在JDK中几乎无处不在，所以，下面的列表只是一些典型的。</p>
+<ul>
+<li>java.io.BufferedInputStream(InputStream)</li>
+<li>java.io.DataInputStream(InputStream)</li>
+<li>java.io.BufferedOutputStream(OutputStream)</li>
+<li>java.util.zip.ZipOutputStream(OutputStream)</li>
+<li>java.util.Collections#checked<a href="">List|Map|Set|SortedSet|SortedMap</a></li>
+</ul>
+<p><strong>Facade(外观模式):</strong><br>用一个简单的接口包状一组组件，接口，抽象或是子系统。</p>
+<ul>
+<li>java.lang.Class</li>
+<li>javax.faces.webapp.FacesServlet</li>
+</ul>
+<p><strong>Flyweight(享元模式):</strong><br>有效率地存储大量的小的对象。</p>
+<ul>
+<li>java.lang.Integer#valueOf(int)</li>
+<li>java.lang.Boolean#valueOf(boolean)</li>
+<li>java.lang.Byte#valueOf(byte)</li>
+<li>java.lang.Character#valueOf(char)</li>
+</ul>
+<p><strong>Proxy(代理模式):</strong><br>用一个简单的对象来代替一个复杂的对象。</p>
+<ul>
+<li>java.lang.reflect.Proxy</li>
+<li>RMI</li>
+</ul>
+<h4 id="Creational（创建模式）"><a href="#Creational（创建模式）" class="headerlink" title="Creational（创建模式）"></a><strong>Creational（创建模式）</strong></h4><p><strong>Abstract factory:</strong></p>
+<ul>
+<li>java.util.Calendar#getInstance()</li>
+<li>java.util.Arrays#asList()</li>
+<li>java.util.ResourceBundle#getBundle()</li>
+<li>java.sql.DriverManager#getConnection()</li>
+<li>java.sql.Connection#createStatement()</li>
+<li>java.sql.Statement#executeQuery()</li>
+<li>java.text.NumberFormat#getInstance()</li>
+<li>javax.xml.transform.TransformerFactory#newInstance()</li>
+</ul>
+<p><strong>Builder:</strong><br>主要用来简化一个复杂的对象的创建。这个模式也可以用来实现一个 <a href="http://en.wikipedia.org/wiki/Fluent_interface" target="_blank" rel="noopener">Fluent Interface</a>。</p>
+<ul>
+<li>java.lang.StringBuilder#append()</li>
+<li>java.lang.StringBuffer#append()</li>
+<li>java.sql.PreparedStatement</li>
+<li>javax.swing.GroupLayout.Group#addComponent()</li>
+</ul>
+<p><strong>Factory:</strong><br>简单来说，按照需求返回一个类型的实例。</p>
+<ul>
+<li>java.lang.Proxy#newProxyInstance()</li>
+<li>java.lang.Object#toString()</li>
+<li>java.lang.Class#newInstance()</li>
+<li>java.lang.reflect.Array#newInstance()</li>
+<li>java.lang.reflect.Constructor#newInstance()</li>
+<li>java.lang.Boolean#valueOf(String)</li>
+<li>java.lang.Class#forName()</li>
+</ul>
+<p><strong>Prototype:</strong><br>使用自己的实例创建另一个实例。有时候，创建一个实例然后再把已有实例的值拷贝过去，是一个很复杂的动作。所以，使用这个模式可以避免这样的复杂性。</p>
+<ul>
+<li>java.lang.Object#clone()</li>
+<li>java.lang.Cloneable</li>
+</ul>
+<p><strong>Singleton:</strong><br>只允许一个实例。在 Effective Java中建议使用Emun.</p>
+<ul>
+<li>java.lang.Runtime#getRuntime()</li>
+<li>java.awt.Toolkit#getDefaultToolkit()</li>
+<li>java.awt.GraphicsEnvironment#getLocalGraphicsEnvironment()</li>
+<li>java.awt.Desktop#getDesktop()</li>
+</ul>
+<h4 id="Behavioral-行为模式"><a href="#Behavioral-行为模式" class="headerlink" title="Behavioral(行为模式)"></a><strong>Behavioral(行为模式)</strong></h4><p><strong>Chain of responsibility:</strong><br>把一个对象在一个链接传递直到被处理。在这个链上的所有的对象有相同的接口（抽象类）但却有不同的实现。</p>
+<ul>
+<li>java.util.logging.Logger#log()</li>
+<li>javax.servlet.Filter#doFilter()</li>
+</ul>
+<p><strong>Command:</strong><br>把一个或一些命令封装到一个对象中。</p>
+<ul>
+<li>java.lang.Runnable</li>
+<li>javax.swing.Action</li>
+</ul>
+<p><strong>Interpreter:</strong><br>一个语法解释器的模式。</p>
+<ul>
+<li>java.util.Pattern</li>
+<li>java.text.Normalizer</li>
+<li>java.text.Format</li>
+</ul>
+<p><strong>Iterator:</strong><br>提供一种一致的方法来顺序遍历一个容器中的所有元素。</p>
+<ul>
+<li>java.util.Iterator</li>
+<li>java.util.Enumeration</li>
+</ul>
+<p><strong>Mediator:</strong><br>用来减少对象单的直接通讯的依赖关系。使用一个中间类来管理消息的方向。</p>
+<ul>
+<li>java.util.Timer</li>
+<li>java.util.concurrent.Executor#execute()</li>
+<li>java.util.concurrent.ExecutorService#submit()</li>
+<li>java.lang.reflect.Method#invoke()</li>
+</ul>
+<p><strong>Memento:</strong><br>给一个对象的状态做一个快照。Date类在内部使用了一个long型来做这个快照。</p>
+<ul>
+<li>java.util.Date</li>
+<li>java.io.Serializable</li>
+</ul>
+<p><strong>Null Object:</strong><br>这个模式用来解决如果一个Collection中没有元素的情况。</p>
+<ul>
+<li>java.util.Collections#emptyList()</li>
+<li>java.util.Collections#emptyMap()</li>
+<li>java.util.Collections#emptySet()</li>
+</ul>
+<p><strong>Observer:</strong><br>允许一个对象向所有的侦听的对象广播自己的消息或事件。</p>
+<ul>
+<li>java.util.EventListener</li>
+<li>javax.servlet.http.HttpSessionBindingListener</li>
+<li>javax.servlet.http.HttpSessionAttributeListener</li>
+<li>javax.faces.event.PhaseListener</li>
+</ul>
+<p><strong>State:</strong><br>这个模式允许你可以在运行时很容易地根据自身内部的状态改变对象的行为。</p>
+<ul>
+<li>java.util.Iterator</li>
+<li>javax.faces.lifecycle.LifeCycle#execute()</li>
+</ul>
+<p><strong>Strategy:</strong><br>定义一组算法，并把其封装到一个对象中。然后在运行时，可以灵活的使用其中的一个算法。</p>
+<ul>
+<li>java.util.Comparator#compare()</li>
+<li>javax.servlet.http.HttpServlet</li>
+<li>javax.servlet.Filter#doFilter()</li>
+</ul>
+<p><strong>Template method:</strong><br>允许子类重载部分父类而不需要完全重写。</p>
+<ul>
+<li>java.util.Collections#sort()</li>
+<li>java.io.InputStream#skip()</li>
+<li>java.io.InputStream#read()</li>
+<li>java.util.AbstractList#indexOf()</li>
+</ul>
+<p><strong>Visitor:</strong></p>
+<p>作用于某个对象群中各个对象的操作. 它可以使你在不改变这些对象本身的情况下,定义作用于这些对象的新操作.</p>
+<ul>
+<li>javax.lang.model.element.Element 和javax.lang.model.element.ElementVisitor</li>
+<li>javax.lang.model.type.TypeMirror 和javax.lang.model.type.TypeVisitor</li>
+</ul>
+<h3 id="5-如何编写线程安全的单例"><a href="#5-如何编写线程安全的单例" class="headerlink" title="5. 如何编写线程安全的单例"></a>5. 如何编写线程安全的单例</h3><p>双重检查锁（Double-checked locking）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public static synchronized Singleton getInstance() &#123;</span><br><span class="line">  if(singleton &#x3D;&#x3D; null) &#123;</span><br><span class="line">     synchronized(Singleton.class) &#123;</span><br><span class="line">       if(singleton &#x3D;&#x3D; null) &#123;</span><br><span class="line">         singleton &#x3D; new Singleton();</span><br><span class="line">       &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return singleton;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-代理模式有哪些类型？"><a href="#6-代理模式有哪些类型？" class="headerlink" title="6.  代理模式有哪些类型？"></a>6.  代理模式有哪些类型？</h3><ul>
+<li><p>保护代理: </p>
+<ul>
+<li>它根据某些条件控制对真实主题的访问。</li>
+</ul>
+</li>
+<li><p>虚拟代理</p>
+<ul>
+<li>虚拟代理用于实例化昂贵的对象。代理管理实现中真实主体的生命周期。</li>
+<li>它决定创建实例的需要以及何时重用实例。虚拟代理优化性能。</li>
+</ul>
+</li>
+<li><p>缓存代理</p>
+<ul>
+<li>缓存代理用于缓存对真实主题的昂贵调用。代理可以使用许多缓存策略。</li>
+<li>其中一些是通读、写、缓存和基于时间的。缓存代理用于提高性能。</li>
+</ul>
+</li>
+<li><p>远程代理</p>
+<ul>
+<li>远程代理用于分布式对象通信。远程代理通过调用本地对象方法在远程对象上执行。</li>
+</ul>
+</li>
+<li><p>智能代理</p>
+<ul>
+<li>智能代理用于实现对对象的日志调用和引用计数</li>
+</ul>
+</li>
+</ul>
+<h3 id="7-mvc模式"><a href="#7-mvc模式" class="headerlink" title="7. mvc模式"></a>7. mvc模式</h3><p>MVC 模式代表 Model-View-Controller（模型-视图-控制器） 模式。这种模式用于应用程序的分层开发。</p>
+<ul>
+<li><strong>Model（模型）</strong> - 模型代表一个存取数据的对象或 JAVA POJO。它也可以带有逻辑，在数据变化时更新控制器。</li>
+<li><strong>View（视图）</strong> - 视图代表模型包含的数据的可视化。</li>
+<li><strong>Controller（控制器）</strong> - 控制器作用于模型和视图上。它控制数据流向模型对象，并在数据变化时更新视图。它使视图与模型分离开。</li>
+</ul>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly93d3cucnVub29iLmNvbS93cC1jb250ZW50L3VwbG9hZHMvMjAxNC8wOC9NVkMxLnBuZw?x-oss-process=image/format,png" alt="img"></p>
+<h3 id="8-拦截过滤器模式及其有点"><a href="#8-拦截过滤器模式及其有点" class="headerlink" title="8. 拦截过滤器模式及其有点"></a>8. 拦截过滤器模式及其有点</h3><p>拦截过滤器设计模式用于在请求处理之前和之后拦截和操作请求和响应。过滤器执行请求的身份验证/授权/日志记录或跟踪，然后将请求转发给相应的处理程序。让我们看一下拦截设计模式的一些基本实体。</p>
+<p><strong>过滤器</strong></p>
+<p>　　它在请求处理程序执行请求之前或之后执行特定的任务。</p>
+<p><strong>过滤器链</strong></p>
+<p>　　它包含多个过滤器，有助于在目标上按定义的顺序执行它们。</p>
+<p><strong>目标</strong></p>
+<p>　　目标对象是请求处理程序</p>
+<p><strong>过滤器管理器</strong></p>
+<p>　　它管理过滤器和过滤器链。 </p>
+<p><strong>客户端</strong></p>
+<p>　　客户机对象是向目标对象发送请求的对象。</p>
+<p><strong>拦截过滤器设计模式的好处</strong></p>
+<p>　　过滤器模式使用松散耦合的处理程序提供中央控制。</p>
+<p>　　它扩展了可重用性。</p>
+<p>　　可以随时添加新的过滤器，而不影响客户机的代码。</p>
+<p>　　过滤器可以在程序执行期间动态选择。</p>
+<h3 id="9-dao设计模式"><a href="#9-dao设计模式" class="headerlink" title="9. dao设计模式"></a>9. dao设计模式</h3><p>数据访问对象模式用于将低级数据访问API或操作与高级业务服务隔离开来。下面是DAO模式中的组件。</p>
+<p>数据存取对象接口</p>
+<p>　　DAO接口描述要在模型对象上执行的标准操作。</p>
+<p>数据访问对象的具体类</p>
+<p>　　该类实现一个DAO接口。该类负责从数据源(可以是Xml/数据库或任何其他存储机制)获取数据。</p>
+<p>模型对象或值对象</p>
+<p>　　这个对象是一个普通的旧java对象，包含用于存储使用DAO类检索的数据的get/set方法。</p>
+<blockquote>
+<p>文章参考：<br><a href="https://www.cnblogs.com/davidwang456/p/11328433.html" target="_blank" rel="noopener">https://www.cnblogs.com/davidwang456/p/11328433.html</a><br><a href="https://www.jianshu.com/p/4014472ac79d" target="_blank" rel="noopener">https://www.jianshu.com/p/4014472ac79d</a></p>
+</blockquote>
+
+            <div class="post-copyright">
+    <div class="content">
+        <p>最后更新： 2020年03月23日 13:49</p>
+        <p>原始链接： <a class="post-url" href="/2020/06/02/JavaNote_07/" title="设计模式">https://guoshusong.github.io/2020/06/02/JavaNote_07/</a></p>
+        <footer>
+            <a href="https://guoshusong.github.io">
+                <img src="/images/logo.png" alt="GuoShuSong">
+                GuoShuSong
+            </a>
+        </footer>
+    </div>
+</div>
+
+      
+        
+            
+
+        
+    </div>
+    <footer class="article-footer">
+        
+        
+<div class="post-share">
+    <a href="javascript:;" id="share-sub" class="post-share-fab">
+        <i class="fa fa-share-alt"></i>
+    </a>
+    <div class="post-share-list" id="share-list">
+        <ul class="share-icons">
+          <li>
+            <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://guoshusong.github.io/2020/06/02/JavaNote_07/&title=《设计模式》 — gssplus's Blog&pic=https://guoshusong.github.ioimages/logo.png" data-title="微博">
+              <i class="fa fa-weibo"></i>
+            </a>
+          </li>
+          <li>
+            <a class="weixin share-sns" id="wxFab" href="javascript:;" data-title="微信">
+              <i class="fa fa-weixin"></i>
+            </a>
+          </li>
+          <li>
+            <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://guoshusong.github.io/2020/06/02/JavaNote_07/&title=《设计模式》 — gssplus's Blog&source=常见设计模式及解析" data-title="QQ">
+              <i class="fa fa-qq"></i>
+            </a>
+          </li>
+          <li>
+            <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://guoshusong.github.io/2020/06/02/JavaNote_07/" data-title="Facebook">
+              <i class="fa fa-facebook"></i>
+            </a>
+          </li>
+          <li>
+            <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《设计模式》 — gssplus's Blog&url=https://guoshusong.github.io/2020/06/02/JavaNote_07/&via=https://guoshusong.github.io" data-title="Twitter">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li>
+            <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://guoshusong.github.io/2020/06/02/JavaNote_07/" data-title="Google+">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        </ul>
+     </div>
+</div>
+<div class="post-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;" id="wxShare-close">×</a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://guoshusong.github.io/2020/06/02/JavaNote_07/" alt="微信分享二维码">
+</div>
+
+<div class="mask"></div>
+
+        
+        <ul class="article-footer-menu">
+            
+            
+  <li class="article-footer-tags">
+    <i class="fa fa-tags"></i>
+      
+    <a href="/tags/java/" class="color5">java</a>
+      
+  </li>
+
+        </ul>
+        
+    </footer>
+  </div>
+</article>
+
+
+    <aside class="post-toc-pos post-toc-top" id="post-toc">
+        <nav class="post-toc-wrap">
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#常见设计模式及解析"><span class="post-toc-text">常见设计模式及解析</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#1-设计模式分类"><span class="post-toc-text">1.设计模式分类</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#2-设计模式的优点"><span class="post-toc-text">2.设计模式的优点</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#3-单例模式的七种实现"><span class="post-toc-text">3.单例模式的七种实现</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#第一种：懒汉式加载"><span class="post-toc-text">第一种：懒汉式加载</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#第二种：饿汉式加载"><span class="post-toc-text">第二种：饿汉式加载</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#我们停下来思考一下"><span class="post-toc-text">我们停下来思考一下</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#测试用例：我们测试一下-测试用例"><span class="post-toc-text">测试用例：我们测试一下   测试用例</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#我们停下来思考一下："><span class="post-toc-text">我们停下来思考一下：</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#第三种方式：synchronized-同步式"><span class="post-toc-text">第三种方式：synchronized 同步式</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#第四种方式：双重检验锁："><span class="post-toc-text">第四种方式：双重检验锁：</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#第五种方式：既要懒汉式加载，又要线程安全：静态内部类。"><span class="post-toc-text">第五种方式：既要懒汉式加载，又要线程安全：静态内部类。</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#第六种方式：反射和反序列化破坏单例"><span class="post-toc-text">第六种方式：反射和反序列化破坏单例</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#第七种方式：最后一招，使用枚举"><span class="post-toc-text">第七种方式：最后一招，使用枚举</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#总结"><span class="post-toc-text">总结</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#4-jdk中使用了哪些设计模式？"><span class="post-toc-text">4.jdk中使用了哪些设计模式？</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Structural（结构模式）"><span class="post-toc-text">Structural（结构模式）</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Creational（创建模式）"><span class="post-toc-text">Creational（创建模式）</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Behavioral-行为模式"><span class="post-toc-text">Behavioral(行为模式)</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#5-如何编写线程安全的单例"><span class="post-toc-text">5. 如何编写线程安全的单例</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#6-代理模式有哪些类型？"><span class="post-toc-text">6.  代理模式有哪些类型？</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#7-mvc模式"><span class="post-toc-text">7. mvc模式</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#8-拦截过滤器模式及其有点"><span class="post-toc-text">8. 拦截过滤器模式及其有点</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#9-dao设计模式"><span class="post-toc-text">9. dao设计模式</span></a></li></ol></li></ol>
+        </nav>
+    </aside>
+    
+
+<nav id="article-nav">
+  
+    <a href="/2020/06/02/JavaNote_08/" id="article-nav-newer" class="article-nav-link-wrap">
+
+      <span class="article-nav-title">
+        <i class="fa fa-hand-o-left" aria-hidden="true"></i>
+        
+          Java多线程
+        
+      </span>
+    </a>
+  
+  
+    <a href="/2020/06/02/JavaNote_06/" id="article-nav-older" class="article-nav-link-wrap">
+      <span class="article-nav-title">HashMap源码解析</span>
+      <i class="fa fa-hand-o-right" aria-hidden="true"></i>
+    </a>
+  
+</nav>
+
+
+
+    
+</section>
+        
+      </div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+
+      <p>
+        Powered by  <a href="http://hexo.io/" target="_blank">Hexo</a>
+        Theme <a href="//github.com/wongminho/hexo-theme-miho" target="_blank">MiHo</a>
+      &copy; 2020 GuoShuSong<br>
+      </p>
+    </div>
+  </div>
+</footer>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script>
+  var mihoConfig = {
+      root: "https://guoshusong.github.io",
+      animate: true,
+      isHome: false,
+      share: true,
+      reward: 0
+  }
+</script>
+<div class="sidebar">
+    <div id="sidebar-search" title="Search">
+        <i class="fa fa-search"></i>
+    </div>
+    <div id="sidebar-category" title="Categories">
+        <i class="fa fa-book"></i>
+    </div>
+    <div id="sidebar-tag" title="Tags">
+        <i class="fa fa-tags"></i>
+    </div>
+    <div id="sidebar-top">
+        <span class="sidebar-top-icon"><i class="fa fa-angle-up"></i></span>
+    </div>
+</div>
+<div class="sidebar-menu-box" id="sidebar-menu-box">
+    <div class="sidebar-menu-box-container">
+        <div id="sidebar-menu-box-categories">
+            <a class="category-link" href="/categories/Docker/">Docker</a><a class="category-link" href="/categories/Java/">Java</a><a class="category-link" href="/categories/Nginx/">Nginx</a><a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a><a class="category-link" href="/categories/%E7%90%90%E7%A2%8E/">琐碎</a><a class="category-link" href="/categories/%E9%9D%A2%E8%AF%95/">面试</a>
+        </div>
+        <div id="sidebar-menu-box-tags">
+            <a href="/tags/Docker/" style="font-size: 12.5px;">Docker</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Java%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">Java基础</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 12.5px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 20px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 10px;">SpringBoot</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 17.5px;">java</a> <a href="/tags/jvm/" style="font-size: 15px;">jvm</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">排序算法</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" style="font-size: 12.5px;">数据结构与算法</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a> <a href="/tags/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/" style="font-size: 10px;">查找算法</a> <a href="/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A1%A8/" style="font-size: 10px;">线性表</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+        </div>
+    </div>
+    <a href="javascript:;" class="sidebar-menu-box-close">&times;</a>
+</div>
+<div class="mobile-header-menu-nav" id="mobile-header-menu-nav">
+    <div class="mobile-header-menu-container">
+        <span class="title">Menus</span>
+        <ul class="mobile-header-menu-navbar">
+            
+            <li>
+                <a  href="/">
+                    <i class="fa fa-home"></i><span>Home</span>
+                </a>
+            </li>
+            
+            <li>
+                <a  href="/archives">
+                    <i class="fa fa-archive"></i><span>Archives</span>
+                </a>
+            </li>
+            
+            <li>
+                <a  href="/about">
+                    <i class="fa fa-user"></i><span>About</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    <div class="mobile-header-tag-container">
+        <span class="title">Tags</span>
+        <div id="mobile-header-container-tags">
+            <a href="/tags/Docker/" style="font-size: 12.5px;">Docker</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Java%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">Java基础</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 12.5px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 20px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 10px;">SpringBoot</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 17.5px;">java</a> <a href="/tags/jvm/" style="font-size: 15px;">jvm</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">排序算法</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" style="font-size: 12.5px;">数据结构与算法</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a> <a href="/tags/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/" style="font-size: 10px;">查找算法</a> <a href="/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A1%A8/" style="font-size: 10px;">线性表</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+        </div>
+    </div>
+</div>
+<div class="search-wrap">
+    <span class="search-close">&times;</span>
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+            <i class="icon icon-lg icon-chevron-left"></i>
+        </a>
+        <input class="search-field" placeholder="Search..." id="keywords">
+        <a id="search-submit" href="javascript:;">
+            <i class="fa fa-search"></i>
+        </a>
+    <div class="search-container" id="search-container">
+        <ul class="search-result" id="search-result">
+        </ul>
+    </div>
+</div>
+
+<div id="search-tpl">
+    <li class="search-result-item">
+        <a href="{url}" class="search-item-li">
+            <span class="search-item-li-title" title="{title}">{title}</span>
+        </a>
+    </li>
+</div>
+
+<script src="/js/search.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+  <script src="//cdn.bootcss.com/particles.js/2.0.0/particles.min.js"></script>
+  <div id="particles"></div>
+  
+<script src="/js/particles.js"></script>
+
+
+
+
+
+
+
+
+  
+<link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+
+  <script src="//cdn.bootcss.com/scrollReveal.js/3.0.5/scrollreveal.js"></script>
+  
+<script src="/js/animate.js"></script>
+
+
+
+  
+<script src="/js/pop-img.js"></script>
+
+  <script>
+     $(".article-entry p img").popImg();
+  </script>
+
+  </div>
+</body>
+</html>

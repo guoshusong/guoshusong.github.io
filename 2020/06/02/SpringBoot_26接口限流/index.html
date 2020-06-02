@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>SpringBoot接口限流 | gssplus&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+    <meta name="keywords" content="gss's Blog" />
+  
+  <meta name="description" content="Google-guava的RateLimiter在后端接口限流中的使用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot接口限流">
+<meta property="og:url" content="https://guoshusong.github.io/2020/06/02/SpringBoot_26%E6%8E%A5%E5%8F%A3%E9%99%90%E6%B5%81/index.html">
+<meta property="og:site_name" content="gssplus&#39;s Blog">
+<meta property="og:description" content="Google-guava的RateLimiter在后端接口限流中的使用">
+<meta property="og:image" content="https://i.loli.net/2020/04/19/Yr8qdgCpe3ARmvE.png">
+<meta property="article:published_time" content="2020-06-02T06:08:50.571Z">
+<meta property="article:modified_time" content="2020-04-19T08:07:13.877Z">
+<meta property="article:author" content="GuoShuSong">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="Spring">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2020/04/19/Yr8qdgCpe3ARmvE.png">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+  
+
+  
+  
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+  <div id="container">
+      <header id="header">
+    <div id="banner"></div>
+    <div id="header-outer">
+        <div id="header-menu" class="header-menu-pos animated">
+            <div class="header-menu-container">
+                <a href="/" class="left">
+                    <span class="site-title">Hello,Here is gssplus!</span>
+                </a>
+                <nav id="header-menu-nav" class="right">
+                    
+                    <a  href="/">
+                        <i class="fa fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    
+                    <a  href="/archives">
+                        <i class="fa fa-archive"></i>
+                        <span>Archives</span>
+                    </a>
+                    
+                    <a  href="/about">
+                        <i class="fa fa-user"></i>
+                        <span>About</span>
+                    </a>
+                    
+                </nav>
+                <a class="mobile-header-menu-button">
+                    <i class="fa fa-bars"></i>
+                </a>
+            </div>
+        </div>
+        <div id="header-row">
+            <div id="logo">
+                <a href="/">
+                    <img src="/images/logo.png" alt="logo">
+                </a>
+            </div>
+            <div class="header-info">
+                <div id="header-title">
+                    
+                    <h2>
+                        Hello,Here is gssplus!
+                    </h2>
+                    
+                </div>
+                <div id="header-description">
+                    
+                    <h3>
+                        我见过春日夏风，秋月冬雪，也曾踏遍南水北山，东麓西岭，可这四季春秋，苍山央水，都不及你瞅我展眉一笑
+                    </h3>
+                    
+                </div>
+            </div>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a title="MinHow" target="_blank" href="//guoshusong.github.io/">
+                            <i class="fa fa-home fa-2x"></i></a>
+                    
+                        <a title="Github" target="_blank" href="//github.com/guoshusong">
+                            <i class="fa fa-github fa-2x"></i></a>
+                    
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>
+      <div class="outer">
+        <section id="main" class="body-wrap"><article id="post-SpringBoot_26接口限流" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="post-title" itemprop="name">
+      SpringBoot接口限流
+    </h1>
+    <div class="post-title-bar">
+      <ul>
+          
+        <li>
+          <i class="fa fa-calendar"></i>  2020-06-02
+        </li>
+        <li>
+          <i class="fa fa-eye"></i>
+          <span id="busuanzi_value_page_pv"></span>
+        </li>
+      </ul>
+    </div>
+  
+
+          
+      </header>
+    
+    <div class="article-entry post-content" itemprop="articleBody">
+      
+            
+            <h2 id="Google-guava的RateLimiter在后端接口限流中的使用"><a href="#Google-guava的RateLimiter在后端接口限流中的使用" class="headerlink" title="Google-guava的RateLimiter在后端接口限流中的使用"></a>Google-guava的RateLimiter在后端接口限流中的使用</h2><a id="more"></a>
+
+<h2 id="了解限流"><a href="#了解限流" class="headerlink" title="了解限流"></a>了解限流</h2><p>缓存：缓存的目的是提升系统访问速度和增大系统处理容量</p>
+<p>降级：降级是当服务器压力剧增的情况下，根据当前业务情况及流量对一些服务和页面有策略的降级，以此释放服务器资源以保证核心任务的正常运行</p>
+<p>限流：限流的目的是通过对并发访问/请求进行限速，或者对一个时间窗口内的请求进行限速来保护系统，一旦达到限制速率则可以拒绝服务、排队或等待、降级等处理</p>
+<h3 id="限流算法"><a href="#限流算法" class="headerlink" title="限流算法"></a>限流算法</h3><p>常用的限流算法有令牌桶和和漏桶，而Google开源项目Guava中的RateLimiter使用的就是令牌桶控制算法。</p>
+<h3 id="漏桶算法"><a href="#漏桶算法" class="headerlink" title="漏桶算法"></a>漏桶算法</h3><p>把请求比作是水，水来了都先放进桶里，并以限定的速度出水，当水来得过猛而出水不够快时就会导致水直接溢出，即拒绝服务。</p>
+<p>漏斗有一个进水口 和 一个出水口，出水口以一定速率出水，并且有一个最大出水速率：</p>
+<p>在漏斗中没有水的时候，</p>
+<ul>
+<li>如果进水速率小于等于最大出水速率，那么，出水速率等于进水速率，此时，不会积水</li>
+<li>如果进水速率大于最大出水速率，那么，漏斗以最大速率出水，此时，多余的水会积在漏斗中</li>
+</ul>
+<p>在漏斗中有水的时候</p>
+<ul>
+<li><p>出水口以最大速率出水</p>
+</li>
+<li><p>如果漏斗未满，且有进水的话，那么这些水会积在漏斗中</p>
+</li>
+<li><p>如果漏斗已满，且有进水的话，那么这些水会溢出到漏斗之外</p>
+</li>
+</ul>
+<h3 id="令牌桶算法"><a href="#令牌桶算法" class="headerlink" title="令牌桶算法"></a>令牌桶算法</h3><p>对于很多应用场景来说，除了要求能够限制数据的平均传输速率外，还要求允许某种程度的突发传输。这时候漏桶算法可能就不合适了，令牌桶算法更为适合。</p>
+<p>令牌桶算法的原理是系统以恒定的速率产生令牌，然后把令牌放到令牌桶中，令牌桶有一个容量，当令牌桶满了的时候，再向其中放令牌，那么多余的令牌会被丢弃；当想要处理一个请求的时候，需要从令牌桶中取出一个令牌，如果此时令牌桶中没有令牌，那么则拒绝该请求。</p>
+<h3 id="滑动窗口算法"><a href="#滑动窗口算法" class="headerlink" title="滑动窗口算法"></a>滑动窗口算法</h3><p>为了解决计数器法中</p>
+<blockquote>
+<p>假设有一个恶意用户，他在0:59时，瞬间发送了100个请求，并且1:00又瞬间发送了100个请求，那么其实这个用户在1秒里面，瞬间发送了200个请求。我们刚才规定的是1分钟最多100个请求，也就是每秒钟最多1.7个请求，用户通过在时间窗口的重置节点处突发请求，可以瞬间超过我们的速率限制。用户有可能通过算法的这个漏洞，瞬间压垮我们的应用。</p>
+</blockquote>
+<p>eg: </p>
+<p>一个时间窗口就是一分钟。然后我们将时间窗口进行划分，比如图中，我们就将滑动窗口划成了6格，所以每格代表的是10秒钟。每过10秒钟，我们的时间窗口就会往右滑动一格。每一个格子都有自己独立的计数器counter，比如当一个请求在0:35秒的时候到达，那么0:30~0:39对应的counter就会加1。</p>
+<p>0:59到达的100个请求会落在灰色的格子中，而1:00到达的请求会落在橘黄色的格子中。当时间到达1:00时，我们的窗口会往右移动一格，那么此时时间窗口内的总请求数量一共是200个，超过了限定的100个，所以此时能够检测出来触发了限流。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CounterDemo</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">long</span> timeStamp = getNowTime();</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> reqCount = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> limit = <span class="number">100</span>; <span class="comment">// 时间窗口内最大请求数</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">long</span> interval = <span class="number">6000</span>; <span class="comment">// 时间窗口6ms,6格</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">grant</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> now = getNowTime();</span><br><span class="line">        <span class="keyword">if</span> (now &lt; timeStamp + interval) &#123;</span><br><span class="line">            <span class="comment">// 在时间窗口内</span></span><br><span class="line">            reqCount++;</span><br><span class="line">            <span class="comment">// 判断当前时间窗口内是否超过最大请求控制数</span></span><br><span class="line">            <span class="keyword">return</span> reqCount &lt;= limit;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            timeStamp = now;</span><br><span class="line">            <span class="comment">// 超时后重置</span></span><br><span class="line">            reqCount = <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> Long <span class="title">getNowTime</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> System.currentTimeMillis();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="计数器算法"><a href="#计数器算法" class="headerlink" title="计数器算法"></a>计数器算法</h3><h2 id="RateLimiter在U报名中的使用"><a href="#RateLimiter在U报名中的使用" class="headerlink" title="RateLimiter在U报名中的使用"></a>RateLimiter在U报名中的使用</h2><p>Guava RateLimiter + AOP注解实现单机(只有一台机器)限流、统计QPS</p>
+<p>RateLimiter 基于漏桶算法，但它参考了令牌桶算法</p>
+<h3 id="注解"><a href="#注解" class="headerlink" title="注解"></a>注解</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target</span>(ElementType.METHOD)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> LxRateLimit &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">String <span class="title">value</span><span class="params">()</span> <span class="keyword">default</span> ""</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 每秒向桶中放入令牌的数量</span></span><br><span class="line"><span class="comment">     * 根据项目，所以此处暂定默认为1000</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">double</span> <span class="title">perSecond</span><span class="params">()</span> <span class="keyword">default</span> 1000</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取令牌的等待时间  默认0</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">timeOut</span><span class="params">()</span> <span class="keyword">default</span> 0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 超时时间单位</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">TimeUnit <span class="title">timeOutUnit</span><span class="params">()</span> <span class="keyword">default</span> TimeUnit.MILLISECONDS</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>切面类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LxRateLimitAspect</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> Logger logger = LoggerFactory.getLogger(LxRateLimitAspect<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> RateLimiter rateLimiter = RateLimiter.create(Double.MAX_VALUE);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 定义切点</span></span><br><span class="line"><span class="comment">     * 1、通过扫包切入</span></span><br><span class="line"><span class="comment">     * 2、带有指定注解切入*/</span></span><br><span class="line">    <span class="meta">@Pointcut</span>(<span class="string">"@annotation(com.volunteer.uapply.annotation.LxRateLimit)"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">checkPointcut</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="meta">@Around</span>(value = <span class="string">"checkPointcut()"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">aroundNotice</span><span class="params">(ProceedingJoinPoint pjp)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        logger.info(<span class="string">"拦截到了&#123;&#125;方法..."</span>, pjp.getSignature().getName());</span><br><span class="line">        Signature signature = pjp.getSignature();</span><br><span class="line">        MethodSignature methodSignature = (MethodSignature)signature;</span><br><span class="line">        <span class="comment">//获取目标方法</span></span><br><span class="line">        Method targetMethod = methodSignature.getMethod();</span><br><span class="line">        <span class="keyword">if</span> (targetMethod.isAnnotationPresent(LxRateLimit<span class="class">.<span class="keyword">class</span>)) </span>&#123;</span><br><span class="line">            <span class="comment">//获取目标方法的@LxRateLimit注解</span></span><br><span class="line">            LxRateLimit lxRateLimit = targetMethod.getAnnotation(LxRateLimit<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">            <span class="comment">//将注解的令牌数量放入到令牌桶中</span></span><br><span class="line">            rateLimiter.setRate(lxRateLimit.perSecond());</span><br><span class="line">            <span class="keyword">if</span> (!rateLimiter.tryAcquire(lxRateLimit.timeOut(), lxRateLimit.timeOutUnit())) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> UniversalResponseBody(ResponseResultEnum.SERVER_BUSY.getCode(),ResponseResultEnum.SERVER_BUSY.getMsg());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> pjp.proceed();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>controller类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/testAnnotation"</span>)</span><br><span class="line"><span class="meta">@LxRateLimit</span>(perSecond = <span class="number">1.0</span>, timeOut = <span class="number">500</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">testAnnotation</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">"get token success"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当接口QPS大于1的时候就会返回,服务器繁忙</p>
+<h2 id="RateLimiter的源码"><a href="#RateLimiter的源码" class="headerlink" title="RateLimiter的源码"></a>RateLimiter的源码</h2><p><a href="http://ifeve.com/guava-ratelimiter/" target="_blank" rel="noopener">一篇比较好的文档</a></p>
+<p>RateLimiter 接口列表:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 实例化的两种方式：</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> RateLimiter <span class="title">create</span><span class="params">(<span class="keyword">double</span> permitsPerSecond)</span></span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> RateLimiter <span class="title">create</span><span class="params">(<span class="keyword">double</span> permitsPerSecond,<span class="keyword">long</span> warmupPeriod,TimeUnit unit)</span> </span>&#123;&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">acquire</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">acquire</span><span class="params">(<span class="keyword">int</span> permits)</span> </span>&#123;&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">tryAcquire</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">tryAcquire</span><span class="params">(<span class="keyword">int</span> permits)</span> </span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">tryAcquire</span><span class="params">(<span class="keyword">long</span> timeout, TimeUnit unit)</span> </span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">tryAcquire</span><span class="params">(<span class="keyword">int</span> permits, <span class="keyword">long</span> timeout, TimeUnit unit)</span> </span>&#123;&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">double</span> <span class="title">getRate</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">setRate</span><span class="params">(<span class="keyword">double</span> permitsPerSecond)</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>RateLimiter 的作用是用来限流的，我们知道 java 并发包中提供了 Semaphore(信号量)，它也能够提供对资源使用进行控制，我们看一下下面的代码:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Semaphore semaphore = <span class="keyword">new</span> Semaphore(<span class="number">10</span>);</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">    executor.submit(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            semaphore.acquireUninterruptibly(<span class="number">1</span>);</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                doSomething();</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                semaphore.release();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Semaphore 用来控制同时访问某个资源的并发数量，如上面的代码，我们设置 100 个线程工作，但是我们能做到最多只有 10 个线程能同时到 doSomething() 方法中。它控制的是并发数量。</p>
+<p>而 RateLimiter 是用来控制访问资源的速率（rate）的，它强调的是控制速率。比如控制每秒只能有 100 个请求通过，比如允许每秒发送 1MB 的数据。</p>
+<p>它的构造方法指定一个 permitsPerSecond 参数，代表每秒钟产生多少个 permits，这就是我们的速率。</p>
+<p>RateLimiter 允许预占未来的令牌，比如，每秒产生 5 个 permits，我们可以单次请求 100 个，这样，紧接着的下一个请求需要等待大概 20 秒才能获取到 permits。</p>
+<h3 id="SmoothRateLimiter-介绍"><a href="#SmoothRateLimiter-介绍" class="headerlink" title="SmoothRateLimiter 介绍"></a>SmoothRateLimiter 介绍</h3><p>RateLimiter 目前只有一个子类，那就是抽象类 SmoothRateLimiter，SmoothRateLimiter 有两个实现类，也就是我们这边要介绍的两种模式，我们先简单介绍下 SmoothRateLimiter，然后后面分两个小节分别介绍它的两个实现类。</p>
+<p><img src="https://i.loli.net/2020/04/19/Yr8qdgCpe3ARmvE.png" alt="2020041900-RateLimiter.png"></p>
+<p>RateLimiter 作为抽象类，只有两个属性：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> SleepingStopwatch stopwatch;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> Object mutexDoNotUseDirectly;</span><br></pre></td></tr></table></figure>
+
+<p>stopwatch 非常重要，它用来“计时”，RateLimiter 把实例化的时间设置为 0 值，后续都是取相对时间，用微秒表示。</p>
+<p>mutexDoNotUseDirectly 用来做锁，RateLimiter 依赖于 synchronized 来控制并发，所以我们之后可以看到，各个属性甚至都没有用 volatile 修饰。</p>
+<h4 id="SmoothRateLimiter的属性"><a href="#SmoothRateLimiter的属性" class="headerlink" title="SmoothRateLimiter的属性"></a>SmoothRateLimiter的属性</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 当前还有多少 permits 没有被使用，被存下来的 permits 数量</span></span><br><span class="line"><span class="keyword">double</span> storedPermits;</span><br><span class="line"> </span><br><span class="line"><span class="comment">// 最大允许缓存的 permits 数量，也就是 storedPermits 能达到的最大值</span></span><br><span class="line"><span class="keyword">double</span> maxPermits;</span><br><span class="line"> </span><br><span class="line"><span class="comment">// 每隔多少时间产生一个 permit，</span></span><br><span class="line"><span class="comment">// 比如我们构造方法中设置每秒 5 个，也就是每隔 200ms 一个，这里单位是微秒，也就是 200,000</span></span><br><span class="line"><span class="keyword">double</span> stableIntervalMicros;</span><br><span class="line"> </span><br><span class="line"><span class="comment">// 下一次可以获取 permits 的时间，这个时间是相对 RateLimiter 的构造时间的，是一个相对时间，理解为时间戳吧</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">long</span> nextFreeTicketMicros = <span class="number">0L</span>;</span><br></pre></td></tr></table></figure>
+
+<p>nextFreeTicketMicros 是一个很关键的属性。我们每次获取 permits 的时候，先拿 storedPermits 的值，如果够，storedPermits 减去相应的值就可以了，如果不够，那么还需要将 nextFreeTicketMicros 往前推，表示我预占了接下来多少时间的量了。那么下一个请求来的时候，如果还没到 nextFreeTicketMicros 这个时间点，需要 sleep 到这个点再返回，当然也要将这个值再往前推。 </p>
+<h3 id="SmoothBursty"><a href="#SmoothBursty" class="headerlink" title="SmoothBursty"></a>SmoothBursty</h3><p>Bursty 是突发的意思，它说的不是下面这个意思：我们设置了 1k 每秒，而我们可以一次性获取 5k 的 permits，这个场景表达的不是突发，而是在说预先占有了接下来几秒产生的 permits。</p>
+<p>突发说的是，RateLimiter 会缓存一定数量的 permits 在池中，这样对于突发请求，能及时得到满足。想象一下我们的某个接口，很久没有请求过来，突然同时来了好几个请求，如果我们没有缓存一些 permits 的话，很多线程就需要等待了。</p>
+<p>SmoothBursty 默认缓存最多 1 秒钟的 permits，不可以修改。</p>
+<p>构造方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> RateLimiter <span class="title">create</span><span class="params">(<span class="keyword">double</span> permitsPerSecond)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> create(permitsPerSecond, SleepingStopwatch.createFromSystemTimer());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//构造参数 permitsPerSecond 指定每秒钟可以产生多少个 permits。</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> RateLimiter <span class="title">create</span><span class="params">(<span class="keyword">double</span> permitsPerSecond, SleepingStopwatch stopwatch)</span> </span>&#123;</span><br><span class="line">    RateLimiter rateLimiter = <span class="keyword">new</span> SmoothBursty(stopwatch, <span class="number">1.0</span> <span class="comment">/* maxBurstSeconds */</span>);</span><br><span class="line">    rateLimiter.setRate(permitsPerSecond);</span><br><span class="line">    <span class="keyword">return</span> rateLimiter;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>构造函数指定了 maxBurstSeconds 为 1.0，也就是说，最多会缓存 1 秒钟，也就是 (1.0 * permitsPerSecond) 这么多个 permits 到池中。</p>
+<blockquote>
+<p>这个 1.0 秒，关系到 storedPermits 和 maxPermits：0 &lt;= storedPermits &lt;= maxPermits = permitsPerSecond</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">setRate</span><span class="params">(<span class="keyword">double</span> permitsPerSecond)</span> </span>&#123;</span><br><span class="line">  checkArgument(</span><br><span class="line">      permitsPerSecond &gt; <span class="number">0.0</span> &amp;&amp; !Double.isNaN(permitsPerSecond), <span class="string">"rate must be positive"</span>);</span><br><span class="line">  <span class="keyword">synchronized</span> (mutex()) &#123;</span><br><span class="line">    doSetRate(permitsPerSecond, stopwatch.readMicros());</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>setRate 这个方法是一个 public 方法，它可以用来调整速率。我们这边继续跟的是初始化过程，但是大家提前知道这个方法是用来调整速率用的，对理解源码有很大的帮助。注意看，这里用了 synchronized 控制并发。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">doSetRate</span><span class="params">(<span class="keyword">double</span> permitsPerSecond, <span class="keyword">long</span> nowMicros)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 同步</span></span><br><span class="line">    resync(nowMicros);</span><br><span class="line">    <span class="comment">// 计算属性 stableIntervalMicros</span></span><br><span class="line">    <span class="keyword">double</span> stableIntervalMicros = SECONDS.toMicros(<span class="number">1L</span>) / permitsPerSecond;</span><br><span class="line">    <span class="keyword">this</span>.stableIntervalMicros = stableIntervalMicros;</span><br><span class="line">    doSetRate(permitsPerSecond, stableIntervalMicros);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>resync 方法很简单，它用来调整 storedPermits 和 nextFreeTicketMicros。这就是我们说的，在关键的节点，需要先更新一下 storedPermits 到正确的值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">resync</span><span class="params">(<span class="keyword">long</span> nowMicros)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 如果 nextFreeTicket 已经过掉了，想象一下很长时间都没有再次调用 limiter.acquire() 的场景</span></span><br><span class="line">  <span class="comment">// 需要将 nextFreeTicket 设置为当前时间，重新计算 storedPermits</span></span><br><span class="line">  <span class="keyword">if</span> (nowMicros &gt; nextFreeTicketMicros) &#123;</span><br><span class="line">    <span class="keyword">double</span> newPermits = (nowMicros - nextFreeTicketMicros) / coolDownIntervalMicros();</span><br><span class="line">    storedPermits = min(maxPermits, storedPermits + newPermits);</span><br><span class="line">    nextFreeTicketMicros = nowMicros;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>resync 同步以后，会设置 stableIntervalMicros 为一个正确的值，然后进入下面的方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">doSetRate</span><span class="params">(<span class="keyword">double</span> permitsPerSecond, <span class="keyword">double</span> stableIntervalMicros)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">double</span> oldMaxPermits = <span class="keyword">this</span>.maxPermits;</span><br><span class="line">  <span class="comment">// 这里计算了，maxPermits 为 1 秒产生的 permits</span></span><br><span class="line">  maxPermits = maxBurstSeconds * permitsPerSecond;</span><br><span class="line">  <span class="keyword">if</span> (oldMaxPermits == Double.POSITIVE_INFINITY) &#123;</span><br><span class="line">    <span class="comment">// if we don't special-case this, we would get storedPermits == NaN, below</span></span><br><span class="line">    storedPermits = maxPermits;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// 因为 storedPermits 的值域变化了，需要等比例缩放</span></span><br><span class="line">    storedPermits =</span><br><span class="line">        (oldMaxPermits == <span class="number">0.0</span>)</span><br><span class="line">            ? <span class="number">0.0</span> <span class="comment">// initial state</span></span><br><span class="line">            : storedPermits * maxPermits / oldMaxPermits;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>，原来的 RateLimiter 是用某个 permitsPerSecond 值初始化的，现在我们要调整这个频率。对于 maxPermits 来说，是重新计算，而对于 storedPermits 来说，是做等比例的缩放。</p>
+<p>到此，构造方法就完成了，我们得到了一个 RateLimiter 的实现类 SmoothBursty 的实例.</p>
+<p>acquire 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@CanIgnoreReturnValue</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">acquire</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> acquire(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="meta">@CanIgnoreReturnValue</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">acquire</span><span class="params">(<span class="keyword">int</span> permits)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 预约，如果当前不能直接获取到 permits，需要等待</span></span><br><span class="line">  <span class="comment">// 返回值代表需要 sleep 多久</span></span><br><span class="line">  <span class="keyword">long</span> microsToWait = reserve(permits);</span><br><span class="line">  <span class="comment">// sleep</span></span><br><span class="line">  stopwatch.sleepMicrosUninterruptibly(microsToWait);</span><br><span class="line">  <span class="comment">// 返回 sleep 的时长</span></span><br><span class="line">  <span class="keyword">return</span> <span class="number">1.0</span> * microsToWait / SECONDS.toMicros(<span class="number">1L</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">reserve</span><span class="params">(<span class="keyword">int</span> permits)</span> </span>&#123;</span><br><span class="line">  checkPermits(permits);</span><br><span class="line">  <span class="keyword">synchronized</span> (mutex()) &#123;</span><br><span class="line">    <span class="keyword">return</span> reserveAndGetWaitLength(permits, stopwatch.readMicros());</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">reserveAndGetWaitLength</span><span class="params">(<span class="keyword">int</span> permits, <span class="keyword">long</span> nowMicros)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 返回 nextFreeTicketMicros</span></span><br><span class="line">  <span class="keyword">long</span> momentAvailable = reserveEarliestAvailable(permits, nowMicros);</span><br><span class="line">  <span class="comment">// 计算时长</span></span><br><span class="line">  <span class="keyword">return</span> max(momentAvailable - nowMicros, <span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">reserveEarliestAvailable</span><span class="params">(<span class="keyword">int</span> requiredPermits, <span class="keyword">long</span> nowMicros)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 这里做一次同步，更新 storedPermits 和 nextFreeTicketMicros (如果需要)</span></span><br><span class="line">  resync(nowMicros);</span><br><span class="line">  <span class="comment">// 返回值就是 nextFreeTicketMicros，注意刚刚已经做了 resync 了，此时它是最新的正确的值</span></span><br><span class="line">  <span class="keyword">long</span> returnValue = nextFreeTicketMicros;</span><br><span class="line">  <span class="comment">// storedPermits 中可以使用多少个 permits</span></span><br><span class="line">  <span class="keyword">double</span> storedPermitsToSpend = min(requiredPermits, <span class="keyword">this</span>.storedPermits);</span><br><span class="line">  <span class="comment">// storedPermits 中不够的部分</span></span><br><span class="line">  <span class="keyword">double</span> freshPermits = requiredPermits - storedPermitsToSpend;</span><br><span class="line">  <span class="comment">// 为了这个不够的部分，需要等待多久时间</span></span><br><span class="line">  <span class="keyword">long</span> waitMicros =</span><br><span class="line">      storedPermitsToWaitTime(<span class="keyword">this</span>.storedPermits, storedPermitsToSpend) <span class="comment">// 这部分固定返回 0</span></span><br><span class="line">          + (<span class="keyword">long</span>) (freshPermits * stableIntervalMicros);</span><br><span class="line">  <span class="comment">// 将 nextFreeTicketMicros 往前推</span></span><br><span class="line">  <span class="keyword">this</span>.nextFreeTicketMicros = LongMath.saturatedAdd(nextFreeTicketMicros, waitMicros);</span><br><span class="line">  <span class="comment">// storedPermits 减去被拿走的部分</span></span><br><span class="line">  <span class="keyword">this</span>.storedPermits -= storedPermitsToSpend;</span><br><span class="line">  <span class="keyword">return</span> returnValue;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以看到，获取 permits 的时候，其实是获取了两部分，一部分来自于存量 storedPermits，存量不够的话，另一部分来自于预占未来的 freshPermits。</p>
+<p>这里提一个关键点吧，我们看到，返回值是 nextFreeTicketMicros 的旧值，因为只要到这个时间点，就说明当次 acquire 可以成功返回了，而不管 storedPermits 够不够。如果 storedPermits 不够，会将 nextFreeTicketMicros 往前推一定的时间，预占了一定的量。</p>
+<h3 id="SmoothWarmingUp"><a href="#SmoothWarmingUp" class="headerlink" title="SmoothWarmingUp"></a>SmoothWarmingUp</h3><p>moothBursty 可以处理突发请求，因为它会缓存最多 1 秒的 permits，而待会我们会看到 SmoothWarmingUp 完全不同的设计。</p>
+<p>SmoothWarmingUp 适用于资源需要预热的场景，比如我们的某个接口业务，需要使用到数据库连接，由于连接需要预热才能进入到最佳状态，如果我们的系统长时间处于低负载或零负载状态（当然，应用刚启动也是一样的），连接池中的连接慢慢释放掉了，此时我们认为连接池是冷的。</p>
+<p>假设我们的业务在稳定状态下，正常可以提供最大 1000 QPS 的访问，但是如果连接池是冷的，我们就不能让 1000 个请求同时进来，因为这会拖垮我们的系统，我们应该有个预热升温的过程。</p>
+<p>对应到 SmoothWarmingUp 中，如果系统处于低负载状态，storedPermits 会一直增加，当请求来的时候，我们要从 storedPermits 中取 permits，最关键的点在于，从 storedPermits 中取 permits 的操作是比较耗时的，因为没有预热。</p>
+<p>回顾一下前面介绍的 SmoothBursty，它从 storedPermits 中获取 permits 是不需要等待时间的，而这边洽洽相反，从 storedPermits 获取需要更多的时间，这是最大的不同.</p>
+<p><a href="https://blog.csdn.net/forezp/article/details/100060686" target="_blank" rel="noopener">此部分参考博客</a></p>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><ul>
+<li>Sentinel 是阿里开源的流控、熔断工具</li>
+</ul>
+
+            <div class="post-copyright">
+    <div class="content">
+        <p>最后更新： 2020年04月19日 16:07</p>
+        <p>原始链接： <a class="post-url" href="/2020/06/02/SpringBoot_26%E6%8E%A5%E5%8F%A3%E9%99%90%E6%B5%81/" title="SpringBoot接口限流">https://guoshusong.github.io/2020/06/02/SpringBoot_26%E6%8E%A5%E5%8F%A3%E9%99%90%E6%B5%81/</a></p>
+        <footer>
+            <a href="https://guoshusong.github.io">
+                <img src="/images/logo.png" alt="GuoShuSong">
+                GuoShuSong
+            </a>
+        </footer>
+    </div>
+</div>
+
+      
+        
+            
+
+        
+    </div>
+    <footer class="article-footer">
+        
+        
+<div class="post-share">
+    <a href="javascript:;" id="share-sub" class="post-share-fab">
+        <i class="fa fa-share-alt"></i>
+    </a>
+    <div class="post-share-list" id="share-list">
+        <ul class="share-icons">
+          <li>
+            <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://guoshusong.github.io/2020/06/02/SpringBoot_26%E6%8E%A5%E5%8F%A3%E9%99%90%E6%B5%81/&title=《SpringBoot接口限流》 — gssplus's Blog&pic=https://guoshusong.github.ioimages/logo.png" data-title="微博">
+              <i class="fa fa-weibo"></i>
+            </a>
+          </li>
+          <li>
+            <a class="weixin share-sns" id="wxFab" href="javascript:;" data-title="微信">
+              <i class="fa fa-weixin"></i>
+            </a>
+          </li>
+          <li>
+            <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://guoshusong.github.io/2020/06/02/SpringBoot_26%E6%8E%A5%E5%8F%A3%E9%99%90%E6%B5%81/&title=《SpringBoot接口限流》 — gssplus's Blog&source=Google-guava的RateLimiter在后端接口限流中的使用" data-title="QQ">
+              <i class="fa fa-qq"></i>
+            </a>
+          </li>
+          <li>
+            <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://guoshusong.github.io/2020/06/02/SpringBoot_26%E6%8E%A5%E5%8F%A3%E9%99%90%E6%B5%81/" data-title="Facebook">
+              <i class="fa fa-facebook"></i>
+            </a>
+          </li>
+          <li>
+            <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《SpringBoot接口限流》 — gssplus's Blog&url=https://guoshusong.github.io/2020/06/02/SpringBoot_26%E6%8E%A5%E5%8F%A3%E9%99%90%E6%B5%81/&via=https://guoshusong.github.io" data-title="Twitter">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li>
+            <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://guoshusong.github.io/2020/06/02/SpringBoot_26%E6%8E%A5%E5%8F%A3%E9%99%90%E6%B5%81/" data-title="Google+">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        </ul>
+     </div>
+</div>
+<div class="post-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;" id="wxShare-close">×</a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://guoshusong.github.io/2020/06/02/SpringBoot_26%E6%8E%A5%E5%8F%A3%E9%99%90%E6%B5%81/" alt="微信分享二维码">
+</div>
+
+<div class="mask"></div>
+
+        
+        <ul class="article-footer-menu">
+            
+            
+  <li class="article-footer-tags">
+    <i class="fa fa-tags"></i>
+      
+    <a href="/tags/java/" class="color5">java</a>
+      
+    <a href="/tags/Spring/" class="color2">Spring</a>
+      
+  </li>
+
+        </ul>
+        
+    </footer>
+  </div>
+</article>
+
+
+    <aside class="post-toc-pos post-toc-top" id="post-toc">
+        <nav class="post-toc-wrap">
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Google-guava的RateLimiter在后端接口限流中的使用"><span class="post-toc-text">Google-guava的RateLimiter在后端接口限流中的使用</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#了解限流"><span class="post-toc-text">了解限流</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#限流算法"><span class="post-toc-text">限流算法</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#漏桶算法"><span class="post-toc-text">漏桶算法</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#令牌桶算法"><span class="post-toc-text">令牌桶算法</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#滑动窗口算法"><span class="post-toc-text">滑动窗口算法</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#计数器算法"><span class="post-toc-text">计数器算法</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#RateLimiter在U报名中的使用"><span class="post-toc-text">RateLimiter在U报名中的使用</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#注解"><span class="post-toc-text">注解</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#RateLimiter的源码"><span class="post-toc-text">RateLimiter的源码</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#SmoothRateLimiter-介绍"><span class="post-toc-text">SmoothRateLimiter 介绍</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#SmoothRateLimiter的属性"><span class="post-toc-text">SmoothRateLimiter的属性</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#SmoothBursty"><span class="post-toc-text">SmoothBursty</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#SmoothWarmingUp"><span class="post-toc-text">SmoothWarmingUp</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#其他"><span class="post-toc-text">其他</span></a></li></ol></li></ol>
+        </nav>
+    </aside>
+    
+
+<nav id="article-nav">
+  
+    <a href="/2020/06/02/Tcp1/" id="article-nav-newer" class="article-nav-link-wrap">
+
+      <span class="article-nav-title">
+        <i class="fa fa-hand-o-left" aria-hidden="true"></i>
+        
+          建立服务器套字时Socket流的关闭
+        
+      </span>
+    </a>
+  
+  
+    <a href="/2020/06/02/SpringBoot_11Cache/" id="article-nav-older" class="article-nav-link-wrap">
+      <span class="article-nav-title">Spring的Cache</span>
+      <i class="fa fa-hand-o-right" aria-hidden="true"></i>
+    </a>
+  
+</nav>
+
+
+
+    
+</section>
+        
+      </div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+
+      <p>
+        Powered by  <a href="http://hexo.io/" target="_blank">Hexo</a>
+        Theme <a href="//github.com/wongminho/hexo-theme-miho" target="_blank">MiHo</a>
+      &copy; 2020 GuoShuSong<br>
+      </p>
+    </div>
+  </div>
+</footer>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script>
+  var mihoConfig = {
+      root: "https://guoshusong.github.io",
+      animate: true,
+      isHome: false,
+      share: true,
+      reward: 0
+  }
+</script>
+<div class="sidebar">
+    <div id="sidebar-search" title="Search">
+        <i class="fa fa-search"></i>
+    </div>
+    <div id="sidebar-category" title="Categories">
+        <i class="fa fa-book"></i>
+    </div>
+    <div id="sidebar-tag" title="Tags">
+        <i class="fa fa-tags"></i>
+    </div>
+    <div id="sidebar-top">
+        <span class="sidebar-top-icon"><i class="fa fa-angle-up"></i></span>
+    </div>
+</div>
+<div class="sidebar-menu-box" id="sidebar-menu-box">
+    <div class="sidebar-menu-box-container">
+        <div id="sidebar-menu-box-categories">
+            <a class="category-link" href="/categories/Docker/">Docker</a><a class="category-link" href="/categories/Java/">Java</a><a class="category-link" href="/categories/Nginx/">Nginx</a><a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a><a class="category-link" href="/categories/%E7%90%90%E7%A2%8E/">琐碎</a><a class="category-link" href="/categories/%E9%9D%A2%E8%AF%95/">面试</a>
+        </div>
+        <div id="sidebar-menu-box-tags">
+            <a href="/tags/Docker/" style="font-size: 12.5px;">Docker</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Java%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">Java基础</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 12.5px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 20px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 10px;">SpringBoot</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 17.5px;">java</a> <a href="/tags/jvm/" style="font-size: 15px;">jvm</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">排序算法</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" style="font-size: 12.5px;">数据结构与算法</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a> <a href="/tags/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/" style="font-size: 10px;">查找算法</a> <a href="/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A1%A8/" style="font-size: 10px;">线性表</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+        </div>
+    </div>
+    <a href="javascript:;" class="sidebar-menu-box-close">&times;</a>
+</div>
+<div class="mobile-header-menu-nav" id="mobile-header-menu-nav">
+    <div class="mobile-header-menu-container">
+        <span class="title">Menus</span>
+        <ul class="mobile-header-menu-navbar">
+            
+            <li>
+                <a  href="/">
+                    <i class="fa fa-home"></i><span>Home</span>
+                </a>
+            </li>
+            
+            <li>
+                <a  href="/archives">
+                    <i class="fa fa-archive"></i><span>Archives</span>
+                </a>
+            </li>
+            
+            <li>
+                <a  href="/about">
+                    <i class="fa fa-user"></i><span>About</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    <div class="mobile-header-tag-container">
+        <span class="title">Tags</span>
+        <div id="mobile-header-container-tags">
+            <a href="/tags/Docker/" style="font-size: 12.5px;">Docker</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Java%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">Java基础</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 12.5px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 20px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 10px;">SpringBoot</a> <a href="/tags/TCP/" style="font-size: 10px;">TCP</a> <a href="/tags/java/" style="font-size: 17.5px;">java</a> <a href="/tags/jvm/" style="font-size: 15px;">jvm</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">排序算法</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" style="font-size: 12.5px;">数据结构与算法</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a> <a href="/tags/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/" style="font-size: 10px;">查找算法</a> <a href="/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A1%A8/" style="font-size: 10px;">线性表</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+        </div>
+    </div>
+</div>
+<div class="search-wrap">
+    <span class="search-close">&times;</span>
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+            <i class="icon icon-lg icon-chevron-left"></i>
+        </a>
+        <input class="search-field" placeholder="Search..." id="keywords">
+        <a id="search-submit" href="javascript:;">
+            <i class="fa fa-search"></i>
+        </a>
+    <div class="search-container" id="search-container">
+        <ul class="search-result" id="search-result">
+        </ul>
+    </div>
+</div>
+
+<div id="search-tpl">
+    <li class="search-result-item">
+        <a href="{url}" class="search-item-li">
+            <span class="search-item-li-title" title="{title}">{title}</span>
+        </a>
+    </li>
+</div>
+
+<script src="/js/search.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+  <script src="//cdn.bootcss.com/particles.js/2.0.0/particles.min.js"></script>
+  <div id="particles"></div>
+  
+<script src="/js/particles.js"></script>
+
+
+
+
+
+
+
+
+  
+<link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+
+  <script src="//cdn.bootcss.com/scrollReveal.js/3.0.5/scrollreveal.js"></script>
+  
+<script src="/js/animate.js"></script>
+
+
+
+  
+<script src="/js/pop-img.js"></script>
+
+  <script>
+     $(".article-entry p img").popImg();
+  </script>
+
+  </div>
+</body>
+</html>
