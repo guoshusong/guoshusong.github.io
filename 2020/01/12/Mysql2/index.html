@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8">
   
-  <title>事务及事务的各种隔离级别 | gssplus&#39;s Blog</title>
+  <title>MySQL事务及事务的各种隔离级别 | gssplus&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
     <meta name="keywords" content="gss's Blog" />
   
   <meta name="description" content="SQL中事务及不可重复读、脏读、幻读及解决方案">
 <meta property="og:type" content="article">
-<meta property="og:title" content="事务及事务的各种隔离级别">
+<meta property="og:title" content="MySQL事务及事务的各种隔离级别">
 <meta property="og:url" content="https://guoshusong.github.io/2020/01/12/Mysql2/index.html">
 <meta property="og:site_name" content="gssplus&#39;s Blog">
 <meta property="og:description" content="SQL中事务及不可重复读、脏读、幻读及解决方案">
 <meta property="article:published_time" content="2020-01-12T01:23:15.000Z">
-<meta property="article:modified_time" content="2020-06-02T08:20:26.095Z">
+<meta property="article:modified_time" content="2020-06-02T13:56:52.911Z">
 <meta property="article:author" content="GuoShuSong">
 <meta property="article:tag" content="MySQL">
 <meta name="twitter:card" content="summary">
@@ -114,7 +114,7 @@
         
   
     <h1 class="post-title" itemprop="name">
-      事务及事务的各种隔离级别
+      MySQL事务及事务的各种隔离级别
     </h1>
     <div class="post-title-bar">
       <ul>
@@ -151,16 +151,49 @@
 <p>事务实际上就是对数据库的一个或者多个更改。当你在某张表上创建更新或者删除记录的时，你就已经在使用事务了。控制事务以保证数据完整性，并对数据库错误做出处理，对数据库来说非常重要。</p>
 <p>实践中，通常会将很多 SQL 查询组合在一起，并将其作为某个事务一部分来执行。</p>
 <h3 id="事务的属性"><a href="#事务的属性" class="headerlink" title="事务的属性"></a>事务的属性</h3><p>事务具有以下四个标准属性，通常用缩略词 ACID 来表示：</p>
+<h4 id="原子性"><a href="#原子性" class="headerlink" title="原子性"></a>原子性</h4><p>原子性：保证任务中的所有操作都执行完毕；否则，事务会在出现错误时终止，并回滚之前所有操作到原始状态。</p>
+<blockquote>
+<p>实现原理：undo log</p>
+</blockquote>
+<p>在说明原子性原理之前，首先介绍一下MySQL的事务日志。MySQL的日志有很多种，如二进制日志、错误日志、查询日志、慢查询日志等，此外InnoDB存储引擎还提供了两种事务日志：redo log(重做日志)和undo log(回滚日志)。其中redo log用于保证事务持久性；undo log则是事务原子性和隔离性实现的基础。</p>
+<p>下面说回undo log。实现原子性的关键，是当事务回滚时能够撤销所有已经成功执行的sql语句。InnoDB实现回滚，靠的是undo log：当事务对数据库进行修改时，InnoDB会生成对应的undo log；如果事务执行失败或调用了rollback，导致事务需要回滚，便可以利用undo log中的信息将数据回滚到修改之前的样子。</p>
+<p>undo log属于逻辑日志，它记录的是sql执行相关的信息。当发生回滚时，InnoDB会根据undo log的内容做与之前相反的工作：对于每个insert，回滚时会执行delete；对于每个delete，回滚时会执行insert；对于每个update，回滚时会执行一个相反的update，把数据改回去。</p>
+<p>以update操作为例：当事务执行update时，其生成的undo log中会包含被修改行的主键(以便知道修改了哪些行)、修改了哪些列、这些列在修改前后的值等信息，回滚时便可以使用这些信息将数据还原到update之前的状态。</p>
+<h4 id="一致性"><a href="#一致性" class="headerlink" title="一致性"></a>一致性</h4><p>一致性：如果事务成功执行，则数据库的状态得到了进行了正确的转变。</p>
+<blockquote>
+<p>实现原理：redo log</p>
+</blockquote>
+<p>redo log和undo log都属于InnoDB的事务日志。下面先聊一下redo log存在的背景。</p>
+<p>InnoDB作为MySQL的存储引擎，数据是存放在磁盘中的，但如果每次读写数据都需要磁盘IO，效率会很低。为此，InnoDB提供了缓存(Buffer Pool)，Buffer Pool中包含了磁盘中部分数据页的映射，作为访问数据库的缓冲：当从数据库读取数据时，会首先从Buffer Pool中读取，如果Buffer Pool中没有，则从磁盘读取后放入Buffer Pool；当向数据库写入数据时，会首先写入Buffer Pool，Buffer Pool中修改的数据会定期刷新到磁盘中（这一过程称为刷脏）。</p>
+<p>Buffer Pool的使用大大提高了读写数据的效率，但是也带了新的问题：如果MySQL宕机，而此时Buffer Pool中修改的数据还没有刷新到磁盘，就会导致数据的丢失，事务的持久性无法保证。</p>
+<p>于是，redo log被引入来解决这个问题：当数据修改时，除了修改Buffer Pool中的数据，还会在redo log记录这次操作；当事务提交时，会调用fsync接口对redo log进行刷盘。如果MySQL宕机，重启时可以读取redo log中的数据，对数据库进行恢复。redo log采用的是WAL（Write-ahead logging，预写式日志），所有修改先写入日志，再更新到Buffer Pool，保证了数据不会因MySQL宕机而丢失，从而满足了持久性要求。</p>
+<p>既然redo log也需要在事务提交时将日志写入磁盘，为什么它比直接将Buffer Pool中修改的数据写入磁盘(即刷脏)要快呢？主要有以下两方面的原因：</p>
+<p>（1）刷脏是随机IO，因为每次修改的数据位置随机，但写redo log是追加操作，属于顺序IO。</p>
+<p>（2）刷脏是以数据页（Page）为单位的，MySQL默认页大小是16KB，一个Page上一个小修改都要整页写入；而redo log中只包含真正需要写入的部分，无效IO大大减少。</p>
+<blockquote>
+<p>redo log与binlog</p>
+</blockquote>
+<p>我们知道，在MySQL中还存在binlog(二进制日志)也可以记录写操作并用于数据的恢复，但二者是有着根本的不同的：</p>
+<p>（1）作用不同：redo log是用于crash recovery的，保证MySQL宕机也不会影响持久性；binlog是用于point-in-time recovery的，保证服务器可以基于时间点恢复数据，此外binlog还用于主从复制。</p>
+<p>（2）层次不同：redo log是InnoDB存储引擎实现的，而binlog是MySQL的服务器层(可以参考文章前面对MySQL逻辑架构的介绍)实现的，同时支持InnoDB和其他存储引擎。</p>
+<p>（3）内容不同：redo log是物理日志，内容基于磁盘的Page；binlog的内容是二进制的，根据binlog_format参数的不同，可能基于sql语句、基于数据本身或者二者的混合。</p>
+<p>（4）写入时机不同：binlog在事务提交时写入；redo log的写入时机相对多元：</p>
+<p>前面曾提到：当事务提交时会调用fsync对redo log进行刷盘；这是默认情况下的策略，修改innodb_flush_log_at_trx_commit参数可以改变该策略，但事务的持久性将无法保证。<br>除了事务提交时，还有其他刷盘时机：如master thread每秒刷盘一次redo log等，这样的好处是不一定要等到commit时刷盘，commit速度大大加快。</p>
+<h4 id="隔离性"><a href="#隔离性" class="headerlink" title="隔离性"></a>隔离性</h4><p>隔离性：保证不同的事务相互独立、透明地执行。</p>
+<p>隔离性追求的是并发情形下事务之间互不干扰。简单起见，我们仅考虑最简单的读操作和写操作(暂时不考虑带锁读等特殊操作)，那么隔离性的探讨，主要可以分为两个方面：</p>
 <ul>
-<li><p>原子性：保证任务中的所有操作都执行完毕；否则，事务会在出现错误时终止，并回滚之前所有操作到原始状态。</p>
+<li><p>(一个事务)写操作对(另一个事务)写操作的影响：锁机制保证隔离性</p>
 </li>
-<li><p>一致性：如果事务成功执行，则数据库的状态得到了进行了正确的转变。</p>
-</li>
-<li><p>隔离性：保证不同的事务相互独立、透明地执行。</p>
-</li>
-<li><p>持久性：即使出现系统故障，之前成功执行的事务的结果也会持久存在</p>
+<li><p>(一个事务)写操作对(另一个事务)读操作的影响：MVCC保证隔离性</p>
 </li>
 </ul>
+<h4 id="持久性"><a href="#持久性" class="headerlink" title="持久性"></a>持久性</h4><p>持久性：即使出现系统故障，之前成功执行的事务的结果也会持久存在</p>
+<h3 id="提交和回滚"><a href="#提交和回滚" class="headerlink" title="提交和回滚"></a>提交和回滚</h3><p>典型的MySQL事务是如下操作的：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span>;</span><br><span class="line">……  <span class="comment">#一条或多条sql语句</span></span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
+
+<p>其中start transaction标识事务开始，commit提交事务，将执行结果写入到数据库。如果sql语句执行出现问题，会调用rollback，回滚所有已经执行成功的sql语句。当然，也可以在事务中直接使用rollback语句进行回滚。</p>
+<p>MySQL中默认采用的是自动提交（autocommit）模式.</p>
+<p>在自动提交模式下，如果没有start transaction显式地开始一个事务，那么每个sql语句都会被当做一个事务执行提交操作。需要注意的是，autocommit参数是针对连接的，在一个连接中修改了参数，不会对其他连接产生影响。</p>
 <h3 id="不可重复读、脏读、幻读的概念"><a href="#不可重复读、脏读、幻读的概念" class="headerlink" title="不可重复读、脏读、幻读的概念"></a>不可重复读、脏读、幻读的概念</h3><h4 id="脏读"><a href="#脏读" class="headerlink" title="脏读"></a>脏读</h4><p>所谓脏读是指一个事务中访问到了另外一个事务未提交的数据.</p>
 <table>
 <thead>
@@ -262,8 +295,8 @@
 
             <div class="post-copyright">
     <div class="content">
-        <p>最后更新： 2020年06月02日 16:20</p>
-        <p>原始链接： <a class="post-url" href="/2020/01/12/Mysql2/" title="事务及事务的各种隔离级别">https://guoshusong.github.io/2020/01/12/Mysql2/</a></p>
+        <p>最后更新： 2020年06月02日 21:56</p>
+        <p>原始链接： <a class="post-url" href="/2020/01/12/Mysql2/" title="MySQL事务及事务的各种隔离级别">https://guoshusong.github.io/2020/01/12/Mysql2/</a></p>
         <footer>
             <a href="https://guoshusong.github.io">
                 <img src="/images/logo.png" alt="GuoShuSong">
@@ -289,7 +322,7 @@
     <div class="post-share-list" id="share-list">
         <ul class="share-icons">
           <li>
-            <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://guoshusong.github.io/2020/01/12/Mysql2/&title=《事务及事务的各种隔离级别》 — gssplus's Blog&pic=https://i.loli.net/2020/06/02/5mARcyWBNzwQ72k.png" data-title="微博">
+            <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://guoshusong.github.io/2020/01/12/Mysql2/&title=《MySQL事务及事务的各种隔离级别》 — gssplus's Blog&pic=https://i.loli.net/2020/06/02/5mARcyWBNzwQ72k.png" data-title="微博">
               <i class="fa fa-weibo"></i>
             </a>
           </li>
@@ -299,7 +332,7 @@
             </a>
           </li>
           <li>
-            <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://guoshusong.github.io/2020/01/12/Mysql2/&title=《事务及事务的各种隔离级别》 — gssplus's Blog&source=SQL中事务及不可重复读、脏读、幻读及解决方案" data-title="QQ">
+            <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://guoshusong.github.io/2020/01/12/Mysql2/&title=《MySQL事务及事务的各种隔离级别》 — gssplus's Blog&source=SQL中事务及不可重复读、脏读、幻读及解决方案" data-title="QQ">
               <i class="fa fa-qq"></i>
             </a>
           </li>
@@ -309,7 +342,7 @@
             </a>
           </li>
           <li>
-            <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《事务及事务的各种隔离级别》 — gssplus's Blog&url=https://guoshusong.github.io/2020/01/12/Mysql2/&via=https://guoshusong.github.io" data-title="Twitter">
+            <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《MySQL事务及事务的各种隔离级别》 — gssplus's Blog&url=https://guoshusong.github.io/2020/01/12/Mysql2/&via=https://guoshusong.github.io" data-title="Twitter">
               <i class="fa fa-twitter"></i>
             </a>
           </li>
@@ -349,7 +382,7 @@
 
     <aside class="post-toc-pos post-toc-top" id="post-toc">
         <nav class="post-toc-wrap">
-            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#SQL中事务及不可重复读、脏读、幻读及解决方案"><span class="post-toc-text">SQL中事务及不可重复读、脏读、幻读及解决方案</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#SQL事务"><span class="post-toc-text">SQL事务</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#事务的属性"><span class="post-toc-text">事务的属性</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#不可重复读、脏读、幻读的概念"><span class="post-toc-text">不可重复读、脏读、幻读的概念</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#脏读"><span class="post-toc-text">脏读</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#幻读"><span class="post-toc-text">幻读</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#不可重复读"><span class="post-toc-text">不可重复读</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#解决方案"><span class="post-toc-text">解决方案</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#读未提交（Read-Uncommitted）"><span class="post-toc-text">读未提交（Read Uncommitted）</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#读提交（Read-Committed）"><span class="post-toc-text">读提交（Read Committed）</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#可重复读取（Repeatable-Read）"><span class="post-toc-text">可重复读取（Repeatable Read）</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#序列化（Serializable）"><span class="post-toc-text">序列化（Serializable）</span></a></li></ol></li></ol></li></ol>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#SQL中事务及不可重复读、脏读、幻读及解决方案"><span class="post-toc-text">SQL中事务及不可重复读、脏读、幻读及解决方案</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#SQL事务"><span class="post-toc-text">SQL事务</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#事务的属性"><span class="post-toc-text">事务的属性</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#原子性"><span class="post-toc-text">原子性</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#一致性"><span class="post-toc-text">一致性</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#隔离性"><span class="post-toc-text">隔离性</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#持久性"><span class="post-toc-text">持久性</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#提交和回滚"><span class="post-toc-text">提交和回滚</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#不可重复读、脏读、幻读的概念"><span class="post-toc-text">不可重复读、脏读、幻读的概念</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#脏读"><span class="post-toc-text">脏读</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#幻读"><span class="post-toc-text">幻读</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#不可重复读"><span class="post-toc-text">不可重复读</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#解决方案"><span class="post-toc-text">解决方案</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#读未提交（Read-Uncommitted）"><span class="post-toc-text">读未提交（Read Uncommitted）</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#读提交（Read-Committed）"><span class="post-toc-text">读提交（Read Committed）</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#可重复读取（Repeatable-Read）"><span class="post-toc-text">可重复读取（Repeatable Read）</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#序列化（Serializable）"><span class="post-toc-text">序列化（Serializable）</span></a></li></ol></li></ol></li></ol>
         </nav>
     </aside>
     
