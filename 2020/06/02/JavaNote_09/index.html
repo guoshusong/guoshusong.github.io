@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="gssplus&#39;s Blog">
 <meta property="og:description" content="线程池的基本概念及使用">
 <meta property="article:published_time" content="2020-06-02T06:08:50.500Z">
-<meta property="article:modified_time" content="2020-06-02T08:15:41.613Z">
+<meta property="article:modified_time" content="2020-06-05T08:48:33.346Z">
 <meta property="article:author" content="GuoShuSong">
 <meta property="article:tag" content="Java基础">
 <meta name="twitter:card" content="summary">
@@ -163,15 +163,23 @@
 </li>
 </ul>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">TimeUnit.DAYS;               <span class="comment">//天</span></span><br><span class="line">TimeUnit.HOURS;             <span class="comment">//小时</span></span><br><span class="line">TimeUnit.MINUTES;           <span class="comment">//分钟</span></span><br><span class="line">TimeUnit.SECONDS;           <span class="comment">//秒</span></span><br><span class="line">TimeUnit.MILLISECONDS;      <span class="comment">//毫秒</span></span><br><span class="line">TimeUnit.MICROSECONDS;      <span class="comment">//微妙</span></span><br><span class="line">TimeUnit.NANOSECONDS;       <span class="comment">//纳秒</span></span><br></pre></td></tr></table></figure>
-<p>· workQueue：一个阻塞队列，用来存储等待执行的任务，这个参数的选择也很重要，会对线程池的运行过程产生重大影响，一般来说，这里的阻塞队列有以下几种选择：</p>
+<ul>
+<li>workQueue：一个阻塞队列，用来存储等待执行的任务，这个参数的选择也很重要，会对线程池的运行过程产生重大影响，一般来说，这里的阻塞队列有以下几种选择：</li>
+</ul>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ArrayBlockingQueue;</span><br><span class="line">LinkedBlockingQueue;</span><br><span class="line">SynchronousQueue;</span><br></pre></td></tr></table></figure>
 
+<blockquote>
 <p>ArrayBlockingQueue和PriorityBlockingQueue使用较少，一般使用LinkedBlockingQueue和Synchronous。线程池的排队策略与BlockingQueue有关。</p>
+</blockquote>
 <ul>
-<li>threadFactory：线程工厂，主要用来创建线程；</li>
-<li>handler：表示当拒绝处理任务时的策略，有以下四种取值：</li>
+<li><p>threadFactory：线程工厂，主要用来创建线程；</p>
+</li>
+<li><p>handler：表示当拒绝处理任务时的策略，有以下四种取值：</p>
+</li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ThreadPoolExecutor.AbortPolicy:丢弃任务并抛出RejectedExecutionException异常。 </span><br><span class="line">ThreadPoolExecutor.DiscardPolicy：也是丢弃任务，但是不抛出异常。 </span><br><span class="line">ThreadPoolExecutor.DiscardOldestPolicy：丢弃队列最前面的任务，然后重新尝试执行任务（重复此过程）</span><br><span class="line">ThreadPoolExecutor.CallerRunsPolicy：由调用线程处理该任务</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ExecutorService executorService = <span class="keyword">new</span> ThreadPoolExecutor(<span class="number">2</span>,<span class="number">4</span>,<span class="number">15</span>, TimeUnit.MINUTES,<span class="keyword">new</span> LinkedBlockingDeque&lt;&gt;(),<span class="keyword">new</span> ThreadPoolExecutor.CallerRunsPolicy())</span><br></pre></td></tr></table></figure>
 
 <p>ThreadPoolExecutor、AbstractExecutorService、ExecutorService和Executor几个之间的关系</p>
 <p>Executor是一个顶层接口，在它里面只声明了一个方法execute(Runnable)，返回值为void，参数为Runnable类型，从字面意思可以理解，就是用来执行传进去的任务的；</p>
@@ -329,7 +337,7 @@
 
             <div class="post-copyright">
     <div class="content">
-        <p>最后更新： 2020年06月02日 16:15</p>
+        <p>最后更新： 2020年06月05日 16:48</p>
         <p>原始链接： <a class="post-url" href="/2020/06/02/JavaNote_09/" title="Java多线程-线程池">https://guoshusong.github.io/2020/06/02/JavaNote_09/</a></p>
         <footer>
             <a href="https://guoshusong.github.io">
