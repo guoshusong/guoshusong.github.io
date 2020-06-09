@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Java内存模型(Java Memory Model) | gssplus&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+    <meta name="keywords" content="gss's Blog" />
+  
+  <meta name="description" content="Maven入门(包的依赖关系、作用域,解决Jar包冲突,生命周期)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java内存模型(Java Memory Model)">
+<meta property="og:url" content="https://guoshusong.github.io/2020/06/08/Maven_01/index.html">
+<meta property="og:site_name" content="gssplus&#39;s Blog">
+<meta property="og:description" content="Maven入门(包的依赖关系、作用域,解决Jar包冲突,生命周期)">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2020/6/7/1728e5a5b75cc715?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2020/6/7/1728e5a6aca1d3c2?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2020/6/7/1728e5a6f6211eae?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="article:published_time" content="2020-06-08T02:00:28.002Z">
+<meta property="article:modified_time" content="2020-06-08T02:27:13.484Z">
+<meta property="article:author" content="GuoShuSong">
+<meta property="article:tag" content="Maven">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://user-gold-cdn.xitu.io/2020/6/7/1728e5a5b75cc715?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+  
+
+  
+  
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+  <div id="container">
+      <header id="header">
+    <div id="banner"></div>
+    <div id="header-outer">
+        <div id="header-menu" class="header-menu-pos animated">
+            <div class="header-menu-container">
+                <a href="/" class="left">
+                    <span class="site-title">Hello,Here is gssplus!</span>
+                </a>
+                <nav id="header-menu-nav" class="right">
+                    
+                    <a  href="/">
+                        <i class="fa fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    
+                    <a  href="/archives">
+                        <i class="fa fa-archive"></i>
+                        <span>Archives</span>
+                    </a>
+                    
+                    <a  href="/about">
+                        <i class="fa fa-user"></i>
+                        <span>About</span>
+                    </a>
+                    
+                </nav>
+                <a class="mobile-header-menu-button">
+                    <i class="fa fa-bars"></i>
+                </a>
+            </div>
+        </div>
+        <div id="header-row">
+            <div id="logo">
+                <a href="/">
+                    <img src="/images/logo.png" alt="logo">
+                </a>
+            </div>
+            <div class="header-info">
+                <div id="header-title">
+                    
+                    <h2>
+                        Hello,Here is gssplus!
+                    </h2>
+                    
+                </div>
+                <div id="header-description">
+                    
+                    <h3>
+                        我见过春日夏风，秋月冬雪，也曾踏遍南水北山，东麓西岭，可这四季春秋，苍山央水，都不及你瞅我展眉一笑
+                    </h3>
+                    
+                </div>
+            </div>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a title="MinHow" target="_blank" href="//guoshusong.github.io/">
+                            <i class="fa fa-home fa-2x"></i></a>
+                    
+                        <a title="Github" target="_blank" href="//github.com/guoshusong">
+                            <i class="fa fa-github fa-2x"></i></a>
+                    
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>
+      <div class="outer">
+        <section id="main" class="body-wrap"><article id="post-Maven_01" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="post-title" itemprop="name">
+      Java内存模型(Java Memory Model)
+    </h1>
+    <div class="post-title-bar">
+      <ul>
+          
+        <li>
+          <i class="fa fa-calendar"></i>  2020-06-08
+        </li>
+        <li>
+          <i class="fa fa-eye"></i>
+          <span id="busuanzi_value_page_pv"></span>
+        </li>
+      </ul>
+    </div>
+  
+
+          
+      </header>
+    
+    <div class="article-entry post-content" itemprop="articleBody">
+      
+            
+            <h2 id="Maven入门-包的依赖关系、作用域-解决Jar包冲突-生命周期"><a href="#Maven入门-包的依赖关系、作用域-解决Jar包冲突-生命周期" class="headerlink" title="Maven入门(包的依赖关系、作用域,解决Jar包冲突,生命周期)"></a>Maven入门(包的依赖关系、作用域,解决Jar包冲突,生命周期)</h2><a id="more"></a>
+
+<ul>
+<li>maven 包的依赖关系、依赖传递及依赖传递遵循的规则</li>
+<li>依赖包的作用域</li>
+<li>怎么解决 jar 包冲突</li>
+<li>项目继承和聚合</li>
+<li>maven 生命周期</li>
+<li>maven 插件使用及常用命令</li>
+<li>maven 私服的使用</li>
+<li>怎么发布 jar </li>
+<li>maven 定义不同的配置环境</li>
+<li>maven-assembly-plugin 打包</li>
+</ul>
+<h3 id="Maven"><a href="#Maven" class="headerlink" title="Maven"></a>Maven</h3><p>在 Maven 中通过 POM-Project Object Model 项目对象模型的概念来管理项目。在 Maven 中每个项目都相当于一个对象，对象(项目)之间可以依赖、继承、聚合。</p>
+<p>项目依赖包查找网站 mvnrepository.com</p>
+<p>依赖包放在 Maven 仓库中，我们需要通过依赖的坐标信息，从仓库中下载 jar 。<br>坐标信息：groupId，artifactId，version</p>
+<p>当我们在 pom.xml 引入某个 a.jar , Maven 会从本地仓库查找有没有 a.jar，没有就会去私服下载，私服没有会从中央仓库下载到私服，然后下载本地仓库。</p>
+<p><img src="https://user-gold-cdn.xitu.io/2020/6/7/1728e5a5b75cc715?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt=""></p>
+<h3 id="依赖传递"><a href="#依赖传递" class="headerlink" title="依赖传递"></a>依赖传递</h3><p>maven-a.jar 依赖 maven-b.jar</p>
+<p>maven-b.jar 依赖 maven-c.jar</p>
+<p>maven-client 项目中引入 maven-a.jar，那么 maven-b.jar 和 maven-c.jar 都会引入进来。</p>
+<p><img src="https://user-gold-cdn.xitu.io/2020/6/7/1728e5a6aca1d3c2?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt=""></p>
+<h3 id="依赖传递遵循的两个规则"><a href="#依赖传递遵循的两个规则" class="headerlink" title="依赖传递遵循的两个规则"></a>依赖传递遵循的两个规则</h3><h4 id="最短路径原则"><a href="#最短路径原则" class="headerlink" title="最短路径原则"></a>最短路径原则</h4><p>有了依赖传递，但也存在一个问题。</p>
+<p>maven-a.jar 依赖 maven-b.jar</p>
+<p>maven-b.jar 依赖 maven-c.jar(2.0)</p>
+<p>maven-a.jar 依赖 maven-c.jar(1.0)</p>
+<p>maven-client 项目中引入 maven-a.jar。</p>
+<p>最终会采用哪个 maven-c.jar</p>
+<p>所以 maven 依赖传递的其中一个规则就是，最短路径原则。</p>
+<blockquote>
+<p>a -&gt; b -&gt;c(2.0)</p>
+</blockquote>
+<blockquote>
+<p>a -&gt; c(1.0)</p>
+</blockquote>
+<p>maven-client 项目最终使用 1.0 的 c 。</p>
+<h4 id="最先声明原则"><a href="#最先声明原则" class="headerlink" title="最先声明原则"></a>最先声明原则</h4><p>最短路径原则存在一个问题，当最短路径一样的时候怎么办，最先声明原则就是再最短路径相同的时候声效。</p>
+<p>maven-client 项目中引入 maven-a.jar 和 maven-b.jar</p>
+<p>maven-b.jar 只依赖 maven-c.jar(2.0)</p>
+<p>maven-a.jar 只依赖 maven-c.jar(1.0)</p>
+<p>现在依赖的最短路径一样</p>
+<blockquote>
+<p>maven-client -&gt; maven-a -&gt; maven-c(1.0) </p>
+</blockquote>
+<blockquote>
+<p>maven-client -&gt; maven-b -&gt; maven-c(2.0) </p>
+</blockquote>
+<p>在 maven-client 先引入的 maven-a 那么 maven-c 1.0 生效</p>
+<p>在 maven-client 先引入的 maven-b 那么 maven-c 2.0 生效</p>
+<p>最先声明有点达不到我们的预期，我可以可以这样解决。</p>
+<ul>
+<li>第一种，打破最短依赖路径，直接在 maven-client 引入你想要的 maven-c 的版本。</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.example<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-a<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.example<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-b<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.example<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-c<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>第二种，排除 jar</li>
+</ul>
+<p>这样排除掉 maven-b 传递过来的 maven-c。根据自己的需求</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.example<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-a<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.example<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-b<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">exclusions</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">exclusion</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.example<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-c<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">exclusion</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">exclusions</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="依赖作用域"><a href="#依赖作用域" class="headerlink" title="依赖作用域"></a>依赖作用域</h3><p>依赖的作用域定义了 jar 在什么时候生效，打包成 war 或者 jar 的时候是否打包进去。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>mysql<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mysql-connector-java<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>runtime<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>scope有以下取值</p>
+<ol>
+<li>compile</li>
+</ol>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;scope 默认取值 compile 标识，当前依赖包，参与项目的编译、运行、测试、打包。</p>
+<ol start="2">
+<li>runtime</li>
+</ol>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;runtime 标识不参与项目编译，参与项目的运行、测试、打包。</p>
+<ol start="3">
+<li>provided</li>
+</ol>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;provided 标识参与项目的编译、运行、测试，但是不参与打包。</p>
+<ol start="4">
+<li>system</li>
+</ol>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;system 用于我们开发的一些二方库，但是不能发布到网上，可以使用这种场景去使用。默认这种 jar 不会打包进去，需要我们配置一下。</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;参与项目的编译、运行、测试。</p>
+<ol start="5">
+<li>test</li>
+</ol>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;标识只在编译测试代码和运行测试代码的时候需要，别的都不用，打包的时候也不会包含。</p>
+<ol start="6">
+<li>import</li>
+</ol>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;一般我们会在父工程使用这个作用域。表示从其它的 pom.xml 导入 dependency 的配置。</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;比如我们自己的父工程，只想要 springboot 的依赖管理</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencyManagement</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-dependencies<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;spring-boot.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">type</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">type</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">scope</span>&gt;</span>import<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencyManagement</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="继承和聚合"><a href="#继承和聚合" class="headerlink" title="继承和聚合"></a>继承和聚合</h3><h4 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h4><p>maven-client 继承了 maven-demo</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-demo<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.example<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">modelVersion</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">packaging</span>&gt;</span>jar<span class="tag">&lt;/<span class="name">packaging</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-client<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h4><p>maven-demo 聚合了五个工程</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> &gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.3.0.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">relativePath</span>/&gt;</span> <span class="comment">&lt;!-- lookup parent from repository --&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.example<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-demo<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">packaging</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">packaging</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">modules</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">module</span>&gt;</span>maven-a<span class="tag">&lt;/<span class="name">module</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">module</span>&gt;</span>maven-b<span class="tag">&lt;/<span class="name">module</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">module</span>&gt;</span>maven-c<span class="tag">&lt;/<span class="name">module</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">module</span>&gt;</span>maven-client<span class="tag">&lt;/<span class="name">module</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">module</span>&gt;</span>maven-d<span class="tag">&lt;/<span class="name">module</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">modules</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>继承用于消除冗余配置，比如一些配置打包配置，配置的变量，项目依赖和插件依赖版本管理</p>
+<p>聚合用于快速构建项目。</p>
+<p>聚合之前打包 a,b,c,d,clent 需要分别运行 mvn package。</p>
+<p>聚合之后，我咱们只需要在 maven-demo 下运行 mvn package。</p>
+<h3 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h3><p>maven 内部有三个构建周期。clean ,default,site。</p>
+<p>其中 default 是我们经常使用的生命周期。</p>
+<h4 id="clean-生命周期"><a href="#clean-生命周期" class="headerlink" title="clean 生命周期"></a>clean 生命周期</h4><p>只干一件事情，将编译生成的东西删除干净。</p>
+<h4 id="default-生命周期"><a href="#default-生命周期" class="headerlink" title="default 生命周期"></a>default 生命周期</h4><p>默认生命周期大致由下面几个阶段组成:</p>
+<p>resources -&gt; compile -&gt; testResources -&gt; testCompile -&gt; test -&gt; package -&gt; install -&gt; deploy</p>
+<p>介绍下我们常用的:</p>
+<ul>
+<li><p>resources：拷贝 src/main/resources 下资源到 classpath 下。</p>
+</li>
+<li><p>compile：编译项目源码</p>
+</li>
+<li><p>testResources：拷贝 src/test/resources 到 测试的 test 的 classpath 下</p>
+</li>
+<li><p>test：运行单元测试</p>
+</li>
+<li><p>package：打包</p>
+</li>
+<li><p>install：安装 jar 到本地仓库</p>
+</li>
+<li><p>deploy: 发布 jar 到远程仓库或私有仓库</p>
+</li>
+</ul>
+<p><img src="https://user-gold-cdn.xitu.io/2020/6/7/1728e5a6f6211eae?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt=""></p>
+<h4 id="自定义操作到生命周期某个阶段"><a href="#自定义操作到生命周期某个阶段" class="headerlink" title="自定义操作到生命周期某个阶段"></a>自定义操作到生命周期某个阶段</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-assembly-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">descriptors</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">descriptor</span>&gt;</span>$&#123;basedir&#125;/assembly/package.xml<span class="tag">&lt;/<span class="name">descriptor</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">descriptors</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">executions</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">execution</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">id</span>&gt;</span>make-assembly<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">phase</span>&gt;</span>package<span class="tag">&lt;/<span class="name">phase</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">goals</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">goal</span>&gt;</span>single<span class="tag">&lt;/<span class="name">goal</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">goals</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">execution</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">executions</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="不同的生命周期一起运行"><a href="#不同的生命周期一起运行" class="headerlink" title="不同的生命周期一起运行"></a>不同的生命周期一起运行</h4><p>mvn clean package</p>
+<p>限制性 clean 生命周期，再执行 default 生命周期到 package 阶段。</p>
+
+            <div class="post-copyright">
+    <div class="content">
+        <p>最后更新： 2020年06月08日 10:27</p>
+        <p>原始链接： <a class="post-url" href="/2020/06/08/Maven_01/" title="Java内存模型(Java Memory Model)">https://guoshusong.github.io/2020/06/08/Maven_01/</a></p>
+        <footer>
+            <a href="https://guoshusong.github.io">
+                <img src="/images/logo.png" alt="GuoShuSong">
+                GuoShuSong
+            </a>
+        </footer>
+    </div>
+</div>
+
+      
+        
+            
+
+        
+    </div>
+    <footer class="article-footer">
+        
+        
+<div class="post-share">
+    <a href="javascript:;" id="share-sub" class="post-share-fab">
+        <i class="fa fa-share-alt"></i>
+    </a>
+    <div class="post-share-list" id="share-list">
+        <ul class="share-icons">
+          <li>
+            <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://guoshusong.github.io/2020/06/08/Maven_01/&title=《Java内存模型(Java Memory Model)》 — gssplus's Blog&pic=https://i.loli.net/2020/06/08/J3bBtSnMh691xdr.png" data-title="微博">
+              <i class="fa fa-weibo"></i>
+            </a>
+          </li>
+          <li>
+            <a class="weixin share-sns" id="wxFab" href="javascript:;" data-title="微信">
+              <i class="fa fa-weixin"></i>
+            </a>
+          </li>
+          <li>
+            <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://guoshusong.github.io/2020/06/08/Maven_01/&title=《Java内存模型(Java Memory Model)》 — gssplus's Blog&source=Maven入门(包的依赖关系、作用域,解决Jar包冲突,生命周期)" data-title="QQ">
+              <i class="fa fa-qq"></i>
+            </a>
+          </li>
+          <li>
+            <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://guoshusong.github.io/2020/06/08/Maven_01/" data-title="Facebook">
+              <i class="fa fa-facebook"></i>
+            </a>
+          </li>
+          <li>
+            <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《Java内存模型(Java Memory Model)》 — gssplus's Blog&url=https://guoshusong.github.io/2020/06/08/Maven_01/&via=https://guoshusong.github.io" data-title="Twitter">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li>
+            <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://guoshusong.github.io/2020/06/08/Maven_01/" data-title="Google+">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        </ul>
+     </div>
+</div>
+<div class="post-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;" id="wxShare-close">×</a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://guoshusong.github.io/2020/06/08/Maven_01/" alt="微信分享二维码">
+</div>
+
+<div class="mask"></div>
+
+        
+        <ul class="article-footer-menu">
+            
+            
+  <li class="article-footer-tags">
+    <i class="fa fa-tags"></i>
+      
+    <a href="/tags/Maven/" class="color1">Maven</a>
+      
+  </li>
+
+        </ul>
+        
+    </footer>
+  </div>
+</article>
+
+
+    <aside class="post-toc-pos post-toc-top" id="post-toc">
+        <nav class="post-toc-wrap">
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Maven入门-包的依赖关系、作用域-解决Jar包冲突-生命周期"><span class="post-toc-text">Maven入门(包的依赖关系、作用域,解决Jar包冲突,生命周期)</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Maven"><span class="post-toc-text">Maven</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#依赖传递"><span class="post-toc-text">依赖传递</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#依赖传递遵循的两个规则"><span class="post-toc-text">依赖传递遵循的两个规则</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#最短路径原则"><span class="post-toc-text">最短路径原则</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#最先声明原则"><span class="post-toc-text">最先声明原则</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#依赖作用域"><span class="post-toc-text">依赖作用域</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#继承和聚合"><span class="post-toc-text">继承和聚合</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#继承"><span class="post-toc-text">继承</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#聚合"><span class="post-toc-text">聚合</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#生命周期"><span class="post-toc-text">生命周期</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#clean-生命周期"><span class="post-toc-text">clean 生命周期</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#default-生命周期"><span class="post-toc-text">default 生命周期</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#自定义操作到生命周期某个阶段"><span class="post-toc-text">自定义操作到生命周期某个阶段</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#不同的生命周期一起运行"><span class="post-toc-text">不同的生命周期一起运行</span></a></li></ol></li></ol></li></ol>
+        </nav>
+    </aside>
+    
+
+<nav id="article-nav">
+  
+  
+    <a href="/2020/06/06/SpringBoot_3%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D/" id="article-nav-older" class="article-nav-link-wrap">
+      <span class="article-nav-title">SpringBoot自动装配原理</span>
+      <i class="fa fa-hand-o-right" aria-hidden="true"></i>
+    </a>
+  
+</nav>
+
+
+
+    
+</section>
+        
+      </div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+
+      <p>
+        Powered by  <a href="http://hexo.io/" target="_blank">Hexo</a>
+        Theme <a href="//github.com/wongminho/hexo-theme-miho" target="_blank">MiHo</a>
+      &copy; 2020 GuoShuSong<br>
+      </p>
+    </div>
+  </div>
+</footer>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script>
+  var mihoConfig = {
+      root: "https://guoshusong.github.io",
+      animate: true,
+      isHome: false,
+      share: true,
+      reward: 0
+  }
+</script>
+<div class="sidebar">
+    <div id="sidebar-search" title="Search">
+        <i class="fa fa-search"></i>
+    </div>
+    <div id="sidebar-category" title="Categories">
+        <i class="fa fa-book"></i>
+    </div>
+    <div id="sidebar-tag" title="Tags">
+        <i class="fa fa-tags"></i>
+    </div>
+    <div id="sidebar-top">
+        <span class="sidebar-top-icon"><i class="fa fa-angle-up"></i></span>
+    </div>
+</div>
+<div class="sidebar-menu-box" id="sidebar-menu-box">
+    <div class="sidebar-menu-box-container">
+        <div id="sidebar-menu-box-categories">
+            <a class="category-link" href="/categories/Docker/">Docker</a><a class="category-link" href="/categories/Java/">Java</a><a class="category-link" href="/categories/MySQL/">MySQL</a><a class="category-link" href="/categories/Nginx/">Nginx</a><a class="category-link" href="/categories/SpringBoot/">SpringBoot</a><a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a><a class="category-link" href="/categories/%E7%90%90%E7%A2%8E/">琐碎</a><a class="category-link" href="/categories/%E9%9D%A2%E8%AF%95/">面试</a>
+        </div>
+        <div id="sidebar-menu-box-tags">
+            <a href="/tags/Docker/" style="font-size: 12px;">Docker</a> <a href="/tags/Java%E5%9F%BA%E7%A1%80/" style="font-size: 18px;">Java基础</a> <a href="/tags/Maven/" style="font-size: 10px;">Maven</a> <a href="/tags/MyBatis/" style="font-size: 10px;">MyBatis</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/SpringBoot/" style="font-size: 20px;">SpringBoot</a> <a href="/tags/jvm/" style="font-size: 16px;">jvm</a> <a href="/tags/%E4%B8%B2/" style="font-size: 10px;">串</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E5%9B%BE/" style="font-size: 10px;">图</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">排序算法</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a> <a href="/tags/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/" style="font-size: 10px;">查找算法</a> <a href="/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A1%A8/" style="font-size: 10px;">线性表</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 10px;">设计模式</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+        </div>
+    </div>
+    <a href="javascript:;" class="sidebar-menu-box-close">&times;</a>
+</div>
+<div class="mobile-header-menu-nav" id="mobile-header-menu-nav">
+    <div class="mobile-header-menu-container">
+        <span class="title">Menus</span>
+        <ul class="mobile-header-menu-navbar">
+            
+            <li>
+                <a  href="/">
+                    <i class="fa fa-home"></i><span>Home</span>
+                </a>
+            </li>
+            
+            <li>
+                <a  href="/archives">
+                    <i class="fa fa-archive"></i><span>Archives</span>
+                </a>
+            </li>
+            
+            <li>
+                <a  href="/about">
+                    <i class="fa fa-user"></i><span>About</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    <div class="mobile-header-tag-container">
+        <span class="title">Tags</span>
+        <div id="mobile-header-container-tags">
+            <a href="/tags/Docker/" style="font-size: 12px;">Docker</a> <a href="/tags/Java%E5%9F%BA%E7%A1%80/" style="font-size: 18px;">Java基础</a> <a href="/tags/Maven/" style="font-size: 10px;">Maven</a> <a href="/tags/MyBatis/" style="font-size: 10px;">MyBatis</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/SpringBoot/" style="font-size: 20px;">SpringBoot</a> <a href="/tags/jvm/" style="font-size: 16px;">jvm</a> <a href="/tags/%E4%B8%B2/" style="font-size: 10px;">串</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E5%9B%BE/" style="font-size: 10px;">图</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">排序算法</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a> <a href="/tags/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/" style="font-size: 10px;">查找算法</a> <a href="/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A1%A8/" style="font-size: 10px;">线性表</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 10px;">设计模式</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+        </div>
+    </div>
+</div>
+<div class="search-wrap">
+    <span class="search-close">&times;</span>
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+            <i class="icon icon-lg icon-chevron-left"></i>
+        </a>
+        <input class="search-field" placeholder="Search..." id="keywords">
+        <a id="search-submit" href="javascript:;">
+            <i class="fa fa-search"></i>
+        </a>
+    <div class="search-container" id="search-container">
+        <ul class="search-result" id="search-result">
+        </ul>
+    </div>
+</div>
+
+<div id="search-tpl">
+    <li class="search-result-item">
+        <a href="{url}" class="search-item-li">
+            <span class="search-item-li-title" title="{title}">{title}</span>
+        </a>
+    </li>
+</div>
+
+<script src="/js/search.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+  <script src="//cdn.bootcss.com/particles.js/2.0.0/particles.min.js"></script>
+  <div id="particles"></div>
+  
+<script src="/js/particles.js"></script>
+
+
+
+
+
+
+
+
+  
+<link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+
+  <script src="//cdn.bootcss.com/scrollReveal.js/3.0.5/scrollreveal.js"></script>
+  
+<script src="/js/animate.js"></script>
+
+
+
+  
+<script src="/js/pop-img.js"></script>
+
+  <script>
+     $(".article-entry p img").popImg();
+  </script>
+
+  </div>
+</body>
+</html>

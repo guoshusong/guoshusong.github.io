@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>SpringBoot自动装配原理 | gssplus&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+    <meta name="keywords" content="gss's Blog" />
+  
+  <meta name="description" content="SpringBoot自动装配原理详解、SpringBoot自动配置">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot自动装配原理">
+<meta property="og:url" content="https://guoshusong.github.io/2020/06/06/SpringBoot_3%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D/index.html">
+<meta property="og:site_name" content="gssplus&#39;s Blog">
+<meta property="og:description" content="SpringBoot自动装配原理详解、SpringBoot自动配置">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/5/8/16a977cf1fff0519?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/12/3/16ec9688bf3c3a2a?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/12/3/16ec9688be257da4?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/12/3/16ec9688f7bb954c?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/12/3/16ec9688f691fdad?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="article:published_time" content="2020-06-06T06:12:56.000Z">
+<meta property="article:modified_time" content="2020-06-06T08:38:00.827Z">
+<meta property="article:author" content="GuoShuSong">
+<meta property="article:tag" content="SpringBoot">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://user-gold-cdn.xitu.io/2019/5/8/16a977cf1fff0519?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+  
+
+  
+  
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+  <div id="container">
+      <header id="header">
+    <div id="banner"></div>
+    <div id="header-outer">
+        <div id="header-menu" class="header-menu-pos animated">
+            <div class="header-menu-container">
+                <a href="/" class="left">
+                    <span class="site-title">Hello,Here is gssplus!</span>
+                </a>
+                <nav id="header-menu-nav" class="right">
+                    
+                    <a  href="/">
+                        <i class="fa fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    
+                    <a  href="/archives">
+                        <i class="fa fa-archive"></i>
+                        <span>Archives</span>
+                    </a>
+                    
+                    <a  href="/about">
+                        <i class="fa fa-user"></i>
+                        <span>About</span>
+                    </a>
+                    
+                </nav>
+                <a class="mobile-header-menu-button">
+                    <i class="fa fa-bars"></i>
+                </a>
+            </div>
+        </div>
+        <div id="header-row">
+            <div id="logo">
+                <a href="/">
+                    <img src="/images/logo.png" alt="logo">
+                </a>
+            </div>
+            <div class="header-info">
+                <div id="header-title">
+                    
+                    <h2>
+                        Hello,Here is gssplus!
+                    </h2>
+                    
+                </div>
+                <div id="header-description">
+                    
+                    <h3>
+                        我见过春日夏风，秋月冬雪，也曾踏遍南水北山，东麓西岭，可这四季春秋，苍山央水，都不及你瞅我展眉一笑
+                    </h3>
+                    
+                </div>
+            </div>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a title="MinHow" target="_blank" href="//guoshusong.github.io/">
+                            <i class="fa fa-home fa-2x"></i></a>
+                    
+                        <a title="Github" target="_blank" href="//github.com/guoshusong">
+                            <i class="fa fa-github fa-2x"></i></a>
+                    
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>
+      <div class="outer">
+        <section id="main" class="body-wrap"><article id="post-SpringBoot_3自动装配" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="post-title" itemprop="name">
+      SpringBoot自动装配原理
+    </h1>
+    <div class="post-title-bar">
+      <ul>
+          
+              <li>
+                  <i class="fa fa-book"></i>
+                  
+                      <a href="/categories/SpringBoot/">SpringBoot</a>
+                  
+              </li>
+          
+        <li>
+          <i class="fa fa-calendar"></i>  2020-06-06
+        </li>
+        <li>
+          <i class="fa fa-eye"></i>
+          <span id="busuanzi_value_page_pv"></span>
+        </li>
+      </ul>
+    </div>
+  
+
+          
+      </header>
+    
+    <div class="article-entry post-content" itemprop="articleBody">
+      
+            
+            <h2 id="SpringBoot自动装配原理详解、SpringBoot自动配置"><a href="#SpringBoot自动装配原理详解、SpringBoot自动配置" class="headerlink" title="SpringBoot自动装配原理详解、SpringBoot自动配置"></a>SpringBoot自动装配原理详解、SpringBoot自动配置</h2><a id="more"></a>
+
+<h3 id="传统装配"><a href="#传统装配" class="headerlink" title="传统装配"></a>传统装配</h3><blockquote>
+<p>传统ssm整合redis的时候 需要在xml的配置文件中 进行大量的配置Bean</p>
+</blockquote>
+<p>1) 加入配置org.springframework.data spring-data-redis 2.0.9.RELEASE redis.clients jedis 2.9.0 </p>
+<p>2) 配置xml的bean的配置</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">//配置连接池</span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"poolConfig"</span> <span class="attr">class</span>=<span class="string">"redis.clients.jedis.JedisPoolConfig"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"minIdle"</span> <span class="attr">value</span>=<span class="string">"10"</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"maxTotal"</span> <span class="attr">value</span>=<span class="string">"20"</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line">//配置连接工厂</span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"jedisConnectionFactory"</span> <span class="attr">class</span>=<span class="string">"org.springframework.data.redis.connection.jedis.JedisConnectionFactory"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"hostName"</span> <span class="attr">value</span>=<span class="string">"47.104.128.12"</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"password"</span> <span class="attr">value</span>=<span class="string">"123456"</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"database"</span> <span class="attr">value</span>=<span class="string">"0"</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"poolConfig"</span> <span class="attr">ref</span>=<span class="string">"poolConfig"</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//配置 redisTemplate 模版类</span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"redisTemplate"</span> <span class="attr">class</span>=<span class="string">"org.springframework.data.redis.core.RedisTemplate"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"connectionFactory"</span>  <span class="attr">ref</span>=<span class="string">"jedisConnectionFactory"</span>/&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--如果不配置Serializer，那么存储的时候缺省使用String，如果用User类型存储，那么会提示错误User can't cast to String！！  --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"keySerializer"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">bean</span> <span class="attr">class</span>=<span class="string">"org.springframework.data.redis.serializer.StringRedisSerializer"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"valueSerializer"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">bean</span> <span class="attr">class</span>=<span class="string">"org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"hashKeySerializer"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">bean</span> <span class="attr">class</span>=<span class="string">"org.springframework.data.redis.serializer.StringRedisSerializer"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"hashValueSerializer"</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">bean</span> <span class="attr">class</span>=<span class="string">"org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>3) 导入配置</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ImportResource</span>(locations = <span class="string">"classpath:beans.xml"</span>)  <span class="comment">//可以导入xml的配置文件</span></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="meta">@ImportResource</span>(locations = <span class="string">"classpath:beans.xml"</span>)</span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TulingOpenAutoconfigPrincipleApplication</span> </span>&#123;</span><br><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> RedisTemplate redisTemplate;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">	SpringApplication.run(TulingOpenAutoconfigPrincipleApplication<span class="class">.<span class="keyword">class</span>, <span class="title">args</span>)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/testRedis"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">testRedis</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	redisTemplate.opsForValue().set(<span class="string">"smlz"</span>,<span class="string">"smlz"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="string">"OK"</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="springboot自动装配"><a href="#springboot自动装配" class="headerlink" title="springboot自动装配"></a>springboot自动装配</h3><p>1) 导入依赖</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-redis<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>2) 修改配置文件</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">修改yml配置文件</span><br><span class="line">spring.redis.host=47.104.128.12 spring.redis.port=6379 spring.redis.password=123456</span><br></pre></td></tr></table></figure>
+<p>直接使用(下述代码可以不要配置，为了解决保存使用jdk的序列方式才配置的)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span> 	</span><br><span class="line"><span class="function"><span class="keyword">public</span> RedisTemplate&lt;Object, Object&gt; <span class="title">redisTemplate</span><span class="params">(RedisConnectionFactory redisConnectionFactory)</span></span>&#123;</span><br><span class="line"></span><br><span class="line">RedisTemplate&lt;Object, Object&gt; template = <span class="keyword">new</span> RedisTemplate&lt;&gt;();</span><br><span class="line"></span><br><span class="line">template.setDefaultSerializer(<span class="keyword">new</span> Jackson2JsonRedisSerializer&lt;Object&gt;(Object<span class="class">.<span class="keyword">class</span>))</span>; </span><br><span class="line"></span><br><span class="line">template.setConnectionFactory(redisConnectionFactory); 	</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> template; 	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="传统整合和springboot自动装配-优劣势分析"><a href="#传统整合和springboot自动装配-优劣势分析" class="headerlink" title="传统整合和springboot自动装配 优劣势分析"></a>传统整合和springboot自动装配 优劣势分析</h3><h4 id="注解"><a href="#注解" class="headerlink" title="注解"></a>注解</h4><p>一、 通过@Import注解来导入ImportSelector组件</p>
+<p>1) 写一个配置类在配置类上标注一个@Import的注解</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@Import</span>(value = &#123;TulingSelector<span class="class">.<span class="keyword">class</span>&#125;)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">TulingConfig</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>2) 在@Import注解的value值写自己需要导入的组件 在selectImports方法中 就是你需要导入组件的全类名</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TulingSelector</span> <span class="keyword">implements</span> <span class="title">ImportSelector</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String[] selectImports(AnnotationMetadata annotationMetadata) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> String[]&#123;<span class="string">"com.tuling.service.TulingServiceImpl"</span>&#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>核心代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TulingController</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//自动注入 tulingServiceImpl</span></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> TulingServiceImpl tulingServiceImpl;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping</span>(<span class="string">"testTuling"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">testTuling</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        tulingServiceImpl.testService();</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"tulingOk"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TulingServiceImpl</span> </span>&#123;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testService</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"我是通过importSelector导入进来的service"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>二、 通过@Import导入ImportBeanDefinitionRegistrar 从而进来导入组件</p>
+<p>核心代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TulingImportBeanDefinitionRegistrar</span> <span class="keyword">implements</span> <span class="title">ImportBeanDefinitionRegistrar</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">registerBeanDefinitions</span><span class="params">(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry beanDefinitionRegistry)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//定义一个BeanDefinition</span></span><br><span class="line">        RootBeanDefinition rootBeanDefinition = <span class="keyword">new</span> RootBeanDefinition(TulingDao<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">        <span class="comment">//把自定义的bean定义导入到容器中</span></span><br><span class="line">        beanDefinitionRegistry.registerBeanDefinition(<span class="string">"tulingDao"</span>,rootBeanDefinition);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;​</span><br><span class="line"></span><br><span class="line"><span class="comment">//通过ImportSelector功能导入进来的</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TulingServiceImpl</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> TulingDao tulingDao;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testService</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        tulingDao.testTulingDao();</span><br><span class="line">        System.out.println(<span class="string">"我是通过importSelector导入进来的service"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//通过ImportBeanDefinitionRegistar导入进来的</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TulingDao</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testTulingDao</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"我是通过ImportBeanDefinitionRegistrar导入进来tulingDao组件"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>三、 Spring底层条件装配的原理@Conditional<br>应用要求:比如我有二个组件,一个是TulingLog  一个是TulingAspect<br>而TulingLog 是依赖TulingAspect的 只有容器中有TulingAspect组件才会加载TulingLog</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//tulingLog组件  依赖TulingAspect组件</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TulingLog</span> </span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//tulingAspect组件</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TulingAspect</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>自定义条件组件</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TulingConditional</span> <span class="keyword">implements</span> <span class="title">Condition</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">matches</span><span class="params">(ConditionContext conditionContext, AnnotatedTypeMetadata annotatedTypeMetadata)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//容器中包含tulingAspect组件才返回Ture</span></span><br><span class="line">        <span class="keyword">if</span>(conditionContext.getBeanFactory().containsBean(<span class="string">"tulingAspect"</span>))&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">    </span><br><span class="line">    -------------------------------------该情况下会加载二个组件-------------------------------------------------</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> TulingAspect <span class="title">tulingAspect</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"TulingAspect组件自动装配到容器中"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> TulingAspect();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@Conditional</span>(value = TulingConditional<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">    <span class="title">public</span> <span class="title">TulingLog</span> <span class="title">tulingLog</span>() </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"TulingLog组件自动装配到容器中"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> TulingLog();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    -------------------------------------二个组件都不会被加载----------------------------------------</span><br><span class="line">    <span class="comment">/*@Bean**/</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> TulingAspect <span class="title">tulingAspect</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"TulingAspect组件自动装配到容器中"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> TulingAspect();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@Conditional</span>(value = TulingConditional<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">    <span class="title">public</span> <span class="title">TulingLog</span> <span class="title">tulingLog</span>() </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"TulingLog组件自动装配到容器中"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> TulingLog();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="自动装配原理分析"><a href="#自动装配原理分析" class="headerlink" title="自动装配原理分析"></a>自动装配原理分析</h3><p>自动装配原理分析 从@SpringbootApplication入手分析</p>
+<p><img src="https://user-gold-cdn.xitu.io/2019/5/8/16a977cf1fff0519?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt=""></p>
+<p>org.springframework.boot.autoconfigure.AutoConfigurationImportSelector.selectImports</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AutoConfigurationImportSelector</span></span></span><br><span class="line"><span class="class">		<span class="keyword">implements</span> <span class="title">DeferredImportSelector</span>, <span class="title">BeanClassLoaderAware</span>, <span class="title">ResourceLoaderAware</span>,</span></span><br><span class="line"><span class="class">		<span class="title">BeanFactoryAware</span>, <span class="title">EnvironmentAware</span>, <span class="title">Ordered</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> String[] selectImports(AnnotationMetadata annotationMetadata) &#123;</span><br><span class="line">		<span class="keyword">if</span> (!isEnabled(annotationMetadata)) &#123;</span><br><span class="line">			<span class="keyword">return</span> NO_IMPORTS;</span><br><span class="line">		&#125;</span><br><span class="line">		AutoConfigurationMetadata autoConfigurationMetadata = AutoConfigurationMetadataLoader</span><br><span class="line">				.loadMetadata(<span class="keyword">this</span>.beanClassLoader);</span><br><span class="line">		AnnotationAttributes attributes = getAttributes(annotationMetadata);</span><br><span class="line">		<span class="comment">//去mata-info/spring.factories文件中 查询 EnableAutoConfiguration对于值</span></span><br><span class="line">		List&lt;String&gt; configurations = getCandidateConfigurations(annotationMetadata,</span><br><span class="line">				attributes);</span><br><span class="line">		<span class="comment">//去除重复的配置类，若我们自己写的starter 可能存主重复的</span></span><br><span class="line">		configurations = removeDuplicates(configurations);</span><br><span class="line">		Set&lt;String&gt; exclusions = getExclusions(annotationMetadata, attributes);</span><br><span class="line">		checkExcludedClasses(configurations, exclusions);</span><br><span class="line">		configurations.removeAll(exclusions);</span><br><span class="line">		<span class="comment">//根据maven 导入的启动器过滤出 需要导入的配置类</span></span><br><span class="line">		configurations = filter(configurations, autoConfigurationMetadata);</span><br><span class="line">		fireAutoConfigurationImportEvents(configurations, exclusions);</span><br><span class="line">		<span class="keyword">return</span> StringUtils.toStringArray(configurations);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;	</span><br><span class="line"> </span><br><span class="line"> <span class="comment">//去spring.factories 中去查询EnableAutoConfirution类</span></span><br><span class="line"> <span class="keyword">private</span> <span class="keyword">static</span> Map&lt;String, List&lt;String&gt;&gt; loadSpringFactories(<span class="meta">@Nullable</span> ClassLoader classLoader) &#123;</span><br><span class="line">		MultiValueMap&lt;String, String&gt; result = cache.get(classLoader);</span><br><span class="line">		<span class="keyword">if</span> (result != <span class="keyword">null</span>) &#123;</span><br><span class="line">			<span class="keyword">return</span> result;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			Enumeration&lt;URL&gt; urls = (classLoader != <span class="keyword">null</span> ?</span><br><span class="line">					classLoader.getResources(FACTORIES_RESOURCE_LOCATION) :</span><br><span class="line">					ClassLoader.getSystemResources(FACTORIES_RESOURCE_LOCATION));</span><br><span class="line">			result = <span class="keyword">new</span> LinkedMultiValueMap&lt;&gt;();</span><br><span class="line">			<span class="keyword">while</span> (urls.hasMoreElements()) &#123;</span><br><span class="line">				URL url = urls.nextElement();</span><br><span class="line">				UrlResource resource = <span class="keyword">new</span> UrlResource(url);</span><br><span class="line">				Properties properties = PropertiesLoaderUtils.loadProperties(resource);</span><br><span class="line">				<span class="keyword">for</span> (Map.Entry&lt;?, ?&gt; entry : properties.entrySet()) &#123;</span><br><span class="line">					List&lt;String&gt; factoryClassNames = Arrays.asList(</span><br><span class="line">							StringUtils.commaDelimitedListToStringArray((String) entry.getValue()));</span><br><span class="line">					result.addAll((String) entry.getKey(), factoryClassNames);</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			cache.put(classLoader, result);</span><br><span class="line">			<span class="keyword">return</span> result;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">catch</span> (IOException ex) &#123;</span><br><span class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Unable to load factories from location ["</span> +</span><br><span class="line">					FACTORIES_RESOURCE_LOCATION + <span class="string">"]"</span>, ex);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">然后我们分析RedisAutoConfiguration类</span><br><span class="line"></span><br><span class="line">     导入了三个组件  RedisTemplate   StringRedisTemplate</span><br><span class="line"></span><br><span class="line">     JedisConnectionConfiguration </span><br><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@ConditionalOnClass</span>(RedisOperations<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">EnableConfigurationProperties</span>(<span class="title">RedisProperties</span>.<span class="title">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">Import</span>(</span>&#123; LettuceConnectionConfiguration<span class="class">.<span class="keyword">class</span>, <span class="title">JedisConnectionConfiguration</span>.<span class="title">class</span> &#125;)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">RedisAutoConfiguration</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//导入redisTemplate </span></span><br><span class="line">	<span class="meta">@Bean</span></span><br><span class="line">	<span class="meta">@ConditionalOnMissingBean</span>(name = <span class="string">"redisTemplate"</span>)</span><br><span class="line">	<span class="function"><span class="keyword">public</span> RedisTemplate&lt;Object, Object&gt; <span class="title">redisTemplate</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">			RedisConnectionFactory redisConnectionFactory)</span> <span class="keyword">throws</span> UnknownHostException </span>&#123;</span><br><span class="line">		RedisTemplate&lt;Object, Object&gt; template = <span class="keyword">new</span> RedisTemplate&lt;&gt;();</span><br><span class="line">		template.setConnectionFactory(redisConnectionFactory);</span><br><span class="line">		<span class="keyword">return</span> template;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Bean</span></span><br><span class="line">	<span class="meta">@ConditionalOnMissingBean</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> StringRedisTemplate <span class="title">stringRedisTemplate</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">			RedisConnectionFactory redisConnectionFactory)</span> <span class="keyword">throws</span> UnknownHostException </span>&#123;</span><br><span class="line">		StringRedisTemplate template = <span class="keyword">new</span> StringRedisTemplate();</span><br><span class="line">		template.setConnectionFactory(redisConnectionFactory);</span><br><span class="line">		<span class="keyword">return</span> template;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">=====================================JedisConnectionConfiguration==========================================</span><br><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@ConditionalOnClass</span>(&#123; GenericObjectPool<span class="class">.<span class="keyword">class</span>, <span class="title">JedisConnection</span>.<span class="title">class</span>, <span class="title">Jedis</span>.<span class="title">class</span> &#125;)</span></span><br><span class="line"><span class="class"><span class="title">class</span> <span class="title">JedisConnectionConfiguration</span> <span class="keyword">extends</span> <span class="title">RedisConnectionConfiguration</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> RedisProperties properties;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> List&lt;JedisClientConfigurationBuilderCustomizer&gt; builderCustomizers;</span><br><span class="line"></span><br><span class="line">	JedisConnectionConfiguration(RedisProperties properties,</span><br><span class="line">			ObjectProvider&lt;RedisSentinelConfiguration&gt; sentinelConfiguration,</span><br><span class="line">			ObjectProvider&lt;RedisClusterConfiguration&gt; clusterConfiguration,</span><br><span class="line">			ObjectProvider&lt;List&lt;JedisClientConfigurationBuilderCustomizer&gt;&gt; builderCustomizers) &#123;</span><br><span class="line">		<span class="keyword">super</span>(properties, sentinelConfiguration, clusterConfiguration);</span><br><span class="line">		<span class="keyword">this</span>.properties = properties;</span><br><span class="line">		<span class="keyword">this</span>.builderCustomizers = builderCustomizers</span><br><span class="line">				.getIfAvailable(Collections::emptyList);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Bean</span></span><br><span class="line">	<span class="meta">@ConditionalOnMissingBean</span>(RedisConnectionFactory<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">	<span class="title">public</span> <span class="title">JedisConnectionFactory</span> <span class="title">redisConnectionFactory</span>() <span class="title">throws</span> <span class="title">UnknownHostException</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> createJedisConnectionFactory();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">private</span> JedisConnectionFactory <span class="title">createJedisConnectionFactory</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		JedisClientConfiguration clientConfiguration = getJedisClientConfiguration();</span><br><span class="line">		<span class="keyword">if</span> (getSentinelConfig() != <span class="keyword">null</span>) &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">new</span> JedisConnectionFactory(getSentinelConfig(), clientConfiguration);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (getClusterConfiguration() != <span class="keyword">null</span>) &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">new</span> JedisConnectionFactory(getClusterConfiguration(),</span><br><span class="line">					clientConfiguration);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">new</span> JedisConnectionFactory(getStandaloneConfig(), clientConfiguration);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">private</span> JedisClientConfiguration <span class="title">getJedisClientConfiguration</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		JedisClientConfigurationBuilder builder = applyProperties(</span><br><span class="line">				JedisClientConfiguration.builder());</span><br><span class="line">		RedisProperties.Pool pool = <span class="keyword">this</span>.properties.getJedis().getPool();</span><br><span class="line">		<span class="keyword">if</span> (pool != <span class="keyword">null</span>) &#123;</span><br><span class="line">			applyPooling(pool, builder);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (StringUtils.hasText(<span class="keyword">this</span>.properties.getUrl())) &#123;</span><br><span class="line">			customizeConfigurationFromUrl(builder);</span><br><span class="line">		&#125;</span><br><span class="line">		customize(builder);</span><br><span class="line">		<span class="keyword">return</span> builder.build();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">private</span> JedisClientConfigurationBuilder <span class="title">applyProperties</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">			JedisClientConfigurationBuilder builder)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (<span class="keyword">this</span>.properties.isSsl()) &#123;</span><br><span class="line">			builder.useSsl();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (<span class="keyword">this</span>.properties.getTimeout() != <span class="keyword">null</span>) &#123;</span><br><span class="line">			Duration timeout = <span class="keyword">this</span>.properties.getTimeout();</span><br><span class="line">			builder.readTimeout(timeout).connectTimeout(timeout);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> builder;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">applyPooling</span><span class="params">(RedisProperties.Pool pool,</span></span></span><br><span class="line"><span class="function"><span class="params">			JedisClientConfiguration.JedisClientConfigurationBuilder builder)</span> </span>&#123;</span><br><span class="line">		builder.usePooling().poolConfig(jedisPoolConfig(pool));</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">private</span> JedisPoolConfig <span class="title">jedisPoolConfig</span><span class="params">(RedisProperties.Pool pool)</span> </span>&#123;</span><br><span class="line">		JedisPoolConfig config = <span class="keyword">new</span> JedisPoolConfig();</span><br><span class="line">		config.setMaxTotal(pool.getMaxActive());</span><br><span class="line">		config.setMaxIdle(pool.getMaxIdle());</span><br><span class="line">		config.setMinIdle(pool.getMinIdle());</span><br><span class="line">		<span class="keyword">if</span> (pool.getMaxWait() != <span class="keyword">null</span>) &#123;</span><br><span class="line">			config.setMaxWaitMillis(pool.getMaxWait().toMillis());</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> config;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="自动配置"><a href="#自动配置" class="headerlink" title="自动配置"></a>自动配置</h3><p>点开@SpringBootApplication，可以发现它是一个组合注解，主要是由这么几个注解构成的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootConfiguration</span><span class="comment">//核心</span></span><br><span class="line"><span class="meta">@EnableAutoConfiguration</span><span class="comment">//核心</span></span><br><span class="line"><span class="meta">@ComponentScan</span>(excludeFilters = &#123; <span class="meta">@Filter</span>(type = FilterType.CUSTOM, classes = TypeExcludeFilter<span class="class">.<span class="keyword">class</span>),</span></span><br><span class="line"><span class="class">		@<span class="title">Filter</span>(<span class="title">type</span> </span>= FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter<span class="class">.<span class="keyword">class</span>) &#125;)</span></span><br></pre></td></tr></table></figure>
+
+<p>我们首先要研究的就是核心的两个注解 @SpringBootConfiguration和<br>@EnableAutoConfiguration</p>
+<ol>
+<li>@SpringBootConfiguration</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target</span>(ElementType.TYPE)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> SpringBootConfiguration &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到SpringBootConfiguration其实就携带了一个@Configuration注解，这个注解我们再熟悉不过了，他就代表自己是一个Spring的配置类。所以我们可以认为：@SpringBootConfiguration = @Configuration</p>
+<ol start="2">
+<li>@EnableAutoConfiguration</li>
+</ol>
+<p>这个注解一定和自动配置相关，点进去看源代码之后可以发现，其内部就包含了这么两个注解</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@AutoConfigurationPackage</span> <span class="comment">//自动配置包</span></span><br><span class="line"><span class="meta">@Import</span>(AutoConfigurationImportSelector<span class="class">.<span class="keyword">class</span>)//自动配置导入选择</span></span><br></pre></td></tr></table></figure>
+
+<p>看看@Import(AutoConfigurationImportSelector.class)中的内容：</p>
+<p>它帮我们导入了AutoConfigurationImportSelector，这个类中存在一个方法可以帮我们获取所有的配置，代码如下。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">  所有的配置都存放在configurations中，</span></span><br><span class="line"><span class="comment">  而这些配置都从getCandidateConfiguration中获取，</span></span><br><span class="line"><span class="comment">  这个方法是用来获取候选的配置。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">List&lt;String&gt; configurations = getCandidateConfigurations(annotationMetadata, attributes);</span><br></pre></td></tr></table></figure>
+
+<p>getCandidateConfigurations():</p>
+<p>这个方法可以用来获取所有候选的配置，那么这些候选的配置又是从哪来的呢？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*获取候选的配置*/</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> List&lt;String&gt; <span class="title">getCandidateConfigurations</span><span class="params">(AnnotationMetadata metadata, AnnotationAttributes attributes)</span> </span>&#123;</span><br><span class="line">		List&lt;String&gt; configurations = SpringFactoriesLoader.loadFactoryNames(getSpringFactoriesLoaderFactoryClass(),</span><br><span class="line">				getBeanClassLoader());</span><br><span class="line">		Assert.notEmpty(configurations, <span class="string">"No auto configuration classes found in META-INF/spring.factories. If you "</span></span><br><span class="line">				+ <span class="string">"are using a custom packaging, make sure that file is correct."</span>);</span><br><span class="line">		<span class="keyword">return</span> configurations;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实际上它返回了一个List，这个List是由loadFactoryNames()方法返回的,其中传入了一个getSpringFactoriesLoaderFactoryClass()，我们可以看看这个方法的内容。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> Class&lt;?&gt; getSpringFactoriesLoaderFactoryClass() &#123;</span><br><span class="line">	<span class="keyword">return</span> EnableAutoConfiguration<span class="class">.<span class="keyword">class</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们看到了一个眼熟的词 —— EnableAutoConfiguration，也就是说，它实际上返回的就是标注了这个类的所有包。标注了这个类的包不就是@SpringBootApplication吗？</p>
+<p>所以我们可以得出结论：它兜兜转转饶了这么多地方，就是为了将启动类所需的所有资源导入。</p>
+<p>我们接着往下看，它其中还有这么一条语句，是一条断言：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Assert.notEmpty(configurations, <span class="string">"No auto configuration classes found in META-INF/spring.factories. If you "</span></span><br><span class="line">				+ <span class="string">"are using a custom packaging, make sure that file is correct."</span>);</span><br></pre></td></tr></table></figure>
+
+<p>这个断言的意思是，configurations必须非空，否则就打印一段话，No auto configuration classes found in META-INF/spring.factories.</p>
+<p>当我们的SpringBoot项目启动的时候，会先导入AutoConfigurationImportSelector，这个类会帮我们选择所有候选的配置，我们需要导入的配置都是SpringBoot帮我们写好的一个一个的配置类，那么这些配置类的位置，存在与META-INF/spring.factories文件中，通过这个文件，Spring可以找到这些配置类的位置，于是去加载其中的配置。</p>
+<p>spring.factories中存在那么多的配置，每次启动时都是把它们全量加载吗？这显然是不现实的。</p>
+<p><img src="https://user-gold-cdn.xitu.io/2019/12/3/16ec9688bf3c3a2a?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt=""></p>
+<p>@ConditionalOnXXX:如果其中的条件都满足，该类才会生效。<br>所以在加载自动配置类的时候，并不是将spring.factories的配置全量加载进来，而是通过这个注解的判断，如果注解中的类都存在，才会进行加载。<br>所以就实现了：我们在pom.xml文件中加入stater启动器，SpringBoot自动进行配置。完成开箱即用。</p>
+<ol>
+<li>SpringBoot在启动的时候从类路径下的META-INF/spring.factories中获取EnableAutoConfiguration指定的值</li>
+</ol>
+<ol start="2">
+<li>将这些值作为自动配置类导入容器 ， 自动配置类就生效 ， 帮我们进行自动配置工作；</li>
+</ol>
+<ol start="3">
+<li><p>以前我们需要自己配置的东西 ， 自动配置类都帮我们解决了</p>
+</li>
+<li><p>整个J2EE的整体解决方案和自动配置都在springboot-autoconfigure的jar包中；</p>
+</li>
+<li><p>它将所有需要导入的组件以全类名的方式返回 ， 这些组件就会被添加到容器中 ；</p>
+</li>
+<li><p>它会给容器中导入非常多的自动配置类 （xxxAutoConfiguration）, 就是给容器中导入这个场景需要的所有组件 ， 并配置好这些组件 ；</p>
+</li>
+<li><p>有了自动配置类 ， 免去了我们手动编写配置注入功能组件等的工作；</p>
+</li>
+</ol>
+<p><img src="https://user-gold-cdn.xitu.io/2019/12/3/16ec9688be257da4?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt=""></p>
+<h3 id="SpringBoot自动配置类如何读取yml配置"><a href="#SpringBoot自动配置类如何读取yml配置" class="headerlink" title="SpringBoot自动配置类如何读取yml配置"></a>SpringBoot自动配置类如何读取yml配置</h3><h4 id="yml配置文件中可以配置那些东西"><a href="#yml配置文件中可以配置那些东西" class="headerlink" title="yml配置文件中可以配置那些东西"></a>yml配置文件中可以配置那些东西</h4><p>首先要知道这个问题的答案，我们应该习惯springboot的配置方式。在上文中我们阐述了SpringBoot总是将所有的配置都用JavaConfig的形式去呈现出来，这样能够使代码更加优雅。那么yml中配置的东西，必然是要和这种配置模式去进行联系的，我们在application.yml中配置的东西，通常是一些存在与自动配置类中的属性，那么这些自动配置类，在启动的时候是怎么找到的呢？如果你还记得上文的描述，那么你可以很明确地知道：spring.factories！没错，就是它，所以这个问题我们似乎得到了答案——只要存在与spring.factories中的，我们都可以在application.yml中进行配置。当然，这并不意味着不存在其中的我们就不能配置，这些配置类我们是可以进行自定义的，只要我们写了配置类，我们就可以在yml中配置我们需要的属性值，然后在配置类中直接读取这个配置文件，将其映射到配置类的属性上。那么就牵扯出我们的问题了：配置类是如何去读取yml配置文件中的信息的呢？</p>
+<h4 id="ConfigurationProperties"><a href="#ConfigurationProperties" class="headerlink" title="@ConfigurationProperties"></a>@ConfigurationProperties</h4><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">object:</span> </span><br><span class="line">  <span class="attr">name:</span> <span class="string">Object</span></span><br><span class="line">  <span class="attr">blogurl:</span> <span class="string">blog.objectspace.cn</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@ConfigurationProperties</span>(prefix = <span class="string">"object"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestConfig</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> String name;</span><br><span class="line">	<span class="keyword">private</span> String blogUrl;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> name;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.name = name;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getBlogUrl</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> blogUrl;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setBlogUrl</span><span class="params">(String blogUrl)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.blogUrl = blogUrl;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所以@ConfigurationProperties这个注解，可以将yml文件中写好的值注入到我们类的属性中。</p>
+<p>选取SpringMVC的自动配置类，我们来看看其中有些什么东西。</p>
+<p><img src="https://user-gold-cdn.xitu.io/2019/12/3/16ec9688f7bb954c?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt=""></p>
+<p>点击任意一个*Properties类中，look一下其中的内容：</p>
+<p><img src="https://user-gold-cdn.xitu.io/2019/12/3/16ec9688f691fdad?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt=""></p>
+
+            <div class="post-copyright">
+    <div class="content">
+        <p>最后更新： 2020年06月06日 16:38</p>
+        <p>原始链接： <a class="post-url" href="/2020/06/06/SpringBoot_3%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D/" title="SpringBoot自动装配原理">https://guoshusong.github.io/2020/06/06/SpringBoot_3%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D/</a></p>
+        <footer>
+            <a href="https://guoshusong.github.io">
+                <img src="/images/logo.png" alt="GuoShuSong">
+                GuoShuSong
+            </a>
+        </footer>
+    </div>
+</div>
+
+      
+        
+            
+
+        
+    </div>
+    <footer class="article-footer">
+        
+        
+<div class="post-share">
+    <a href="javascript:;" id="share-sub" class="post-share-fab">
+        <i class="fa fa-share-alt"></i>
+    </a>
+    <div class="post-share-list" id="share-list">
+        <ul class="share-icons">
+          <li>
+            <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://guoshusong.github.io/2020/06/06/SpringBoot_3%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D/&title=《SpringBoot自动装配原理》 — gssplus's Blog&pic=https://i.loli.net/2020/06/02/tFQRdryksBI1uvL.png" data-title="微博">
+              <i class="fa fa-weibo"></i>
+            </a>
+          </li>
+          <li>
+            <a class="weixin share-sns" id="wxFab" href="javascript:;" data-title="微信">
+              <i class="fa fa-weixin"></i>
+            </a>
+          </li>
+          <li>
+            <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://guoshusong.github.io/2020/06/06/SpringBoot_3%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D/&title=《SpringBoot自动装配原理》 — gssplus's Blog&source=SpringBoot自动装配原理详解、SpringBoot自动配置" data-title="QQ">
+              <i class="fa fa-qq"></i>
+            </a>
+          </li>
+          <li>
+            <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://guoshusong.github.io/2020/06/06/SpringBoot_3%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D/" data-title="Facebook">
+              <i class="fa fa-facebook"></i>
+            </a>
+          </li>
+          <li>
+            <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《SpringBoot自动装配原理》 — gssplus's Blog&url=https://guoshusong.github.io/2020/06/06/SpringBoot_3%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D/&via=https://guoshusong.github.io" data-title="Twitter">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li>
+            <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://guoshusong.github.io/2020/06/06/SpringBoot_3%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D/" data-title="Google+">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        </ul>
+     </div>
+</div>
+<div class="post-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;" id="wxShare-close">×</a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://guoshusong.github.io/2020/06/06/SpringBoot_3%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D/" alt="微信分享二维码">
+</div>
+
+<div class="mask"></div>
+
+        
+        <ul class="article-footer-menu">
+            
+            
+  <li class="article-footer-tags">
+    <i class="fa fa-tags"></i>
+      
+    <a href="/tags/SpringBoot/" class="color1">SpringBoot</a>
+      
+  </li>
+
+        </ul>
+        
+    </footer>
+  </div>
+</article>
+
+
+    <aside class="post-toc-pos post-toc-top" id="post-toc">
+        <nav class="post-toc-wrap">
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#SpringBoot自动装配原理详解、SpringBoot自动配置"><span class="post-toc-text">SpringBoot自动装配原理详解、SpringBoot自动配置</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#传统装配"><span class="post-toc-text">传统装配</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#springboot自动装配"><span class="post-toc-text">springboot自动装配</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#传统整合和springboot自动装配-优劣势分析"><span class="post-toc-text">传统整合和springboot自动装配 优劣势分析</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#注解"><span class="post-toc-text">注解</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#自动装配原理分析"><span class="post-toc-text">自动装配原理分析</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#自动配置"><span class="post-toc-text">自动配置</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#SpringBoot自动配置类如何读取yml配置"><span class="post-toc-text">SpringBoot自动配置类如何读取yml配置</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#yml配置文件中可以配置那些东西"><span class="post-toc-text">yml配置文件中可以配置那些东西</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#ConfigurationProperties"><span class="post-toc-text">@ConfigurationProperties</span></a></li></ol></li></ol></li></ol>
+        </nav>
+    </aside>
+    
+
+<nav id="article-nav">
+  
+    <a href="/2020/06/08/Maven_01/" id="article-nav-newer" class="article-nav-link-wrap">
+
+      <span class="article-nav-title">
+        <i class="fa fa-hand-o-left" aria-hidden="true"></i>
+        
+          Java内存模型(Java Memory Model)
+        
+      </span>
+    </a>
+  
+  
+    <a href="/2020/06/02/Mysql3/" id="article-nav-older" class="article-nav-link-wrap">
+      <span class="article-nav-title">MySQL逻辑架构</span>
+      <i class="fa fa-hand-o-right" aria-hidden="true"></i>
+    </a>
+  
+</nav>
+
+
+
+    
+</section>
+        
+      </div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+
+      <p>
+        Powered by  <a href="http://hexo.io/" target="_blank">Hexo</a>
+        Theme <a href="//github.com/wongminho/hexo-theme-miho" target="_blank">MiHo</a>
+      &copy; 2020 GuoShuSong<br>
+      </p>
+    </div>
+  </div>
+</footer>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script>
+  var mihoConfig = {
+      root: "https://guoshusong.github.io",
+      animate: true,
+      isHome: false,
+      share: true,
+      reward: 0
+  }
+</script>
+<div class="sidebar">
+    <div id="sidebar-search" title="Search">
+        <i class="fa fa-search"></i>
+    </div>
+    <div id="sidebar-category" title="Categories">
+        <i class="fa fa-book"></i>
+    </div>
+    <div id="sidebar-tag" title="Tags">
+        <i class="fa fa-tags"></i>
+    </div>
+    <div id="sidebar-top">
+        <span class="sidebar-top-icon"><i class="fa fa-angle-up"></i></span>
+    </div>
+</div>
+<div class="sidebar-menu-box" id="sidebar-menu-box">
+    <div class="sidebar-menu-box-container">
+        <div id="sidebar-menu-box-categories">
+            <a class="category-link" href="/categories/Docker/">Docker</a><a class="category-link" href="/categories/Java/">Java</a><a class="category-link" href="/categories/MySQL/">MySQL</a><a class="category-link" href="/categories/Nginx/">Nginx</a><a class="category-link" href="/categories/SpringBoot/">SpringBoot</a><a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a><a class="category-link" href="/categories/%E7%90%90%E7%A2%8E/">琐碎</a><a class="category-link" href="/categories/%E9%9D%A2%E8%AF%95/">面试</a>
+        </div>
+        <div id="sidebar-menu-box-tags">
+            <a href="/tags/Docker/" style="font-size: 12px;">Docker</a> <a href="/tags/Java%E5%9F%BA%E7%A1%80/" style="font-size: 18px;">Java基础</a> <a href="/tags/Maven/" style="font-size: 10px;">Maven</a> <a href="/tags/MyBatis/" style="font-size: 10px;">MyBatis</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/SpringBoot/" style="font-size: 20px;">SpringBoot</a> <a href="/tags/jvm/" style="font-size: 16px;">jvm</a> <a href="/tags/%E4%B8%B2/" style="font-size: 10px;">串</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E5%9B%BE/" style="font-size: 10px;">图</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">排序算法</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a> <a href="/tags/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/" style="font-size: 10px;">查找算法</a> <a href="/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A1%A8/" style="font-size: 10px;">线性表</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 10px;">设计模式</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+        </div>
+    </div>
+    <a href="javascript:;" class="sidebar-menu-box-close">&times;</a>
+</div>
+<div class="mobile-header-menu-nav" id="mobile-header-menu-nav">
+    <div class="mobile-header-menu-container">
+        <span class="title">Menus</span>
+        <ul class="mobile-header-menu-navbar">
+            
+            <li>
+                <a  href="/">
+                    <i class="fa fa-home"></i><span>Home</span>
+                </a>
+            </li>
+            
+            <li>
+                <a  href="/archives">
+                    <i class="fa fa-archive"></i><span>Archives</span>
+                </a>
+            </li>
+            
+            <li>
+                <a  href="/about">
+                    <i class="fa fa-user"></i><span>About</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    <div class="mobile-header-tag-container">
+        <span class="title">Tags</span>
+        <div id="mobile-header-container-tags">
+            <a href="/tags/Docker/" style="font-size: 12px;">Docker</a> <a href="/tags/Java%E5%9F%BA%E7%A1%80/" style="font-size: 18px;">Java基础</a> <a href="/tags/Maven/" style="font-size: 10px;">Maven</a> <a href="/tags/MyBatis/" style="font-size: 10px;">MyBatis</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/SpringBoot/" style="font-size: 20px;">SpringBoot</a> <a href="/tags/jvm/" style="font-size: 16px;">jvm</a> <a href="/tags/%E4%B8%B2/" style="font-size: 10px;">串</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E5%9B%BE/" style="font-size: 10px;">图</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">排序算法</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a> <a href="/tags/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/" style="font-size: 10px;">查找算法</a> <a href="/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/tags/%E7%BA%BF%E6%80%A7%E8%A1%A8/" style="font-size: 10px;">线性表</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 10px;">设计模式</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+        </div>
+    </div>
+</div>
+<div class="search-wrap">
+    <span class="search-close">&times;</span>
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+            <i class="icon icon-lg icon-chevron-left"></i>
+        </a>
+        <input class="search-field" placeholder="Search..." id="keywords">
+        <a id="search-submit" href="javascript:;">
+            <i class="fa fa-search"></i>
+        </a>
+    <div class="search-container" id="search-container">
+        <ul class="search-result" id="search-result">
+        </ul>
+    </div>
+</div>
+
+<div id="search-tpl">
+    <li class="search-result-item">
+        <a href="{url}" class="search-item-li">
+            <span class="search-item-li-title" title="{title}">{title}</span>
+        </a>
+    </li>
+</div>
+
+<script src="/js/search.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+  <script src="//cdn.bootcss.com/particles.js/2.0.0/particles.min.js"></script>
+  <div id="particles"></div>
+  
+<script src="/js/particles.js"></script>
+
+
+
+
+
+
+
+
+  
+<link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+
+  <script src="//cdn.bootcss.com/scrollReveal.js/3.0.5/scrollreveal.js"></script>
+  
+<script src="/js/animate.js"></script>
+
+
+
+  
+<script src="/js/pop-img.js"></script>
+
+  <script>
+     $(".article-entry p img").popImg();
+  </script>
+
+  </div>
+</body>
+</html>
