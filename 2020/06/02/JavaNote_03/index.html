@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Lambda表达式的用法 | gssplus&#39;s Blog</title>
+  <title>Lambda表达式 | gssplus&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
     <meta name="keywords" content="gss's Blog" />
   
-  <meta name="description" content="Lambda表达式的用法">
+  <meta name="description" content="Lambda表达式的用法、Lambda执行时间优化">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Lambda表达式的用法">
+<meta property="og:title" content="Lambda表达式">
 <meta property="og:url" content="https://guoshusong.github.io/2020/06/02/JavaNote_03/index.html">
 <meta property="og:site_name" content="gssplus&#39;s Blog">
-<meta property="og:description" content="Lambda表达式的用法">
+<meta property="og:description" content="Lambda表达式的用法、Lambda执行时间优化">
 <meta property="og:image" content="https://i.loli.net/2020/01/04/1CQvDFKYU9pN4Rz.png">
 <meta property="article:published_time" content="2020-06-02T06:08:50.487Z">
-<meta property="article:modified_time" content="2020-06-02T08:15:09.748Z">
+<meta property="article:modified_time" content="2020-06-30T07:45:05.941Z">
 <meta property="article:author" content="GuoShuSong">
 <meta property="article:tag" content="Java基础">
 <meta name="twitter:card" content="summary">
@@ -116,7 +116,7 @@
         
   
     <h1 class="post-title" itemprop="name">
-      Lambda表达式的用法
+      Lambda表达式
     </h1>
     <div class="post-title-bar">
       <ul>
@@ -145,7 +145,7 @@
     <div class="article-entry post-content" itemprop="articleBody">
       
             
-            <h2 id="Lambda表达式的用法"><a href="#Lambda表达式的用法" class="headerlink" title="Lambda表达式的用法"></a>Lambda表达式的用法</h2><a id="more"></a>
+            <h2 id="Lambda表达式的用法、Lambda执行时间优化"><a href="#Lambda表达式的用法、Lambda执行时间优化" class="headerlink" title="Lambda表达式的用法、Lambda执行时间优化"></a>Lambda表达式的用法、Lambda执行时间优化</h2><a id="more"></a>
 
 <h3 id="Lamba"><a href="#Lamba" class="headerlink" title="Lamba"></a>Lamba</h3><p>消除单方法接口实现的匿名内部类。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"i = "</span> + i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;).start();</span><br></pre></td></tr></table></figure>
@@ -164,11 +164,12 @@
 
 <p>要注意的是，这里的方法体中不带{}，原因就是当方法体只有一个语句的时候，{}可以省略。</p>
 <p>另外，return关键字也被省略了，原因是编译器会认为，既然只有一个语句，那么这个语句执行的结果就应该是返回值，所以return也就不需要了。同理，当参数只有一个的时候，小括号也是可以省略的。</p>
+<p><a href="https://juejin.im/post/5efa93e2e51d4534634c6421" target="_blank" rel="noopener">Lambda初次使用很慢？从JIT到类加载再到实现原理</a></p>
 
             <div class="post-copyright">
     <div class="content">
-        <p>最后更新： 2020年06月02日 16:15</p>
-        <p>原始链接： <a class="post-url" href="/2020/06/02/JavaNote_03/" title="Lambda表达式的用法">https://guoshusong.github.io/2020/06/02/JavaNote_03/</a></p>
+        <p>最后更新： 2020年06月30日 15:45</p>
+        <p>原始链接： <a class="post-url" href="/2020/06/02/JavaNote_03/" title="Lambda表达式">https://guoshusong.github.io/2020/06/02/JavaNote_03/</a></p>
         <footer>
             <a href="https://guoshusong.github.io">
                 <img src="/images/logo.png" alt="GuoShuSong">
@@ -194,7 +195,7 @@
     <div class="post-share-list" id="share-list">
         <ul class="share-icons">
           <li>
-            <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://guoshusong.github.io/2020/06/02/JavaNote_03/&title=《Lambda表达式的用法》 — gssplus's Blog&pic=https://i.loli.net/2020/06/02/kRu437CeQYzhwWv.png" data-title="微博">
+            <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://guoshusong.github.io/2020/06/02/JavaNote_03/&title=《Lambda表达式》 — gssplus's Blog&pic=https://i.loli.net/2020/06/02/kRu437CeQYzhwWv.png" data-title="微博">
               <i class="fa fa-weibo"></i>
             </a>
           </li>
@@ -204,7 +205,7 @@
             </a>
           </li>
           <li>
-            <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://guoshusong.github.io/2020/06/02/JavaNote_03/&title=《Lambda表达式的用法》 — gssplus's Blog&source=Lambda表达式的用法" data-title="QQ">
+            <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://guoshusong.github.io/2020/06/02/JavaNote_03/&title=《Lambda表达式》 — gssplus's Blog&source=Lambda表达式的用法、Lambda执行时间优化" data-title="QQ">
               <i class="fa fa-qq"></i>
             </a>
           </li>
@@ -214,7 +215,7 @@
             </a>
           </li>
           <li>
-            <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《Lambda表达式的用法》 — gssplus's Blog&url=https://guoshusong.github.io/2020/06/02/JavaNote_03/&via=https://guoshusong.github.io" data-title="Twitter">
+            <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《Lambda表达式》 — gssplus's Blog&url=https://guoshusong.github.io/2020/06/02/JavaNote_03/&via=https://guoshusong.github.io" data-title="Twitter">
               <i class="fa fa-twitter"></i>
             </a>
           </li>
@@ -254,7 +255,7 @@
 
     <aside class="post-toc-pos post-toc-top" id="post-toc">
         <nav class="post-toc-wrap">
-            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Lambda表达式的用法"><span class="post-toc-text">Lambda表达式的用法</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Lamba"><span class="post-toc-text">Lamba</span></a></li></ol></li></ol>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Lambda表达式的用法、Lambda执行时间优化"><span class="post-toc-text">Lambda表达式的用法、Lambda执行时间优化</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Lamba"><span class="post-toc-text">Lamba</span></a></li></ol></li></ol>
         </nav>
     </aside>
     
