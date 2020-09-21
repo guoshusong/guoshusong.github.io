@@ -8,14 +8,14 @@
   
     <meta name="keywords" content="gss's Blog" />
   
-  <meta name="description" content="ArrayList(openJdk11)源码分析、通过ArrayList来介绍fail-test">
+  <meta name="description" content="ArrayList(openJdk11)源码分析、通过ArrayList来介绍fail-test、与Arrays.asList的区别">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ArrayList源码解析">
 <meta property="og:url" content="https://guoshusong.github.io/2020/07/12/JavaNote_14/index.html">
 <meta property="og:site_name" content="gssplus&#39;s Blog">
-<meta property="og:description" content="ArrayList(openJdk11)源码分析、通过ArrayList来介绍fail-test">
+<meta property="og:description" content="ArrayList(openJdk11)源码分析、通过ArrayList来介绍fail-test、与Arrays.asList的区别">
 <meta property="article:published_time" content="2020-07-12T06:34:40.334Z">
-<meta property="article:modified_time" content="2020-07-13T11:45:56.612Z">
+<meta property="article:modified_time" content="2020-09-18T02:30:26.531Z">
 <meta property="article:author" content="GuoShuSong">
 <meta property="article:tag" content="Java基础">
 <meta name="twitter:card" content="summary">
@@ -143,7 +143,7 @@
     <div class="article-entry post-content" itemprop="articleBody">
       
             
-            <h2 id="ArrayList-openJdk11-源码分析、通过ArrayList来介绍fail-test"><a href="#ArrayList-openJdk11-源码分析、通过ArrayList来介绍fail-test" class="headerlink" title="ArrayList(openJdk11)源码分析、通过ArrayList来介绍fail-test"></a>ArrayList(openJdk11)源码分析、通过ArrayList来介绍fail-test</h2><a id="more"></a>
+            <h2 id="ArrayList-openJdk11-源码分析、通过ArrayList来介绍fail-test、与Arrays-asList的区别"><a href="#ArrayList-openJdk11-源码分析、通过ArrayList来介绍fail-test、与Arrays-asList的区别" class="headerlink" title="ArrayList(openJdk11)源码分析、通过ArrayList来介绍fail-test、与Arrays.asList的区别"></a>ArrayList(openJdk11)源码分析、通过ArrayList来介绍fail-test、与Arrays.asList的区别</h2><a id="more"></a>
 
 <p>jdk版本为openJdk11+28</p>
 <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>ArrayList 是一个数组队列，相当于 动态数组。与Java中的数组相比，它的容量能动态增长。它继承于AbstractList，实现了List, RandomAccess, Cloneable, java.io.Serializable这些接口。</p>
@@ -319,10 +319,17 @@
 <li><p>ArrayList的Iterator实现类中调用next()时，会“调用checkForComodification()比较‘expectedModCount’和‘modCount’的大小”；但是，CopyOnWriteArrayList的Iterator实现类中，没有所谓的checkForComodification()，更不会抛出ConcurrentModificationException异常！ </p>
 </li>
 </ol>
+<h3 id="与Arrays-asList的区别"><a href="#与Arrays-asList的区别" class="headerlink" title="与Arrays.asList的区别"></a>与Arrays.asList的区别</h3><p>今天将一个数组转换成 List 然后进行 remove 操作时却抛出 java.lang.UnsupportedOperationException 异常。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">String pattern = <span class="string">" ^, v, m, n-music-name, $ "</span>;</span><br><span class="line">String[] patternSplit = Utils.getStringTrimSplit(pattern, <span class="string">","</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 去除模式中的^和$标识</span></span><br><span class="line">List&lt;String&gt; natureList = Arrays.asList(patternSplit);</span><br><span class="line"><span class="keyword">if</span> (<span class="string">"^"</span>.equals(natureList.get(<span class="number">0</span>))) &#123;</span><br><span class="line">    natureList.remove(<span class="number">0</span>); <span class="comment">// throw java.lang.UnsupportedOperationException</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (<span class="string">"$"</span>.equals(natureList.get(natureList.size() - <span class="number">1</span>))) &#123;</span><br><span class="line">    natureList.remove(natureList.size() - <span class="number">1</span>); <span class="comment">// throw java.lang.UnsupportedOperationException</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">String[] natureArray = natureList.toArray(<span class="keyword">new</span> String[natureList.size()]);</span><br><span class="line">System.out.println(natureArray.length);</span><br></pre></td></tr></table></figure>
 
+<p>看了下源码才发现使用 Arrays.asList(arr) 转换的 List 并不能进行 add 和 remove 操作。</p>
+<p>Arrays.asList(arr) 返回的类型是 Aarrays$ArrayList 并不是 ArrayList，</p>
+<p>Aarrays$ArrayList 和 ArrayList 都继承 AbstractList，但是 AbstractList 中的 add 方法和 remove 方法都是直接抛出 UnsupportedOperationException，并没有直接实现。</p>
+<p>ArrayList 重写了 add 方法和 remove 方法,能够进行对应的添加和删除操作，Aarrays$ArrayList 却没有去重写，所以此时调用 add 方法和 remove 方法会抛出 UnsupportedOperationException。</p>
+<h4 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// old</span></span><br><span class="line">List&lt;String&gt; natureList = Arrays.asList(patternSplit);</span><br><span class="line"><span class="comment">// new </span></span><br><span class="line">List&lt;String&gt; natureList = <span class="keyword">new</span> ArrayList&lt;&gt;(Arrays.asList(patternSplit));</span><br></pre></td></tr></table></figure>
             <div class="post-copyright">
     <div class="content">
-        <p>最后更新： 2020年07月13日 19:45</p>
+        <p>最后更新： 2020年09月18日 10:30</p>
         <p>原始链接： <a class="post-url" href="/2020/07/12/JavaNote_14/" title="ArrayList源码解析">https://guoshusong.github.io/2020/07/12/JavaNote_14/</a></p>
         <footer>
             <a href="https://guoshusong.github.io">
@@ -359,7 +366,7 @@
             </a>
           </li>
           <li>
-            <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://guoshusong.github.io/2020/07/12/JavaNote_14/&title=《ArrayList源码解析》 — gssplus's Blog&source=ArrayList(openJdk11)源码分析、通过ArrayList来介绍fail-test" data-title="QQ">
+            <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://guoshusong.github.io/2020/07/12/JavaNote_14/&title=《ArrayList源码解析》 — gssplus's Blog&source=ArrayList(openJdk11)源码分析、通过ArrayList来介绍fail-test、与Arrays.asList的区别" data-title="QQ">
               <i class="fa fa-qq"></i>
             </a>
           </li>
@@ -409,7 +416,7 @@
 
     <aside class="post-toc-pos post-toc-top" id="post-toc">
         <nav class="post-toc-wrap">
-            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#ArrayList-openJdk11-源码分析、通过ArrayList来介绍fail-test"><span class="post-toc-text">ArrayList(openJdk11)源码分析、通过ArrayList来介绍fail-test</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#简介"><span class="post-toc-text">简介</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#API"><span class="post-toc-text">API</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#成员变量"><span class="post-toc-text">成员变量</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#构造方法"><span class="post-toc-text">构造方法</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#添加元素及扩容"><span class="post-toc-text">添加元素及扩容</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#扩容"><span class="post-toc-text">扩容</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#更新"><span class="post-toc-text">更新</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#删除"><span class="post-toc-text">删除</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#查找"><span class="post-toc-text">查找</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#遍历"><span class="post-toc-text">遍历</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#最后"><span class="post-toc-text">最后</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#fast-fail"><span class="post-toc-text">fast-fail</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#简介-1"><span class="post-toc-text">简介</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#解决办法"><span class="post-toc-text">解决办法</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#原理"><span class="post-toc-text">原理</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#解决fail-fast的原理"><span class="post-toc-text">解决fail-fast的原理</span></a></li></ol></li></ol></li></ol>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#ArrayList-openJdk11-源码分析、通过ArrayList来介绍fail-test、与Arrays-asList的区别"><span class="post-toc-text">ArrayList(openJdk11)源码分析、通过ArrayList来介绍fail-test、与Arrays.asList的区别</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#简介"><span class="post-toc-text">简介</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#API"><span class="post-toc-text">API</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#成员变量"><span class="post-toc-text">成员变量</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#构造方法"><span class="post-toc-text">构造方法</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#添加元素及扩容"><span class="post-toc-text">添加元素及扩容</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#扩容"><span class="post-toc-text">扩容</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#更新"><span class="post-toc-text">更新</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#删除"><span class="post-toc-text">删除</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#查找"><span class="post-toc-text">查找</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#遍历"><span class="post-toc-text">遍历</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#最后"><span class="post-toc-text">最后</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#fast-fail"><span class="post-toc-text">fast-fail</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#简介-1"><span class="post-toc-text">简介</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#解决办法"><span class="post-toc-text">解决办法</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#原理"><span class="post-toc-text">原理</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#解决fail-fast的原理"><span class="post-toc-text">解决fail-fast的原理</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#与Arrays-asList的区别"><span class="post-toc-text">与Arrays.asList的区别</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#解决方法"><span class="post-toc-text">解决方法</span></a></li></ol></li></ol></li></ol>
         </nav>
     </aside>
     

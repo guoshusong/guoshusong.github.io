@@ -14,11 +14,15 @@
 <meta property="og:url" content="https://guoshusong.github.io/2020/06/02/JVM_03/index.html">
 <meta property="og:site_name" content="gssplus&#39;s Blog">
 <meta property="og:description" content="Java虚拟机的栈帧结构">
+<meta property="og:image" content="https://pic4.zhimg.com/80/v2-96c13f6ae951c1292b0fbe91bca2e9da_720w.jpg">
+<meta property="og:image" content="https://pic2.zhimg.com/80/v2-b5fde4f3d9b238e95e158f3cdf240f7a_720w.jpg">
+<meta property="og:image" content="https://pic1.zhimg.com/80/v2-deeaeaa76623d68730ab3fa65decd474_720w.jpg">
 <meta property="article:published_time" content="2020-06-02T06:08:50.515Z">
-<meta property="article:modified_time" content="2020-06-02T08:25:00.298Z">
+<meta property="article:modified_time" content="2020-09-21T13:22:18.112Z">
 <meta property="article:author" content="GuoShuSong">
 <meta property="article:tag" content="jvm">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic4.zhimg.com/80/v2-96c13f6ae951c1292b0fbe91bca2e9da_720w.jpg">
   
   
     <link rel="icon" href="/favicon.ico">
@@ -150,30 +154,89 @@
 <li>栈帧随着方法调用而创建，随着方法结束而销毁——无论方法正常完成还是异常完成都算作方法结束。</li>
 <li>栈帧的存储空间由创建它的线程分配在Java虚拟机栈之中，每一个栈帧都有自己的本地变量表(局部变量表)、操作数栈和指向当前方法所属的类的运行时常量池的引用。</li>
 </ul>
+<h3 id="栈运行原理"><a href="#栈运行原理" class="headerlink" title="栈运行原理"></a>栈运行原理</h3><ul>
+<li><p>JVM 直接对 Java 栈的操作只有两个，对栈帧的压栈和出栈，遵循“先进后出/后进先出”原则</p>
+</li>
+<li><p>在一条活动线程中，一个时间点上，只会有一个活动的栈帧。即只有当前正在执行的方法的栈帧（栈顶栈帧）是有效的，这个栈帧被称为当前栈帧（Current Frame），与当前栈帧对应的方法就是当前方法（Current Method），定义这个方法的类就是当前类（Current Class）</p>
+</li>
+<li><p>执行引擎运行的所有字节码指令只针对当前栈帧进行操作</p>
+</li>
+<li><p>如果在该方法中调用了其他方法，对应的新的栈帧会被创建出来，放在栈的顶端，称为新的当前栈帧</p>
+</li>
+<li><p>不同线程中所包含的栈帧是不允许存在相互引用的，即不可能在一个栈帧中引用另外一个线程的栈帧<br>如果当前方法调用了其他方法，方法返回之际，当前栈帧会传回此方法的执行结果给前一个栈帧，接着，虚拟机会丢弃当前栈帧，使得前一个栈帧重新成为当前栈帧</p>
+</li>
+<li><p>Java 方法有两种返回函数的方式，一种是正常的函数返回，使用 return 指令，另一种是抛出异常，不管用哪种方式，都会导致栈帧被弹出</p>
+</li>
+</ul>
+<p>IDEA 在 debug 时候，可以在 debug 窗口看到 Frames 中各种方法的压栈和出栈情况</p>
+<p><img src="https://pic4.zhimg.com/80/v2-96c13f6ae951c1292b0fbe91bca2e9da_720w.jpg" alt=""></p>
 <h3 id="栈帧的概念"><a href="#栈帧的概念" class="headerlink" title="栈帧的概念"></a>栈帧的概念</h3><p>栈帧(Stack Frame)是用于支持虚拟机进行方法调用和方法执行的数据结构。栈帧存储了方法的局部变量表、操作数栈、动态连接和方法返回地址等信息。每一个方法从调用至执行完成的过程，都对应着一个栈帧在虚拟机栈里从入栈到出栈的过程。</p>
 <p>一个线程中方法的调用链可能会很长，很多方法都同时处于执行状态。对于JVM执行引擎来说，在在活动线程中，只有位于JVM虚拟机栈栈顶的元素才是有效的，即称为当前栈帧，与这个栈帧相关连的方法称为当前方法，定义这个方法的类叫做当前类。</p>
 <p>执行引擎运行的所有字节码指令都只针对当前栈帧进行操作。如果当前方法调用了其他方法，或者当前方法执行结束，那这个方法的栈帧就不再是当前栈帧了。</p>
 <p>调用新的方法时，新的栈帧也会随之创建。并且随着程序控制权转移到新方法，新的栈帧成为了当前栈帧。方法返回之际，原栈帧会返回方法的执行结果给之前的栈帧(返回给方法调用者)，随后虚拟机将会丢弃此栈帧。</p>
 <p><font color = red> 本来栈帧是线程本地的私有数据，不可能在一个栈帧中引用另外一个线程的栈帧。</p>
 <p>但是，虚拟机进行了一些优化：为了避免过多的 方法间参数的复制传递、方法返回值的复制传递 等一些操作，就让一部分数据进行栈桢间共享</font></p>
-<h3 id="局部变量表-Local-Variable-Table"><a href="#局部变量表-Local-Variable-Table" class="headerlink" title="局部变量表((Local Variable Table)"></a>局部变量表((Local Variable Table)</h3><p>局部变量表(Local Variable Table)是一组变量值存储空间，用于存放方法参数和方法内定义的局部变量。局部变量表的容量以变量槽(Variable Slot)为最小单位，Java虚拟机规范并没有定义一个槽所应该占用内存空间的大小，但是规定了一个槽应该可以存放一个32位以内的数据类型。</p>
+<h3 id="内部结构"><a href="#内部结构" class="headerlink" title="内部结构"></a>内部结构</h3><p>每个栈帧（Stack Frame）中存储着：</p>
+<ul>
+<li><p>局部变量表（Local Variables）</p>
+</li>
+<li><p>操作数栈（Operand Stack）(或称为表达式栈)</p>
+</li>
+<li><p>动态链接（Dynamic Linking）：指向运行时常量池的方法引用</p>
+</li>
+<li><p>方法返回地址（Return Address）：方法正常退出或异常退出的地址</p>
+</li>
+<li><p>一些附加信息</p>
+</li>
+</ul>
+<p><img src="https://pic2.zhimg.com/80/v2-b5fde4f3d9b238e95e158f3cdf240f7a_720w.jpg" alt=""></p>
+<h3 id="局部变量表-Local-Variable-Table"><a href="#局部变量表-Local-Variable-Table" class="headerlink" title="局部变量表((Local Variable Table)"></a>局部变量表((Local Variable Table)</h3><p>局部变量表(Local Variable Table)是一组变量值存储空间,也被称为局部变量数组或者本地变量表，用于存放方法参数和方法内定义的局部变量。局部变量表的容量以变量槽(Variable Slot)为最小单位，Java虚拟机规范并没有定义一个槽所应该占用内存空间的大小，但是规定了一个槽应该可以存放一个32位以内的数据类型。</p>
 <p><font color = red >在Java程序编译为Class文件时,就在方法的Code属性中的max_locals数据项中确定了该方法所需分配的局部变量表的最大容量。(最大Slot数量)</font></p>
-<p>一个局部变量可以保存一个类型为boolean、byte、char、short、int、float、reference和returnAddress类型的数据。reference类型表示对一个对象实例的引用。returnAddress类型是为jsr、jsr_w和ret指令服务的，目前已经很少使用了。</p>
-<p>虚拟机通过索引定位的方法查找相应的局部变量，索引的范围是从0~局部变量表最大容量。如果Slot是32位的，则遇到一个64位数据类型的变量(如long或double型)，则会连续使用两个连续的Slot来存储。</p>
+<p>主要用于存储方法参数和定义在方法体内的局部变量，包括编译器可知的各种 Java 虚拟机基本数据类型（boolean、byte、char、short、int、float、long、double）、对象引用（reference类型，它并不等同于对象本身，可能是一个指向对象起始地址的引用指针，也可能是指向一个代表对象的句柄或其他与此相关的位置）和 returnAddress 类型（指向了一条字节码指令的地址，已被异常表取代）</p>
+<p>虚拟机通过索引定位的方法查找相应的局部变量，索引的范围是从0~局部变量表最大容量。如果Slot是32位的，则遇到一个64位数据类型的变量(如long或double型)，则会连续使用两个连续的Slot来存储。参数值的存放总是在局部变量数组的 index0 开始，到数组长度 -1 的索引结束</p>
+<p>局部变量表所需要的容量大小是编译期确定下来的，并保存在方法的 Code 属性的 maximum local variables 数据项中。在方法运行期间是不会改变局部变量表的大小的</p>
+<p>方法嵌套调用的次数由栈的大小决定。一般来说，栈越大，方法嵌套调用次数越多。对一个函数而言，它的参数和局部变量越多，使得局部变量表膨胀，它的栈帧就越大，以满足方法调用所需传递的信息增大的需求。进而函数调用就会占用更多的栈空间，导致其嵌套调用次数就会减少。</p>
+<p>局部变量表中的变量只在当前方法调用中有效。在方法执行时，虚拟机通过使用局部变量表完成参数值到参数变量列表的传递过程。当方法调用结束后，随着方法栈帧的销毁，局部变量表也会随之销毁。</p>
 <h3 id="操作数栈"><a href="#操作数栈" class="headerlink" title="操作数栈"></a>操作数栈</h3><p>操作数栈(Operand Stack)也常称为操作栈，它是一个后入先出栈(LIFO)。同局部变量表一样，操作数栈的最大深度也在编译的时候写入到方法的Code属性的max_stacks数据项中。</p>
 <p>操作数栈的每一个元素可以是任意Java数据类型，32位的数据类型占一个栈容量，64位的数据类型占2个栈容量,且在方法执行的任意时刻，操作数栈的深度都不会超过max_stacks中设置的最大值。</p>
 <p>当一个方法刚刚开始执行时，其操作数栈是空的，随着方法执行和字节码指令的执行，会从局部变量表或对象实例的字段中复制常量或变量写入到操作数栈，再随着计算的进行将栈中元素出栈到局部变量表或者返回给方法调用者，也就是出栈/入栈操作。一个完整的方法执行期间往往包含多个这样出栈/入栈的过程。</p>
-<h3 id="动态连接"><a href="#动态连接" class="headerlink" title="动态连接"></a>动态连接</h3><p>在一个class文件中，一个方法要调用其他方法，需要将这些方法的符号引用转化为其在内存地址中的直接引用(字节码中的方法调用指令就以常量池中指向方法的符号引用作为参数)，而符号引用存在于方法区中的运行时常量池。</p>
-<p>Java虚拟机栈中，每个栈帧都包含一个指向运行时常量池中该栈所属方法的符号引用，持有这个引用的目的是为了支持方法调用过程中的动态连接(Dynamic Linking)。</p>
-<p>这些符号引用一部分会在类加载阶段或者第一次使用时就直接转化为直接引用，这类转化称为静态解析。另一部分将在每次运行期间转化为直接引用，这类转化称为动态连接。</p>
-<table><tr><td bgcolor=gray>
-在JVM中，类从被加载到虚拟机内存中开始，到卸载出内存为止，它的整个生命周期包括：加载、验证、准备、解析、初始化、使用和卸载7个阶段。而解析阶段即是虚拟机将常量池内的符号引用替换为直接引用的过程。
-
+<h3 id="栈顶缓存"><a href="#栈顶缓存" class="headerlink" title="栈顶缓存"></a>栈顶缓存</h3><p>HotSpot 的执行引擎采用的并非是基于寄存器的架构，但这并不代表 HotSpot VM 的实现并没有间接利用到寄存器资源。寄存器是物理 CPU 中的组成部分之一，它同时也是 CPU 中非常重要的高速存储资源。一般来说，寄存器的读/写速度非常迅速，甚至可以比内存的读/写速度快上几十倍不止，不过寄存器资源却非常有限，不同平台下的CPU 寄存器数量是不同和不规律的。寄存器主要用于缓存本地机器指令、数值和下一条需要被执行的指令地址等数据。</p>
+<p>基于栈式架构的虚拟机所使用的零地址指令更加紧凑，但完成一项操作的时候必然需要使用更多的入栈和出栈指令，这同时也就意味着将需要更多的指令分派（instruction dispatch）次数和内存读/写次数。由于操作数是存储在内存中的，因此频繁的执行内存读/写操作必然会影响执行速度。为了解决这个问题，HotSpot JVM 设计者们提出了栈顶缓存技术，将栈顶元素全部缓存在物理 CPU 的寄存器中，以此降低对内存的读/写次数，提升执行引擎的执行效率</p>
+<h3 id="动态连接"><a href="#动态连接" class="headerlink" title="动态连接"></a>动态连接</h3><ul>
+<li><p>每一个栈帧内部都包含一个指向运行时常量池中该栈帧所属方法的引用。包含这个引用的目的就是为了支持当前方法的代码能够实现动态链接(Dynamic Linking)。</p>
+</li>
+<li><p>在 Java 源文件被编译到字节码文件中时，所有的变量和方法引用都作为符号引用（Symbolic Reference）保存在 Class 文件的常量池中。比如：描述一个方法调用了另外的其他方法时，就是通过常量池中指向方法的符号引用来表示的，那么动态链接的作用就是为了将这些符号引用转换为调用方法的直接引用</p>
+</li>
+</ul>
+<p><img src="https://pic1.zhimg.com/80/v2-deeaeaa76623d68730ab3fa65decd474_720w.jpg" alt=""></p>
+<blockquote>
+<p>在JVM中，类从被加载到虚拟机内存中开始，到卸载出内存为止，它的整个生命周期包括：加载、验证、准备、解析、初始化、使用和卸载7个阶段。而解析阶段即是虚拟机将常量池内的符号引用替换为直接引用的过程。</p>
 <p>1.符号引用（Symbolic References）：符号引用以一组符号来描述所引用的目标，符号可以是任何形式的字面量，只要使用时能够无歧义的定位到目标即可。例如，在Class文件中它以CONSTANT_Class_info、CONSTANT_Fieldref_info、CONSTANT_Methodref_info等类型的常量出现。符号引用与虚拟机的内存布局无关，引用的目标并不一定加载到内存中。在Java中，一个java类将会编译成一个class文件。在编译时，java类并不知道所引用的类的实际地址，因此只能使用符号引用来代替。比如org.simple.People类引用了org.simple.Language类，在编译时People类并不知道Language类的实际内存地址，因此只能使用符号org.simple.Language（假设是这个，当然实际中是由类似于CONSTANT_Class_info的常量来表示的）来表示Language类的地址。各种虚拟机实现的内存布局可能有所不同，但是它们能接受的符号引用都是一致的，因为符号引用的字面量形式明确定义在Java虚拟机规范的Class文件格式中。</p>
-<p>2.直接引用：<br> 直接引用可以是<br>（1）直接指向目标的指针（比如，指向“类型”【Class对象】、类变量、类方法的直接引用可能是指向方法区的指针）<br>（2）相对偏移量（比如，指向实例变量、实例方法的直接引用都是偏移量）<br>（3）一个能间接定位到目标的句柄<br>直接引用是和虚拟机的布局相关的，同一个符号引用在不同的虚拟机实例上翻译出来的直接引用一般不会相同。如果有了直接引用，那引用的目标必定已经被加载入内存中了。</p>
-</td></tr></table>
-
+<p>2.直接引用：直接引用可以是<br>（1）直接指向目标的指针（比如，指向“类型”【Class对象】、类变量、类方法的直接引用可能是指向方法区的指针）<br>（2）相对偏移量（比如，指向实例变量、实例方法的直接引用都是偏移量）<br>（3）一个能间接定位到目标的句柄。直接引用是和虚拟机的布局相关的，同一个符号引用在不同的虚拟机实例上翻译出来的直接引用一般不会相同。如果有了直接引用，那引用的目标必定已经被加载入内存中了。</p>
+</blockquote>
 <p>参考：<a href="https://blog.csdn.net/u014656992/article/details/51107127" target="_blank" rel="noopener">JVM中的直接引用和符号引用</a></p>
+<h3 id="JVM-是如何执行方法调用的"><a href="#JVM-是如何执行方法调用的" class="headerlink" title="JVM 是如何执行方法调用的"></a>JVM 是如何执行方法调用的</h3><ul>
+<li><p>静态链接：当一个字节码文件被装载进 JVM 内部时，如果被调用的目标方法在编译期可知，且运行期保持不变时。这种情况下将调用方法的符号引用转换为直接引用的过程称之为静态链接</p>
+</li>
+<li><p>动态链接：如果被调用的方法在编译期无法被确定下来，也就是说，只能在程序运行期将调用方法的符号引用转换为直接引用，由于这种引用转换过程具备动态性，因此也就被称之为动态链接</p>
+</li>
+</ul>
+<p>对应的方法的绑定机制为：早期绑定（Early Binding）和晚期绑定（Late Binding）。绑定是一个字段、方法或者类在符号引用被替换为直接引用的过程，这仅仅发生一次。</p>
+<ul>
+<li><p>早期绑定：早期绑定就是指被调用的目标方法如果在编译期可知，且运行期保持不变时，即可将这个方法与所属的类型进行绑定，这样一来，由于明确了被调用的目标方法究竟是哪一个，因此也就可以使用静态链接的方式将符号引用转换为直接引用。</p>
+</li>
+<li><p>晚期绑定：如果被调用的方法在编译器无法被确定下来，只能够在程序运行期根据实际的类型绑定相关的方法，这种绑定方式就被称为晚期绑定。</p>
+</li>
+</ul>
+<h4 id="虚方法和非虚方法"><a href="#虚方法和非虚方法" class="headerlink" title="虚方法和非虚方法"></a>虚方法和非虚方法</h4><ul>
+<li><p>如果方法在编译器就确定了具体的调用版本，这个版本在运行时是不可变的。这样的方法称为非虚方法，比如静态方法、私有方法、final 方法、实例构造器、父类方法都是非虚方法</p>
+</li>
+<li><p>其他方法称为虚方法</p>
+</li>
+</ul>
+<h4 id="虚方法表"><a href="#虚方法表" class="headerlink" title="虚方法表"></a>虚方法表</h4><p>在面向对象编程中，会频繁的使用到动态分派，如果每次动态分派都要重新在类的方法元数据中搜索合适的目标有可能会影响到执行效率。为了提高性能，JVM 采用在类的方法区建立一个虚方法表（virtual method table），使用索引表来代替查找。非虚方法不会出现在表中。</p>
+<p>每个类中都有一个虚方法表，表中存放着各个方法的实际入口。</p>
+<p>虚方法表会在类加载的连接阶段被创建并开始初始化，类的变量初始值准备完成之后，JVM 会把该类的方法表也初始化完毕</p>
 <h3 id="方法返回"><a href="#方法返回" class="headerlink" title="方法返回"></a>方法返回</h3><p>当一个方法开始执行时，可能有两种方式退出该方法：</p>
 <ul>
 <li>正常完成出口</li>
@@ -187,7 +250,7 @@
 
             <div class="post-copyright">
     <div class="content">
-        <p>最后更新： 2020年06月02日 16:25</p>
+        <p>最后更新： 2020年09月21日 21:22</p>
         <p>原始链接： <a class="post-url" href="/2020/06/02/JVM_03/" title="JVM的栈帧结构">https://guoshusong.github.io/2020/06/02/JVM_03/</a></p>
         <footer>
             <a href="https://guoshusong.github.io">
@@ -274,7 +337,7 @@
 
     <aside class="post-toc-pos post-toc-top" id="post-toc">
         <nav class="post-toc-wrap">
-            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Java虚拟机的栈帧结构"><span class="post-toc-text">Java虚拟机的栈帧结构</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Java虚拟机规范中的描述"><span class="post-toc-text">Java虚拟机规范中的描述</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#栈帧的概念"><span class="post-toc-text">栈帧的概念</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#局部变量表-Local-Variable-Table"><span class="post-toc-text">局部变量表((Local Variable Table)</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#操作数栈"><span class="post-toc-text">操作数栈</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#动态连接"><span class="post-toc-text">动态连接</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#方法返回"><span class="post-toc-text">方法返回</span></a></li></ol></li></ol>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Java虚拟机的栈帧结构"><span class="post-toc-text">Java虚拟机的栈帧结构</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Java虚拟机规范中的描述"><span class="post-toc-text">Java虚拟机规范中的描述</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#栈运行原理"><span class="post-toc-text">栈运行原理</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#栈帧的概念"><span class="post-toc-text">栈帧的概念</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#内部结构"><span class="post-toc-text">内部结构</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#局部变量表-Local-Variable-Table"><span class="post-toc-text">局部变量表((Local Variable Table)</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#操作数栈"><span class="post-toc-text">操作数栈</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#栈顶缓存"><span class="post-toc-text">栈顶缓存</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#动态连接"><span class="post-toc-text">动态连接</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#JVM-是如何执行方法调用的"><span class="post-toc-text">JVM 是如何执行方法调用的</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#虚方法和非虚方法"><span class="post-toc-text">虚方法和非虚方法</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#虚方法表"><span class="post-toc-text">虚方法表</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#方法返回"><span class="post-toc-text">方法返回</span></a></li></ol></li></ol>
         </nav>
     </aside>
     
