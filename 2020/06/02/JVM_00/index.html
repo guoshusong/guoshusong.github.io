@@ -18,8 +18,9 @@
 <meta property="og:image" content="https://i.loli.net/2020/02/14/hVEYi8GdZwWvML4.png">
 <meta property="og:image" content="https://i.loli.net/2020/02/14/M6r7dbeD1OxKhSn.png">
 <meta property="og:image" content="https://i.loli.net/2020/02/14/zrlZw2xq3AaV5yo.png">
+<meta property="og:image" content="https://pic2.zhimg.com/80/v2-ae37ea94e73f11b01421fe5379a1c314_720w.jpg">
 <meta property="article:published_time" content="2020-06-02T06:08:50.508Z">
-<meta property="article:modified_time" content="2020-06-02T08:24:51.445Z">
+<meta property="article:modified_time" content="2020-09-22T03:32:55.670Z">
 <meta property="article:author" content="GuoShuSong">
 <meta property="article:tag" content="jvm">
 <meta name="twitter:card" content="summary">
@@ -210,21 +211,98 @@
 </ul>
 <p>ps:很多人原因把方法区称作“永久代”（Permanent Generation），本质上两者并不等价，只是HotSpot虚拟机垃圾回收器团队把GC分代收集扩展到了方法区，或者说是用来永久代来实现方法区而已，这样能省去专门为方法区编写内存管理的代码，但是在Jdk8也移除了“永久代”，使用Native Memory来实现方法区。</p>
 <p><img src="https://i.loli.net/2020/02/14/zrlZw2xq3AaV5yo.png" alt="JVM0.PNG"></p>
-<p>在 JDK1.7之前，HotSpot 使用永久代实现方法区；HotSpot 使用 GC 分代实现方法区带来了很大便利；</p>
-<p>从 JDK1.7 开始HotSpot 开始移除永久代。其中符号引用（Symbols）被移动到 Native Heap中，字符串常量和类引用被移动到 Java Heap中。</p>
-<p>在 JDK1.8 中，永久代已完全被元空间(Meatspace)所取代。元空间的本质和永久代类似，都是对JVM规范中方法区的实现。不过元空间与永久代之间最大的区别在于：元空间并不在虚拟机中，而是使用本地内存。因此，默认情况下，元空间的大小仅受本地内存限制。</p>
-<h5 id="运行时常量池"><a href="#运行时常量池" class="headerlink" title="运行时常量池"></a>运行时常量池</h5><p>值得注意的是在方法区中存在一个叫运行时常量池(Runtime Constant Pool）的区域。<br>Class 文件中的常量池（编译器生成的各种字面量和符号引用）会在类加载后被放入这个区域。</p>
+<ul>
+<li><p>方法区（method area）只是 JVM 规范中定义的一个概念，用于存储类信息、常量池、静态变量、JIT编译后的代码等数据，并没有规定如何去实现它，不同的厂商有不同的实现。而永久代（PermGen）是 Hotspot 虚拟机特有的概念， Java8 的时候又被元空间取代了，永久代和元空间都可以理解为方法区的落地实现。</p>
+</li>
+<li><p>永久代物理是堆的一部分，和新生代，老年代地址是连续的（受垃圾回收器管理），而元空间存在于本地内存（我们常说的堆外内存，不受垃圾回收器管理），这样就不受 JVM 限制了，也比较难发生OOM（都会有溢出异常）<br>Java7 中我们通过-XX:PermSize 和 -xx:MaxPermSize 来设置永久代参数，Java8 之后，随着永久代的取消，这些参数也就随之失效了，改为通过-XX:MetaspaceSize 和 -XX:MaxMetaspaceSize 用来设置元空间参数</p>
+</li>
+<li><p>存储内容不同，元空间存储类的元信息，静态变量和常量池等并入堆中。相当于永久代的数据被分到了堆和元空间中</p>
+</li>
+<li><p>如果方法区域中的内存不能用于满足分配请求，则 Java 虚拟机抛出 OutOfMemoryError</p>
+</li>
+<li><p>JVM 规范说方法区在逻辑上是堆的一部分，但目前实际上是与 Java 堆分开的（Non-Heap）</p>
+</li>
+</ul>
+<p>所以对于方法区，Java8 之后的变化：</p>
+<ul>
+<li><p>移除了永久代（PermGen），替换为元空间（Metaspace）；</p>
+</li>
+<li><p>永久代中的 class metadata 转移到了 native memory（本地内存，而不是虚拟机）；</p>
+</li>
+<li><p>永久代中的 interned Strings 和 class static variables 转移到了 Java heap；</p>
+</li>
+<li><p>永久代参数 （PermSize MaxPermSize） -&gt; 元空间参数（MetaspaceSize MaxMetaspaceSize）</p>
+</li>
+</ul>
+<h5 id="方法区内部结构"><a href="#方法区内部结构" class="headerlink" title="方法区内部结构"></a>方法区内部结构</h5><p>方法区用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等。</p>
+<h6 id="类型信息"><a href="#类型信息" class="headerlink" title="类型信息"></a>类型信息</h6><p>对每个加载的类型（类 class、接口 interface、枚举 enum、注解 annotation），JVM 必须在方法区中存储以下类型信息</p>
+<ul>
+<li><p>这个类型的完整有效名称（全名=包名.类名）</p>
+</li>
+<li><p>这个类型直接父类的完整有效名（对于 interface或是 java.lang.Object，都没有父类）</p>
+</li>
+<li><p>这个类型的修饰符（public，abstract，final 的某个子集）</p>
+</li>
+<li><p>这个类型直接接口的一个有序列表</p>
+</li>
+</ul>
+<h6 id="域（Field）信息"><a href="#域（Field）信息" class="headerlink" title="域（Field）信息"></a>域（Field）信息</h6><ul>
+<li><p>JVM 必须在方法区中保存类型的所有域的相关信息以及域的声明顺序</p>
+</li>
+<li><p>域的相关信息包括：域名称、域类型、域修饰符（public、private、protected、static、final、volatile、transient 的某个子集）</p>
+</li>
+</ul>
+<h6 id="方法（Method）信息"><a href="#方法（Method）信息" class="headerlink" title="方法（Method）信息"></a>方法（Method）信息</h6><p>JVM 必须保存所有方法的</p>
+<ul>
+<li>方法名称</li>
+<li>方法的返回类型</li>
+<li>方法参数的数量和类型</li>
+<li>方法的修饰符（public，private，protected，static，final，synchronized，native，abstract 的一个子集）<br>方法的字符码（bytecodes）、操作数栈、局部变量表及大小（abstract 和 native 方法除外）</li>
+<li>异常表（abstract 和 native 方法除外）</li>
+<li>每个异常处理的开始位置、结束位置、代码处理在程序计数器中的偏移地址、被捕获的异常类的常量池索引</li>
+</ul>
+<p>栈、堆、方法区的交互关系</p>
+<p><img src="https://pic2.zhimg.com/80/v2-ae37ea94e73f11b01421fe5379a1c314_720w.jpg" alt=""></p>
+<h5 id="运行时常量池"><a href="#运行时常量池" class="headerlink" title="运行时常量池"></a>运行时常量池</h5><p>值得注意的是在方法区中存在一个叫运行时常量池(Runtime Constant Pool）的区域。</p>
+<p>Class 文件中的常量池（编译器生成的各种字面量和符号引用）会在类加载后被放入这个区域。</p>
+<blockquote>
+<p>一个有效的字节码文件中除了包含类的版本信息、字段、方法以及接口等描述信息外，还包含一项信息那就是常量池表（Constant Pool Table），包含各种字面量和对类型、域和方法的符号引用。</p>
+</blockquote>
 <p>除了在编译期生成的常量，还允许动态生成，例如 String 类的 intern()。这部分常量也会被放入运行时常量池。</p>
+<p>通过索引访问</p>
 <h5 id="直接内存"><a href="#直接内存" class="headerlink" title="直接内存"></a>直接内存</h5><ul>
 <li><p>直接内存（Direct Memory）并不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域，但是这部分内存也被频繁地使用，而且也可能导致OutOfMemoryError 异常出现。</p>
 </li>
 <li><p>在 JDK 1.4 中新加入了 NIO 类，引入了一种基于通道（Channel）与缓冲区（Buffer）的I/O方式，它可以使用 Native 函数库直接分配堆外内存，然后通过一个存储在 Java 堆里的 DirectByteBuffer 对象作为这块内存的引用进行操作。这样能在一些场景中显著提高性能，因为避免了在Java 堆和Native 堆中来回复制数据。</p>
 </li>
 </ul>
+<h5 id="方法区垃圾回收"><a href="#方法区垃圾回收" class="headerlink" title="方法区垃圾回收"></a>方法区垃圾回收</h5><p>方法区的垃圾收集主要回收两部分内容：常量池中废弃的常量和不再使用的类型。</p>
+<p>先来说说方法区内常量池之中主要存放的两大类常量：字面量和符号引用。字面量比较接近 java 语言层次的常量概念，如文本字符串、被声明为 final 的常量值等。而符号引用则属于编译原理方面的概念，包括下面三类常量：</p>
+<ul>
+<li><p>类和接口的全限定名</p>
+</li>
+<li><p>字段的名称和描述符</p>
+</li>
+<li><p>方法的名称和描述符</p>
+</li>
+</ul>
+<p>HotSpot 虚拟机对常量池的回收策略是很明确的，只要常量池中的常量没有被任何地方引用，就可以被回收</p>
+<p>判定一个类型是否属于“不再被使用的类”，需要同时满足三个条件：</p>
+<ul>
+<li><p>该类所有的实例都已经被回收，也就是 Java 堆中不存在该类及其任何派生子类的实例</p>
+</li>
+<li><p>加载该类的类加载器已经被回收，这个条件除非是经过精心设计的可替换类加载器的场景，如 OSGi、JSP 的重加载等，否则通常很难达成</p>
+</li>
+<li><p>该类对应的 java.lang.Class 对象没有在任何地方被引用，无法在任何地方通过反射访问该类的方法</p>
+</li>
+</ul>
+<p>Java 虚拟机被允许堆满足上述三个条件的无用类进行回收，这里说的仅仅是“被允许”，而并不是和对象一样，不使用了就必然会回收。是否对类进行回收，HotSpot 虚拟机提供了 -Xnoclassgc 参数进行控制，还可以使用 -verbose:class 以及 -XX:+TraceClassLoading 、-XX:+TraceClassUnLoading 查看类加载和卸载信息。</p>
+<p>在大量使用反射、动态代理、CGLib 等 ByteCode 框架、动态生成 JSP 以及 OSGi 这类频繁自定义 ClassLoader 的场景都需要虚拟机具备类卸载的功能，以保证永久代不会溢出。</p>
+<p><a href="https://zhuanlan.zhihu.com/p/161777331" target="_blank" rel="noopener">参考文章</a></p>
 
             <div class="post-copyright">
     <div class="content">
-        <p>最后更新： 2020年06月02日 16:24</p>
+        <p>最后更新： 2020年09月22日 11:32</p>
         <p>原始链接： <a class="post-url" href="/2020/06/02/JVM_00/" title="JVM的组成">https://guoshusong.github.io/2020/06/02/JVM_00/</a></p>
         <footer>
             <a href="https://guoshusong.github.io">
@@ -311,7 +389,7 @@
 
     <aside class="post-toc-pos post-toc-top" id="post-toc">
         <nav class="post-toc-wrap">
-            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#JVM的整体组成以及各部分的用途"><span class="post-toc-text">JVM的整体组成以及各部分的用途</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#JVM组成"><span class="post-toc-text">JVM组成</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#运行时数据区"><span class="post-toc-text">运行时数据区</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#程序计数器"><span class="post-toc-text">程序计数器</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#特性：内存私有"><span class="post-toc-text">特性：内存私有</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#异常规定：无"><span class="post-toc-text">异常规定：无</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Java虚拟机栈"><span class="post-toc-text">Java虚拟机栈</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#特性：内存私有，它的生命周期和线程相同。"><span class="post-toc-text">特性：内存私有，它的生命周期和线程相同。</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#异常规定：StackOverflowError、OutOfMemoryError"><span class="post-toc-text">异常规定：StackOverflowError、OutOfMemoryError</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#本地方法栈"><span class="post-toc-text">本地方法栈</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Java堆"><span class="post-toc-text">Java堆</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#方法区"><span class="post-toc-text">方法区</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#运行时常量池"><span class="post-toc-text">运行时常量池</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#直接内存"><span class="post-toc-text">直接内存</span></a></li></ol></li></ol></li></ol></li></ol>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#JVM的整体组成以及各部分的用途"><span class="post-toc-text">JVM的整体组成以及各部分的用途</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#JVM组成"><span class="post-toc-text">JVM组成</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#运行时数据区"><span class="post-toc-text">运行时数据区</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#程序计数器"><span class="post-toc-text">程序计数器</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#特性：内存私有"><span class="post-toc-text">特性：内存私有</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#异常规定：无"><span class="post-toc-text">异常规定：无</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Java虚拟机栈"><span class="post-toc-text">Java虚拟机栈</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#特性：内存私有，它的生命周期和线程相同。"><span class="post-toc-text">特性：内存私有，它的生命周期和线程相同。</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#异常规定：StackOverflowError、OutOfMemoryError"><span class="post-toc-text">异常规定：StackOverflowError、OutOfMemoryError</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#本地方法栈"><span class="post-toc-text">本地方法栈</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Java堆"><span class="post-toc-text">Java堆</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#方法区"><span class="post-toc-text">方法区</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#方法区内部结构"><span class="post-toc-text">方法区内部结构</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-6"><a class="post-toc-link" href="#类型信息"><span class="post-toc-text">类型信息</span></a></li><li class="post-toc-item post-toc-level-6"><a class="post-toc-link" href="#域（Field）信息"><span class="post-toc-text">域（Field）信息</span></a></li><li class="post-toc-item post-toc-level-6"><a class="post-toc-link" href="#方法（Method）信息"><span class="post-toc-text">方法（Method）信息</span></a></li></ol></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#运行时常量池"><span class="post-toc-text">运行时常量池</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#直接内存"><span class="post-toc-text">直接内存</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#方法区垃圾回收"><span class="post-toc-text">方法区垃圾回收</span></a></li></ol></li></ol></li></ol></li></ol>
         </nav>
     </aside>
     
