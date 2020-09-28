@@ -3,19 +3,25 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Category: Java | gssplus&#39;s Blog</title>
+  <title>其他并发容器 | gssplus&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
     <meta name="keywords" content="gss's Blog" />
   
-  <meta name="description" content="我见过春日夏风，秋月冬雪，也曾踏遍南水北山，东麓西岭，可这四季春秋，苍山央水，都不及你瞅我展眉一笑">
-<meta property="og:type" content="website">
-<meta property="og:title" content="gssplus&#39;s Blog">
-<meta property="og:url" content="https://guoshusong.github.io/categories/Java/index.html">
+  <meta name="description" content="CopyOnWriteArrayList">
+<meta property="og:type" content="article">
+<meta property="og:title" content="其他并发容器">
+<meta property="og:url" content="https://guoshusong.github.io/2020/09/28/JavaNote_18/index.html">
 <meta property="og:site_name" content="gssplus&#39;s Blog">
-<meta property="og:description" content="我见过春日夏风，秋月冬雪，也曾踏遍南水北山，东麓西岭，可这四季春秋，苍山央水，都不及你瞅我展眉一笑">
+<meta property="og:description" content="CopyOnWriteArrayList">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2020/6/18/172c612677b6f5a4?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2020/6/18/172c618f64f08c87?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="article:published_time" content="2020-09-28T11:31:14.637Z">
+<meta property="article:modified_time" content="2020-09-28T11:35:17.577Z">
 <meta property="article:author" content="GuoShuSong">
+<meta property="article:tag" content="Java基础">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://user-gold-cdn.xitu.io/2020/6/18/172c612677b6f5a4?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
   
   
     <link rel="icon" href="/favicon.ico">
@@ -104,35 +110,151 @@
     </div>
 </header>
       <div class="outer">
-        <section id="main" class="body-wrap">
-  
-  
+        <section id="main" class="body-wrap"><article id="post-JavaNote_18" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/09/28/JavaNote_18/" class="archive-article-date">
-  <time datetime="2020-09-28T11:31:14.637Z" itemprop="datePublished">09-28</time>
-</a>
-      
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/09/28/JavaNote_18/"  target="_blank"  >其他并发容器</a>
+    <h1 class="post-title" itemprop="name">
+      其他并发容器
     </h1>
+    <div class="post-title-bar">
+      <ul>
+          
+              <li>
+                  <i class="fa fa-book"></i>
+                  
+                      <a href="/categories/Java/">Java</a>
+                  
+              </li>
+          
+        <li>
+          <i class="fa fa-calendar"></i>  2020-09-28
+        </li>
+        <li>
+          <i class="fa fa-eye"></i>
+          <span id="busuanzi_value_page_pv"></span>
+        </li>
+      </ul>
+    </div>
   
 
-    </header>
+          
+      </header>
+    
+    <div class="article-entry post-content" itemprop="articleBody">
       
-        <div class="archive-post-footer">
+            
+            <h2 id="CopyOnWriteArrayList"><a href="#CopyOnWriteArrayList" class="headerlink" title="CopyOnWriteArrayList"></a>CopyOnWriteArrayList</h2><a id="more"></a>
+
+<h3 id="CopyOnWriteArrayList-1"><a href="#CopyOnWriteArrayList-1" class="headerlink" title="CopyOnWriteArrayList"></a>CopyOnWriteArrayList</h3><h4 id="为什么会有这个玩意？"><a href="#为什么会有这个玩意？" class="headerlink" title="为什么会有这个玩意？"></a>为什么会有这个玩意？</h4><ol>
+<li><p>用来代替Vector和SynchronizedList，就和ConcurrentHashMap代替SynchronizedMap的原因一样</p>
+</li>
+<li><p>Vector和SynchronizedList的锁的粒度太大，并发效率相比较低，并且在遍历时无法修改。</p>
+</li>
+<li><p>Copy-On-Write容器还包括CopyOnWriteArraySet，用于替代同步的Set</p>
+</li>
+</ol>
+<h4 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h4><ol>
+<li>读多写少</li>
+</ol>
+<p>读操作需要尽可能的快，而写操作哪怕慢一些也无伤大雅，例如：黑名单场景。</p>
+<ol start="2">
+<li>写入实时性要求不高</li>
+</ol>
+<p>就是说，我的修改不是说非得立即生效，哪怕是有那么一小会，还是在读之前的数据，也没关系。</p>
+<h4 id="读写规则"><a href="#读写规则" class="headerlink" title="读写规则"></a>读写规则</h4><ul>
+<li><p>读读同步、读写同步、写写互斥</p>
+</li>
+<li><p>看起来是不是和读写锁的规则贼像？但是不一样哦。这里有一个升级，就是你即便在写，我也是可以读的。</p>
+</li>
+<li><p>我们来看一下写入的时候</p>
+</li>
+</ul>
+<p><img src="https://user-gold-cdn.xitu.io/2020/6/18/172c612677b6f5a4?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt=""></p>
+<p>上来先锁住，然后整一个新的数组出来，把新元素怼进去，再改一下原地址，解锁，一气呵成。</p>
+<ul>
+<li>读取的时候呢？</li>
+</ul>
+<p><img src="https://user-gold-cdn.xitu.io/2020/6/18/172c618f64f08c87?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt=""></p>
+<p>啥保护措施都没有的，读就完事了。</p>
+<h4 id="实现原理是什么"><a href="#实现原理是什么" class="headerlink" title="实现原理是什么"></a>实现原理是什么</h4><p>CopyOnWrite原理：写入时会先搞一个副本出来，写好以后改地址<br>“不变性”原理：每个list都相当于一个不可变的集合，没有修改操作在上面进行</p>
+<h4 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h4><p>数据一致性：只能保证最终数据的一致性，不能保证实时一致性。</p>
+<p>内存占用：副本可是占用一倍的内存。</p>
+
+            <div class="post-copyright">
+    <div class="content">
+        <p>最后更新： 2020年09月28日 19:35</p>
+        <p>原始链接： <a class="post-url" href="/2020/09/28/JavaNote_18/" title="其他并发容器">https://guoshusong.github.io/2020/09/28/JavaNote_18/</a></p>
+        <footer>
+            <a href="https://guoshusong.github.io">
+                <img src="/images/logo.png" alt="GuoShuSong">
+                GuoShuSong
+            </a>
+        </footer>
+    </div>
+</div>
+
+      
+        
+            
+
+        
+    </div>
+    <footer class="article-footer">
+        
+        
+<div class="post-share">
+    <a href="javascript:;" id="share-sub" class="post-share-fab">
+        <i class="fa fa-share-alt"></i>
+    </a>
+    <div class="post-share-list" id="share-list">
+        <ul class="share-icons">
+          <li>
+            <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://guoshusong.github.io/2020/09/28/JavaNote_18/&title=《其他并发容器》 — gssplus's Blog&pic=https://i.loli.net/2020/06/02/kRu437CeQYzhwWv.png" data-title="微博">
+              <i class="fa fa-weibo"></i>
+            </a>
+          </li>
+          <li>
+            <a class="weixin share-sns" id="wxFab" href="javascript:;" data-title="微信">
+              <i class="fa fa-weixin"></i>
+            </a>
+          </li>
+          <li>
+            <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://guoshusong.github.io/2020/09/28/JavaNote_18/&title=《其他并发容器》 — gssplus's Blog&source=CopyOnWriteArrayList" data-title="QQ">
+              <i class="fa fa-qq"></i>
+            </a>
+          </li>
+          <li>
+            <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://guoshusong.github.io/2020/09/28/JavaNote_18/" data-title="Facebook">
+              <i class="fa fa-facebook"></i>
+            </a>
+          </li>
+          <li>
+            <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《其他并发容器》 — gssplus's Blog&url=https://guoshusong.github.io/2020/09/28/JavaNote_18/&via=https://guoshusong.github.io" data-title="Twitter">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li>
+            <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://guoshusong.github.io/2020/09/28/JavaNote_18/" data-title="Google+">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        </ul>
+     </div>
+</div>
+<div class="post-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;" id="wxShare-close">×</a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://guoshusong.github.io/2020/09/28/JavaNote_18/" alt="微信分享二维码">
+</div>
+
+<div class="mask"></div>
+
+        
+        <ul class="article-footer-menu">
+            
             
   <li class="article-footer-tags">
     <i class="fa fa-tags"></i>
@@ -141,308 +263,33 @@
       
   </li>
 
-        </div>
-      
+        </ul>
+        
+    </footer>
   </div>
 </article>
 
-  
+
+    <aside class="post-toc-pos post-toc-top" id="post-toc">
+        <nav class="post-toc-wrap">
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#CopyOnWriteArrayList"><span class="post-toc-text">CopyOnWriteArrayList</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#CopyOnWriteArrayList-1"><span class="post-toc-text">CopyOnWriteArrayList</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#为什么会有这个玩意？"><span class="post-toc-text">为什么会有这个玩意？</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#应用场景"><span class="post-toc-text">应用场景</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#读写规则"><span class="post-toc-text">读写规则</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#实现原理是什么"><span class="post-toc-text">实现原理是什么</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#缺点"><span class="post-toc-text">缺点</span></a></li></ol></li></ol></li></ol>
+        </nav>
+    </aside>
     
+
+<nav id="article-nav">
+  
+  
+    <a href="/2020/09/28/JavaNote_17/" id="article-nav-older" class="article-nav-link-wrap">
+      <span class="article-nav-title">ConcurrentHashMap的源码解析</span>
+      <i class="fa fa-hand-o-right" aria-hidden="true"></i>
+    </a>
+  
+</nav>
+
+
+
     
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/09/28/JavaNote_17/" class="archive-article-date">
-  <time datetime="2020-09-28T10:45:28.939Z" itemprop="datePublished">09-28</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/09/28/JavaNote_17/"  target="_blank"  >ConcurrentHashMap的源码解析</a>
-    </h1>
-  
-
-    </header>
-      
-        <div class="archive-post-footer">
-            
-  <li class="article-footer-tags">
-    <i class="fa fa-tags"></i>
-      
-    <a href="/tags/Java基础/" class="color2">Java基础</a>
-      
-  </li>
-
-        </div>
-      
-  </div>
-</article>
-
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/09/22/JavaNote_16/" class="archive-article-date">
-  <time datetime="2020-09-22T11:48:22.377Z" itemprop="datePublished">09-22</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/09/22/JavaNote_16/"  target="_blank"  >HashMap HashTable和ConcurrentHashMap的区别</a>
-    </h1>
-  
-
-    </header>
-      
-        <div class="archive-post-footer">
-            
-  <li class="article-footer-tags">
-    <i class="fa fa-tags"></i>
-      
-    <a href="/tags/Java基础/" class="color2">Java基础</a>
-      
-  </li>
-
-        </div>
-      
-  </div>
-</article>
-
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/07/13/JavaNote_15/" class="archive-article-date">
-  <time datetime="2020-07-13T03:43:01.438Z" itemprop="datePublished">07-13</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/07/13/JavaNote_15/"  target="_blank"  >LinkedList源码解析</a>
-    </h1>
-  
-
-    </header>
-      
-        <div class="archive-post-footer">
-            
-  <li class="article-footer-tags">
-    <i class="fa fa-tags"></i>
-      
-    <a href="/tags/Java基础/" class="color2">Java基础</a>
-      
-  </li>
-
-        </div>
-      
-  </div>
-</article>
-
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/07/12/JavaNote_14/" class="archive-article-date">
-  <time datetime="2020-07-12T06:34:40.334Z" itemprop="datePublished">07-12</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/07/12/JavaNote_14/"  target="_blank"  >ArrayList源码解析</a>
-    </h1>
-  
-
-    </header>
-      
-        <div class="archive-post-footer">
-            
-  <li class="article-footer-tags">
-    <i class="fa fa-tags"></i>
-      
-    <a href="/tags/Java基础/" class="color2">Java基础</a>
-      
-  </li>
-
-        </div>
-      
-  </div>
-</article>
-
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/06/10/JavaNote_13/" class="archive-article-date">
-  <time datetime="2020-06-10T02:48:49.589Z" itemprop="datePublished">06-10</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/06/10/JavaNote_13/"  target="_blank"  >AQS(AbstractQueuedSynchronizer)</a>
-    </h1>
-  
-
-    </header>
-      
-        <div class="archive-post-footer">
-            
-  <li class="article-footer-tags">
-    <i class="fa fa-tags"></i>
-      
-    <a href="/tags/Java基础/" class="color2">Java基础</a>
-      
-  </li>
-
-        </div>
-      
-  </div>
-</article>
-
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/06/09/JavaNote_12/" class="archive-article-date">
-  <time datetime="2020-06-09T09:17:57.804Z" itemprop="datePublished">06-09</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/06/09/JavaNote_12/"  target="_blank"  >Java中的&#39;锁&#39;</a>
-    </h1>
-  
-
-    </header>
-      
-        <div class="archive-post-footer">
-            
-  <li class="article-footer-tags">
-    <i class="fa fa-tags"></i>
-      
-    <a href="/tags/Java基础/" class="color2">Java基础</a>
-      
-  </li>
-
-        </div>
-      
-  </div>
-</article>
-
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/06/02/JVM_04/" class="archive-article-date">
-  <time datetime="2020-06-02T06:08:50.518Z" itemprop="datePublished">06-02</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/06/02/JVM_04/"  target="_blank"  >Java内存模型(Java Memory Model)</a>
-    </h1>
-  
-
-    </header>
-      
-        <div class="archive-post-footer">
-            
-  <li class="article-footer-tags">
-    <i class="fa fa-tags"></i>
-      
-    <a href="/tags/jvm/" class="color4">jvm</a>
-      
-  </li>
-
-        </div>
-      
-  </div>
-</article>
-
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/06/02/JVM_03/" class="archive-article-date">
-  <time datetime="2020-06-02T06:08:50.515Z" itemprop="datePublished">06-02</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/06/02/JVM_03/"  target="_blank"  >JVM的栈帧结构</a>
-    </h1>
-  
-
-    </header>
-      
-        <div class="archive-post-footer">
-            
-  <li class="article-footer-tags">
-    <i class="fa fa-tags"></i>
-      
-    <a href="/tags/jvm/" class="color4">jvm</a>
-      
-  </li>
-
-        </div>
-      
-  </div>
-</article>
-
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/06/02/JVM_02/" class="archive-article-date">
-  <time datetime="2020-06-02T06:08:50.513Z" itemprop="datePublished">06-02</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/06/02/JVM_02/"  target="_blank"  >JVM的垃圾回收</a>
-    </h1>
-  
-
-    </header>
-      
-        <div class="archive-post-footer">
-            
-  <li class="article-footer-tags">
-    <i class="fa fa-tags"></i>
-      
-    <a href="/tags/jvm/" class="color4">jvm</a>
-      
-  </li>
-
-        </div>
-      
-  </div>
-</article>
-
-  
-  
-    </div></section>
-  
-
-
-  <nav id="page-nav">
-    <span class="page-number current">1</span><a class="page-number" href="/categories/Java/page/2/">2</a><a class="page-number" href="/categories/Java/page/3/">3</a><a class="extend next" rel="next" href="/categories/Java/page/2/">Next &gt;&gt;</a>
-  </nav>
 </section>
         
       </div>
