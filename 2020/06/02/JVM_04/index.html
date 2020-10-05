@@ -23,8 +23,11 @@
 <meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d37038e491ef475f9a0bd722f2780ec1~tplv-k3u1fbpfcp-zoom-1.image">
 <meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e4d0753f39524f6ea4f4445ed0e50354~tplv-k3u1fbpfcp-zoom-1.image">
 <meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f223f7805e3343f483b9aed3e3bad77a~tplv-k3u1fbpfcp-zoom-1.image">
+<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c9eb55cfc2514d5b967005c9591ea433~tplv-k3u1fbpfcp-zoom-1.image">
+<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2d4909f2b35745839b92ddee883774a3~tplv-k3u1fbpfcp-zoom-1.image">
+<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/abe11d4910354a019053d9cab3440818~tplv-k3u1fbpfcp-zoom-1.image">
 <meta property="article:published_time" content="2020-06-02T06:08:50.518Z">
-<meta property="article:modified_time" content="2020-10-05T13:28:20.789Z">
+<meta property="article:modified_time" content="2020-10-05T13:38:13.328Z">
 <meta property="article:author" content="GuoShuSong">
 <meta property="article:tag" content="jvm">
 <meta name="twitter:card" content="summary">
@@ -266,11 +269,32 @@
 <p>由于MESI缓存一致性协议，需要不断对主线进行内存嗅探，大量的交互会导致总线带宽达到峰值。因此不要滥用volatile</p>
 <h3 id="volatile禁止重排优化"><a href="#volatile禁止重排优化" class="headerlink" title="volatile禁止重排优化"></a>volatile禁止重排优化</h3><p>volatile关键字另一个作用就是禁止指令重排优化，从而避免多线程环境下程序出现乱序执行的现象，关于指令重排优化前面已详细分析过，这里主要简单说明一下volatile是如何实现禁止指令重排优化的。先了解一个概念，内存屏障(Memory Barrier）。</p>
 <p>内存屏障，又称内存栅栏，是一个CPU指令，它的作用有两个，一是保证特定操作的执行顺序，二是保证某些变量的内存可见性（利用该特性实现volatile的内存可见性）。由于编译器和处理器都能执行指令重排优化。如果在指令间插入一条Memory Barrier则会告诉编译器和CPU，不管什么指令都不能和这条Memory Barrier指令重排序，也就是说通过插入内存屏障禁止在内存屏障前后的指令执行重排序优化。Memory Barrier的另外一个作用是强制刷出各种CPU的缓存数据，因此任何CPU上的线程都能读取到这些数据的最新版本。总之，volatile变量正是通过内存屏障实现其在内存中的语义，即可见性和禁止重排优化。</p>
-<p>有一个非常经典的案例就是单例模式的实现.</p>
+<p>有如下四种内存屏障:</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c9eb55cfc2514d5b967005c9591ea433~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<h4 id="volatile写的场景如何插入内存屏障"><a href="#volatile写的场景如何插入内存屏障" class="headerlink" title="volatile写的场景如何插入内存屏障"></a>volatile写的场景如何插入内存屏障</h4><ul>
+<li><p>在每个volatile写操作的前面插入一个StoreStore屏障(写-写 屏障)</p>
+</li>
+<li><p>在每个volatile写操作的后面插入一个StoreLoad屏障(写-读 屏障)</p>
+</li>
+</ul>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2d4909f2b35745839b92ddee883774a3~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<blockquote>
+<p>StoreStore屏障可以保证在volatile写（flag赋值操作flag=true）之前，其前面的所有普通写（num的赋值操作num=1) 操作已经对任意处理器可见了，保障所有普通写在volatile写之前刷新到主内存。</p>
+</blockquote>
+<h4 id="volatile读场景如何插入内存屏障"><a href="#volatile读场景如何插入内存屏障" class="headerlink" title="volatile读场景如何插入内存屏障"></a>volatile读场景如何插入内存屏障</h4><ul>
+<li><p>在每个volatile读操作的后面插入一个LoadLoad屏障(读-读 屏障)</p>
+</li>
+<li><p>在每个volatile读操作的后面插入一个LoadStore屏障(读-写 屏障)</p>
+</li>
+</ul>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/abe11d4910354a019053d9cab3440818~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<blockquote>
+<p>LoadStore屏障可以保证其后面的所有普通写（num的赋值操作num=num+5) 操作必须在volatile读（if(flag)）之后执行。</p>
+</blockquote>
 
             <div class="post-copyright">
     <div class="content">
-        <p>最后更新： 2020年10月05日 21:28</p>
+        <p>最后更新： 2020年10月05日 21:38</p>
         <p>原始链接： <a class="post-url" href="/2020/06/02/JVM_04/" title="Java内存模型(Java Memory Model)">https://guoshusong.github.io/2020/06/02/JVM_04/</a></p>
         <footer>
             <a href="https://guoshusong.github.io">
@@ -357,7 +381,7 @@
 
     <aside class="post-toc-pos post-toc-top" id="post-toc">
         <nav class="post-toc-wrap">
-            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Java内存模型-Java-Memory-Model-、volatile解析"><span class="post-toc-text">Java内存模型(Java Memory Model)、volatile解析</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Java内存区域"><span class="post-toc-text">Java内存区域</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#硬件内存架构与Java内存模型"><span class="post-toc-text">硬件内存架构与Java内存模型</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#硬件内存架构"><span class="post-toc-text">硬件内存架构</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Java线程与硬件处理器"><span class="post-toc-text">Java线程与硬件处理器</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Java内存模型与硬件内存架构的关系"><span class="post-toc-text">Java内存模型与硬件内存架构的关系</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#JMM存在的必要性"><span class="post-toc-text">JMM存在的必要性</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Java内存模型的承诺"><span class="post-toc-text">Java内存模型的承诺</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#原子性"><span class="post-toc-text">原子性</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#理解指令重排"><span class="post-toc-text">理解指令重排</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#编译器重排"><span class="post-toc-text">编译器重排</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#可见性"><span class="post-toc-text">可见性</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#有序性"><span class="post-toc-text">有序性</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#JMM提供的解决方案"><span class="post-toc-text">JMM提供的解决方案</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#理解JMM中的happens-before-原则"><span class="post-toc-text">理解JMM中的happens-before 原则</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#volatile内存语义"><span class="post-toc-text">volatile内存语义</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#volatile的可见性"><span class="post-toc-text">volatile的可见性</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#缓存一致性"><span class="post-toc-text">缓存一致性</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#MESI"><span class="post-toc-text">MESI</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#总线嗅探"><span class="post-toc-text">总线嗅探</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#volatile禁止重排优化"><span class="post-toc-text">volatile禁止重排优化</span></a></li></ol></li></ol>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Java内存模型-Java-Memory-Model-、volatile解析"><span class="post-toc-text">Java内存模型(Java Memory Model)、volatile解析</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Java内存区域"><span class="post-toc-text">Java内存区域</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#硬件内存架构与Java内存模型"><span class="post-toc-text">硬件内存架构与Java内存模型</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#硬件内存架构"><span class="post-toc-text">硬件内存架构</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Java线程与硬件处理器"><span class="post-toc-text">Java线程与硬件处理器</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Java内存模型与硬件内存架构的关系"><span class="post-toc-text">Java内存模型与硬件内存架构的关系</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#JMM存在的必要性"><span class="post-toc-text">JMM存在的必要性</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Java内存模型的承诺"><span class="post-toc-text">Java内存模型的承诺</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#原子性"><span class="post-toc-text">原子性</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#理解指令重排"><span class="post-toc-text">理解指令重排</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#编译器重排"><span class="post-toc-text">编译器重排</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#可见性"><span class="post-toc-text">可见性</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#有序性"><span class="post-toc-text">有序性</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#JMM提供的解决方案"><span class="post-toc-text">JMM提供的解决方案</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#理解JMM中的happens-before-原则"><span class="post-toc-text">理解JMM中的happens-before 原则</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#volatile内存语义"><span class="post-toc-text">volatile内存语义</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#volatile的可见性"><span class="post-toc-text">volatile的可见性</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#缓存一致性"><span class="post-toc-text">缓存一致性</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#MESI"><span class="post-toc-text">MESI</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#总线嗅探"><span class="post-toc-text">总线嗅探</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#volatile禁止重排优化"><span class="post-toc-text">volatile禁止重排优化</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#volatile写的场景如何插入内存屏障"><span class="post-toc-text">volatile写的场景如何插入内存屏障</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#volatile读场景如何插入内存屏障"><span class="post-toc-text">volatile读场景如何插入内存屏障</span></a></li></ol></li></ol></li></ol>
         </nav>
     </aside>
     
