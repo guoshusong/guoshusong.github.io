@@ -3,30 +3,27 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Java多线程 | gssplus&#39;s Blog</title>
+  <title>Java线程基础 | gssplus&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
     <meta name="keywords" content="gss's Blog" />
   
-  <meta name="description" content="基本概念、锁、进程间通信">
+  <meta name="description" content="基本概念、锁、进程间通信、sleep、yield、wait、join的区别">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java多线程">
+<meta property="og:title" content="Java线程基础">
 <meta property="og:url" content="https://guoshusong.github.io/2020/06/02/JavaNote_08/index.html">
 <meta property="og:site_name" content="gssplus&#39;s Blog">
-<meta property="og:description" content="基本概念、锁、进程间通信">
-<meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/11/7/16e4609b7176e34c?w=646&h=502&f=png&s=26960">
-<meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/11/7/16e460d1dd037ff1?w=250&h=270&f=png&s=9047">
+<meta property="og:description" content="基本概念、锁、进程间通信、sleep、yield、wait、join的区别">
 <meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/11/10/16e532817f707795?w=982&h=706&f=png&s=99918">
 <meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/11/10/16e5360a93f8c504?w=592&h=493&f=png&s=39606">
 <meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/11/10/16e5368b83241ef5?w=600&h=520&f=png&s=36212">
 <meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/11/10/16e53725deed33fc?w=559&h=582&f=png&s=39503">
-<meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/11/10/16e537ff5b306b7a?w=1071&h=573&f=png&s=162121">
 <meta property="article:published_time" content="2020-06-02T06:08:50.497Z">
-<meta property="article:modified_time" content="2020-06-09T11:49:46.245Z">
+<meta property="article:modified_time" content="2020-10-06T12:24:40.170Z">
 <meta property="article:author" content="GuoShuSong">
 <meta property="article:tag" content="Java基础">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://user-gold-cdn.xitu.io/2019/11/7/16e4609b7176e34c?w=646&h=502&f=png&s=26960">
+<meta name="twitter:image" content="https://user-gold-cdn.xitu.io/2019/11/10/16e532817f707795?w=982&h=706&f=png&s=99918">
   
   
     <link rel="icon" href="/favicon.ico">
@@ -122,7 +119,7 @@
         
   
     <h1 class="post-title" itemprop="name">
-      Java多线程
+      Java线程基础
     </h1>
     <div class="post-title-bar">
       <ul>
@@ -151,7 +148,7 @@
     <div class="article-entry post-content" itemprop="articleBody">
       
             
-            <h2 id="基本概念、锁、进程间通信"><a href="#基本概念、锁、进程间通信" class="headerlink" title="基本概念、锁、进程间通信"></a>基本概念、锁、进程间通信</h2><a id="more"></a>
+            <h2 id="基本概念、锁、进程间通信、sleep、yield、wait、join的区别"><a href="#基本概念、锁、进程间通信、sleep、yield、wait、join的区别" class="headerlink" title="基本概念、锁、进程间通信、sleep、yield、wait、join的区别"></a>基本概念、锁、进程间通信、sleep、yield、wait、join的区别</h2><a id="more"></a>
 
 <h3 id="1-基本概念"><a href="#1-基本概念" class="headerlink" title="1 基本概念"></a>1 基本概念</h3><p><strong> 程序：</strong> 是计算机指令的集合，它以文件的形式存储在磁盘上,即程序是静态的代码</p>
 <p><strong> 进程：</strong>  </p>
@@ -169,8 +166,7 @@
 <li>线程是进程划分成的更小的运行单位。线程和进程最大的不同在于基本上各进程是独立的，而各线程则不一定，因为同一进程中的线程极有可能会相互影响。</li>
 <li>从另一角度来说，进程属于操作系统的范畴，主要是同一段时间内，可以同时执行一个以上的程序，而线程则是在同一程序内几乎同时执行一个以上的程序段。</li>
 </ul>
-<p><img src="https://user-gold-cdn.xitu.io/2019/11/7/16e4609b7176e34c?w=646&h=502&f=png&s=26960" alt=""></p>
-<h3 id="2-线程组成"><a href="#2-线程组成" class="headerlink" title="2 线程组成"></a>2 线程组成</h3><p>组成部分：虚拟CPU、执行的代码以及处理的数据。<br><img src="https://user-gold-cdn.xitu.io/2019/11/7/16e460d1dd037ff1?w=250&h=270&f=png&s=9047" alt=""></p>
+<h3 id="2-线程组成"><a href="#2-线程组成" class="headerlink" title="2 线程组成"></a>2 线程组成</h3><p>组成部分：虚拟CPU、执行的代码以及处理的数据。</p>
 <h3 id="3-线程与进程区别"><a href="#3-线程与进程区别" class="headerlink" title="3 线程与进程区别"></a>3 线程与进程区别</h3><p><strong> 进程：</strong> 指系统中正在运行中的应用程序，它拥有自己独立的内存空间；</p>
 <p><strong> 线程：</strong> 是指进程中一个执行流程，一个进程中允许同时启动多个线程，他们分别执行不同的任务,多个线程共享内存，从而极大地提高了程序的运行效率;</p>
 <p><strong> 主要区别：</strong></p>
@@ -283,25 +279,25 @@ public class ThreadMain {
 <li>消息传递</li>
 </ul>
 <p><strong>共享内存：在共享内存的并发模型里，线程之间共享程序的公共状态，线程之间通过写-读内存中的公共状态来隐式进行通信。典型的共享内存通信方式，就是通过共享对象进行通信。</strong></p>
-<p><img src="https://user-gold-cdn.xitu.io/2019/11/10/16e5368b83241ef5?w=600&h=520&f=png&s=36212" alt=""><br><strong>消息传递：在消息传递的并发模型里，线程之间没有公共状态，线程之间必须通过明确的发送消息来显式进行通信。在 Java 中典型的消息传递方式，就是 <code>wait()</code> 和 <code>notify()</code> ，或者 BlockingQueue 。</strong></p>
+<p><img src="https://user-gold-cdn.xitu.io/2019/11/10/16e5368b83241ef5?w=600&h=520&f=png&s=36212" alt=""></p>
+<p><strong>消息传递：在消息传递的并发模型里，线程之间没有公共状态，线程之间必须通过明确的发送消息来显式进行通信。在 Java 中典型的消息传递方式，就是 <code>wait()</code> 和 <code>notify()</code> ，或者 BlockingQueue 。</strong></p>
 <p><img src="https://user-gold-cdn.xitu.io/2019/11/10/16e53725deed33fc?w=559&h=582&f=png&s=39503" alt=""></p>
-<h3 id="18-什么是-Java-Lock-接口？"><a href="#18-什么是-Java-Lock-接口？" class="headerlink" title="18 什么是 Java Lock 接口？"></a>18 什么是 Java Lock 接口？</h3><p>java.util.concurrent.locks.Lock 接口，比 synchronized 提供更具拓展行的锁操作。它允许更灵活的结构，可以具有完全不同的性质，并且可以支持多个相关类的条件对象。它的优势有：</p>
-<ul>
-<li>可以使锁更公平。</li>
-<li>可以使线程在等待锁的时候响应中断。</li>
-<li>可以让线程尝试获取锁，并在无法获取锁的时候立即返回或者等待一段时间。</li>
-<li>可以在不同的范围，以不同的顺序获取和释放锁。</li>
-</ul>
-<p><img src="https://user-gold-cdn.xitu.io/2019/11/10/16e537ff5b306b7a?w=1071&h=573&f=png&s=162121" alt=""></p>
-<h3 id="19-Java-AQS"><a href="#19-Java-AQS" class="headerlink" title="19 Java AQS"></a>19 Java AQS</h3><p>AQS ，AbstractQueuedSynchronizer ，即队列同步器。它是构建锁或者其他同步组件的基础框架（如 ReentrantLock、ReentrantReadWriteLock、Semaphore 等），J.U.C 并发包的作者（Doug Lea）期望它能够成为实现大部分同步需求的基础。它是 J.U.C 并发包中的核心基础组件。</p>
-<p><strong> 优势：</strong>  </p>
-<p>AQS 解决了在实现同步器时涉及当的大量细节问题，例如获取同步状态、FIFO 同步队列。基于 AQS 来构建同步器可以带来很多好处。它不仅能够极大地减少实现工作，而且也不必处理在多个位置上发生的竞争问题。</p>
-<p>在基于 AQS 构建的同步器中，只能在一个时刻发生阻塞，从而降低上下文切换的开销，提高了吞吐量。同时在设计 AQS 时充分考虑了可伸缩性，因此 J.U.C 中，所有基于 AQS 构建的同步器均可以获得这个优势。</p>
+<h3 id="18-sleep、yield、wait、join的区别"><a href="#18-sleep、yield、wait、join的区别" class="headerlink" title="18 sleep、yield、wait、join的区别"></a>18 sleep、yield、wait、join的区别</h3><ol>
+<li><p>sleep：Thread类的方法，必须带一个时间参数。会让当前线程休眠进入阻塞状态并释放CPU（阿里面试题 Sleep释放CPU，wait 也会释放cpu，因为cpu资源太宝贵了，只有在线程running的时候，才会获取cpu片段），提供其他线程运行的机会且不考虑优先级，但如果有同步锁则sleep不会释放锁即其他线程无法获得同步锁  可通过调用interrupt()方法来唤醒休眠线程。</p>
+</li>
+<li><p>yield：让出CPU调度，Thread类的方法，类似sleep只是不能由用户指定暂停多长时间 ，并且yield()方法只能让同优先级的线程有执行的机会。 yield()只是使当前线程重新回到可执行状态，所以执行yield()的线程有可能在进入到可执行状态后马上又被执行。调用yield方法只是一个建议，告诉线程调度器我的工作已经做的差不多了，可以让别的相同优先级的线程使用CPU了，没有任何机制保证采纳。</p>
+</li>
+<li><p>wait：Object类的方法(notify()、notifyAll()  也是Object对象)，必须放在循环体和同步代码块中，执行该方法的线程会释放锁，进入线程等待池中等待被再次唤醒(notify随机唤醒，notifyAll全部唤醒，线程结束自动唤醒)即放入锁池中竞争同步锁</p>
+</li>
+<li><p>join：一种特殊的wait，当前运行线程调用另一个线程的join方法，当前线程进入阻塞状态直到另一个线程运行结束等待该线程终止。 注意该方法也需要捕捉异常。</p>
+</li>
+</ol>
+<p>等待调用join方法的线程结束，再继续执行。如：t.join();主要用于等待t线程运行结束，若无此句，main则会执行完毕，导致结果不可预测。</p>
 
             <div class="post-copyright">
     <div class="content">
-        <p>最后更新： 2020年06月09日 19:49</p>
-        <p>原始链接： <a class="post-url" href="/2020/06/02/JavaNote_08/" title="Java多线程">https://guoshusong.github.io/2020/06/02/JavaNote_08/</a></p>
+        <p>最后更新： 2020年10月06日 20:24</p>
+        <p>原始链接： <a class="post-url" href="/2020/06/02/JavaNote_08/" title="Java线程基础">https://guoshusong.github.io/2020/06/02/JavaNote_08/</a></p>
         <footer>
             <a href="https://guoshusong.github.io">
                 <img src="/images/logo.png" alt="GuoShuSong">
@@ -327,7 +323,7 @@ public class ThreadMain {
     <div class="post-share-list" id="share-list">
         <ul class="share-icons">
           <li>
-            <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://guoshusong.github.io/2020/06/02/JavaNote_08/&title=《Java多线程》 — gssplus's Blog&pic=https://i.loli.net/2020/06/02/kRu437CeQYzhwWv.png" data-title="微博">
+            <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://guoshusong.github.io/2020/06/02/JavaNote_08/&title=《Java线程基础》 — gssplus's Blog&pic=https://i.loli.net/2020/06/02/kRu437CeQYzhwWv.png" data-title="微博">
               <i class="fa fa-weibo"></i>
             </a>
           </li>
@@ -337,7 +333,7 @@ public class ThreadMain {
             </a>
           </li>
           <li>
-            <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://guoshusong.github.io/2020/06/02/JavaNote_08/&title=《Java多线程》 — gssplus's Blog&source=基本概念、锁、进程间通信" data-title="QQ">
+            <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://guoshusong.github.io/2020/06/02/JavaNote_08/&title=《Java线程基础》 — gssplus's Blog&source=基本概念、锁、进程间通信、sleep、yield、wait、join的区别" data-title="QQ">
               <i class="fa fa-qq"></i>
             </a>
           </li>
@@ -347,7 +343,7 @@ public class ThreadMain {
             </a>
           </li>
           <li>
-            <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《Java多线程》 — gssplus's Blog&url=https://guoshusong.github.io/2020/06/02/JavaNote_08/&via=https://guoshusong.github.io" data-title="Twitter">
+            <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《Java线程基础》 — gssplus's Blog&url=https://guoshusong.github.io/2020/06/02/JavaNote_08/&via=https://guoshusong.github.io" data-title="Twitter">
               <i class="fa fa-twitter"></i>
             </a>
           </li>
@@ -387,7 +383,7 @@ public class ThreadMain {
 
     <aside class="post-toc-pos post-toc-top" id="post-toc">
         <nav class="post-toc-wrap">
-            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#基本概念、锁、进程间通信"><span class="post-toc-text">基本概念、锁、进程间通信</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#1-基本概念"><span class="post-toc-text">1 基本概念</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#2-线程组成"><span class="post-toc-text">2 线程组成</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#3-线程与进程区别"><span class="post-toc-text">3 线程与进程区别</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#5-主线程"><span class="post-toc-text">5 主线程</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#6-线程优先级"><span class="post-toc-text">6 线程优先级</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#7-线程的生命周期"><span class="post-toc-text">7 线程的生命周期</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#8-线程创建方式"><span class="post-toc-text">8 线程创建方式</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#9-Runnable接口和Callable接口区别"><span class="post-toc-text">9 Runnable接口和Callable接口区别</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#14-Volatile关键字"><span class="post-toc-text">14 Volatile关键字</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#15-ThreadLocal"><span class="post-toc-text">15 ThreadLocal</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#16-多线程同步和互斥实现方法"><span class="post-toc-text">16 多线程同步和互斥实现方法</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#17-线程之间通信"><span class="post-toc-text">17 线程之间通信</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#18-什么是-Java-Lock-接口？"><span class="post-toc-text">18 什么是 Java Lock 接口？</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#19-Java-AQS"><span class="post-toc-text">19 Java AQS</span></a></li></ol></li></ol>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#基本概念、锁、进程间通信、sleep、yield、wait、join的区别"><span class="post-toc-text">基本概念、锁、进程间通信、sleep、yield、wait、join的区别</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#1-基本概念"><span class="post-toc-text">1 基本概念</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#2-线程组成"><span class="post-toc-text">2 线程组成</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#3-线程与进程区别"><span class="post-toc-text">3 线程与进程区别</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#5-主线程"><span class="post-toc-text">5 主线程</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#6-线程优先级"><span class="post-toc-text">6 线程优先级</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#7-线程的生命周期"><span class="post-toc-text">7 线程的生命周期</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#8-线程创建方式"><span class="post-toc-text">8 线程创建方式</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#9-Runnable接口和Callable接口区别"><span class="post-toc-text">9 Runnable接口和Callable接口区别</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#14-Volatile关键字"><span class="post-toc-text">14 Volatile关键字</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#15-ThreadLocal"><span class="post-toc-text">15 ThreadLocal</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#16-多线程同步和互斥实现方法"><span class="post-toc-text">16 多线程同步和互斥实现方法</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#17-线程之间通信"><span class="post-toc-text">17 线程之间通信</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#18-sleep、yield、wait、join的区别"><span class="post-toc-text">18 sleep、yield、wait、join的区别</span></a></li></ol></li></ol>
         </nav>
     </aside>
     
