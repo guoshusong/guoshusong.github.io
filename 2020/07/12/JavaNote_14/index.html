@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="gssplus&#39;s Blog">
 <meta property="og:description" content="ArrayList(openJdk11)源码分析、通过ArrayList来介绍fail-test、与Arrays.asList的区别">
 <meta property="article:published_time" content="2020-07-12T06:34:40.334Z">
-<meta property="article:modified_time" content="2020-09-18T02:30:26.531Z">
+<meta property="article:modified_time" content="2020-10-14T09:09:00.318Z">
 <meta property="article:author" content="GuoShuSong">
 <meta property="article:tag" content="Java基础">
 <meta name="twitter:card" content="summary">
@@ -145,6 +145,7 @@
             
             <h2 id="ArrayList-openJdk11-源码分析、通过ArrayList来介绍fail-test、与Arrays-asList的区别"><a href="#ArrayList-openJdk11-源码分析、通过ArrayList来介绍fail-test、与Arrays-asList的区别" class="headerlink" title="ArrayList(openJdk11)源码分析、通过ArrayList来介绍fail-test、与Arrays.asList的区别"></a>ArrayList(openJdk11)源码分析、通过ArrayList来介绍fail-test、与Arrays.asList的区别</h2><a id="more"></a>
 
+<p><a href="https://i.loli.net/2020/10/14/Bymq6Hl1apODtwU.png" target="_blank" rel="noopener">ArrayList.png</a></p>
 <p>jdk版本为openJdk11+28</p>
 <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>ArrayList 是一个数组队列，相当于 动态数组。与Java中的数组相比，它的容量能动态增长。它继承于AbstractList，实现了List, RandomAccess, Cloneable, java.io.Serializable这些接口。</p>
 <ul>
@@ -329,7 +330,7 @@
 <h4 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// old</span></span><br><span class="line">List&lt;String&gt; natureList = Arrays.asList(patternSplit);</span><br><span class="line"><span class="comment">// new </span></span><br><span class="line">List&lt;String&gt; natureList = <span class="keyword">new</span> ArrayList&lt;&gt;(Arrays.asList(patternSplit));</span><br></pre></td></tr></table></figure>
             <div class="post-copyright">
     <div class="content">
-        <p>最后更新： 2020年09月18日 10:30</p>
+        <p>最后更新： 2020年10月14日 17:09</p>
         <p>原始链接： <a class="post-url" href="/2020/07/12/JavaNote_14/" title="ArrayList源码解析">https://guoshusong.github.io/2020/07/12/JavaNote_14/</a></p>
         <footer>
             <a href="https://guoshusong.github.io">

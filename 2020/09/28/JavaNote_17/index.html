@@ -21,7 +21,7 @@
 <meta property="og:image" content="https://user-gold-cdn.xitu.io/2020/6/18/172c5535b1e0b014?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
 <meta property="og:image" content="https://i.loli.net/2019/05/08/5cd1d2d22c6cb.jpg">
 <meta property="article:published_time" content="2020-09-28T10:45:28.939Z">
-<meta property="article:modified_time" content="2020-10-13T07:00:05.268Z">
+<meta property="article:modified_time" content="2020-10-13T09:00:45.245Z">
 <meta property="article:author" content="GuoShuSong">
 <meta property="article:tag" content="Java基础">
 <meta name="twitter:card" content="summary">
@@ -207,11 +207,14 @@
 
 <p>除了Node自身之外还有以下几种Node子类型：</p>
 <ol>
-<li><p>ForwardingNode  扩容过程中，会将老table空的位置或已经迁移的位置设置成ForwardingNode，ForwardingNode会持有一个新table的引用，用来将扩容过程中其它线程put等操作辅助其扩容(实现多线程扩容)</p>
+<li><p>ForwardingNode  扩容过程中，会将老table空的位置或已经迁移的位置设置成ForwardingNode，ForwardingNode会持有一个新table的引用，用来将扩容过程中其它线程put等操作辅助其扩容(实现多线程扩容)这个节点的key value next指针全部为null，它的hash值为-1.</p>
 </li>
-<li><p>TreeBin 红黑树， 在table[i]位置的链表元素个数超出阈值会转换成TreeBin。</p>
+<li><p>TreeBin 这个类并不负责包装用户的key、value信息，而是包装的很多TreeNode节点。它代替了TreeNode的根节点，也就是说在实际的ConcurrentHashMap“数组”中，存放的是TreeBin对象，而不是TreeNode对象，这是与HashMap的区别。另外这个类还带有了读写锁。</p>
 </li>
-<li><p>TreeNode 代表TreeBin树节点</p>
+</ol>
+<p>这里仅贴出它的构造方法。可以看到在构造TreeBin节点时，仅仅指定了它的hash值为TREEBIN常量，这也就是个标识为。同时也看到我们熟悉的红黑树构造方法</p>
+<ol start="3">
+<li><p>TreeNode 树节点类，另外一个核心的数据结构。当链表长度过长的时候，会转换为TreeNode。但是与HashMap不相同的是，它并不是直接转换为红黑树，而是把这些结点包装成TreeNode放在TreeBin对象中，由TreeBin完成对红黑树的包装。而且TreeNode在ConcurrentHashMap集成自Node类，而并非HashMap中的集成自LinkedHashMap.Entry&lt;K,V&gt;类，也就是说TreeNode带有next指针，这样做的目的是方便基于TreeBin的访问。</p>
 </li>
 <li><p>ReservationNode 在computeIfAbsent和compute中使用的占位节点</p>
 </li>
@@ -356,7 +359,7 @@
 
             <div class="post-copyright">
     <div class="content">
-        <p>最后更新： 2020年10月13日 15:00</p>
+        <p>最后更新： 2020年10月13日 17:00</p>
         <p>原始链接： <a class="post-url" href="/2020/09/28/JavaNote_17/" title="ConcurrentHashMap的源码解析">https://guoshusong.github.io/2020/09/28/JavaNote_17/</a></p>
         <footer>
             <a href="https://guoshusong.github.io">
